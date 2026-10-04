@@ -1,0 +1,390 @@
+@font-face {
+    font-family: 'MuseoModerno';
+    src: url('../fonts/MuseoModerno-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'MuseoModerno';
+    src: url('../fonts/MuseoModerno-Italic-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+/* FUENTE HEADLINE (Myriad Pro Bold) */
+@font-face {
+    font-family: 'Myriad Pro Bold';
+    src: url('../fonts/MYRIADPRO-BOLD.otf') format('opentype'),
+         url('../fonts/MYRIADPRO-BOLD.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* FUENTE CUERPO DE TEXTO Y DESCRIPCIONES (Montserrat - Variable) */
+@font-face {
+    font-family: 'Montserrat';
+    src: url('../fonts/Montserrat-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url('../fonts/Montserrat-Italic-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+:root {
+    
+    --color-primary: #0A1547;        
+    --color-accent: #E6005C;         
+    --color-secondary-pink: #FFC0FE;
+    --color-white: #FFFFFF;          
+    --color-dark: #000000;          
+
+    /* --- Neutros y Superficies --- */
+    --color-bg-light: #F3F3F8;
+    --color-bg-hover: #F9FAFB;
+    --color-text-main: #1A1A1A;
+    --color-text-dark: #111827;
+    --color-text-muted: #8E8E93;
+    --color-text-subtle: #6B7280;
+    --color-overlay: rgba(0, 0, 0, 0.3);
+
+    /* --- Tipografías de Marca --- */
+    --font-display: 'MuseoModerno', sans-serif;
+    --font-heading: 'Myriad Pro Bold', sans-serif;
+    --font-body: 'Montserrat', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-body);
+}
+
+/* Ocultar completamente el input tipo checkbox */
+.menu-toggle-checkbox {
+    display: none;
+}
+
+/* Contenedor Principal del Header */
+.main-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--color-white);
+    padding: 12px 32px;
+    gap: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* 1. Logo */
+.header-logo .logo-img {
+    height: 36px;
+    width: auto;
+    display: block;
+}
+
+/* 2. Búsqueda */
+.header-search {
+    display: flex;
+    align-items: center;
+    background-color: var(--color-bg-light);
+    border-radius: 24px;
+    padding: 10px 18px;
+    flex: 1;
+    max-width: 440px;
+    gap: 10px;
+}
+
+.search-icon {
+    display: flex;
+    align-items: center;
+    color: #2b2b2b;
+}
+
+.search-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    font-size: 14px;
+    color: var(--color-text-main);
+}
+
+.search-input::placeholder {
+    color: var(--color-text-muted);
+}
+
+/* 3. Navegación */
+.categories-nav {
+    display: flex;
+    align-items: center;
+    background-color: var(--color-bg-light);
+    padding: 4px;
+    border-radius: 24px;
+    gap: 4px;
+}
+
+.category-link {
+    text-decoration: none;
+    color: #2c2c2e;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 18px;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.category-link.active {
+    background-color: var(--color-white);
+    color: #0f172a;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.category-link:hover:not(.active) {
+    color: var(--color-accent);
+}
+
+/* 4. Acciones de Usuario */
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-main);
+    padding: 8px;
+    text-decoration: none;
+    border-radius: 50%;
+    transition: opacity 0.2s ease;
+}
+
+.action-btn:hover {
+    opacity: 0.85;
+}
+
+.notification-btn {
+    padding: 6px;
+}
+
+.notification-badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 9px;
+    height: 9px;
+    background-color: var(--color-accent);
+    border: 2px solid var(--color-white);
+    border-radius: 50%;
+}
+
+.ticket-btn {
+    background-color: var(--color-bg-light);
+    border-radius: 20px;
+    padding: 6px 8px 6px 12px;
+    gap: 8px;
+}
+
+.ticket-count {
+    background-color: var(--color-accent);
+    color: var(--color-white);
+    font-size: 12px;
+    font-weight: 700;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-btn {
+    background-color: var(--color-dark);
+    color: var(--color-white);
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    cursor: pointer;
+}
+
+/* Overlay Traslúcido de Fondo */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--color-overlay);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 998;
+    cursor: pointer;
+}
+
+/* Panel Lateral Desplegable */
+.profile-sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 320px;
+    height: 100vh;
+    background-color: var(--color-white);
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.08);
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 999;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Tarjeta de Usuario */
+.user-card {
+    display: flex;
+    align-items: center;
+    background-color: var(--color-bg-light);
+    padding: 10px 14px;
+    border-radius: 16px;
+    gap: 12px;
+}
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    background-color: var(--color-dark);
+    color: var(--color-white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.user-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-text-dark);
+    line-height: 1.2;
+}
+
+.user-role {
+    font-size: 11px;
+    color: var(--color-text-subtle);
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+.user-selector-icon {
+    color: var(--color-text-subtle);
+    display: flex;
+    align-items: center;
+}
+
+/* Conmutador de Rol */
+.role-switcher {
+    display: flex;
+    background-color: var(--color-bg-light);
+    padding: 4px;
+    border-radius: 14px;
+}
+
+.role-tab {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 8px 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4b5563;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.role-tab.active {
+    background-color: var(--color-white);
+    color: var(--color-text-dark);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Menú de Navegación Lateral */
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    border-radius: 12px;
+    gap: 12px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sidebar-item:hover {
+    background-color: var(--color-bg-hover);
+}
+
+.sidebar-item.active {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+}
+
+.sidebar-item.active svg {
+    stroke: var(--color-white);
+}
+
+.sidebar-item .badge {
+    margin-left: auto;
+    background-color: var(--color-bg-light);
+    color: #4b5563;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+/* Activación por Checkbox */
+.menu-toggle-checkbox:checked ~ .sidebar-overlay {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.menu-toggle-checkbox:checked ~ .profile-sidebar {
+    transform: translateX(0);
+}
