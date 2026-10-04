@@ -1,3 +1,7 @@
+/* =========================================================
+   1. CARGA DE FUENTES LOCALES
+   ========================================================= */
+
 /* FUENTE DISPLAY (MuseoModerno) */
 @font-face {
     font-family: 'MuseoModerno';
@@ -42,6 +46,9 @@
     font-display: swap;
 }
 
+/* =========================================================
+   2. VARIABLES COMPLETA DE MARCA Y SLIDER
+   ========================================================= */
 :root {
     /* --- Paleta Oficial de Marca (Konticket) --- */
     --color-primary: #0A1547;        /* Azul Oscuro Primario */
@@ -64,7 +71,9 @@
     --font-body: 'Montserrat', sans-serif;
 }
 
-
+/* =========================================================
+   3. ESTILOS DEL SLIDER HERO
+   ========================================================= */
 
 /* Sección Contenedora */
 .hero-slider-section {
