@@ -1,3 +1,5 @@
+/* Fuente DISPLAY */
+/* FUENTE DISPLAY (MuseoModerno - Variable) */
 @font-face {
     font-family: 'MuseoModerno';
     src: url('../fonts/MuseoModerno-VariableFont_wght.ttf') format('truetype');
@@ -42,12 +44,12 @@
 }
 
 :root {
-    
-    --color-primary: #0A1547;        
-    --color-accent: #E6005C;         
-    --color-secondary-pink: #FFC0FE;
-    --color-white: #FFFFFF;          
-    --color-dark: #000000;          
+    /* --- Paleta Oficial de Marca (Konticket) --- */
+    --color-primary: #0A1547;        /* Azul Oscuro Primario */
+    --color-accent: #E6005C;         /* Rosa Neón de Acento / Destacado */
+    --color-secondary-pink: #FFC0FE; /* Rosa Pastel Secundario */
+    --color-white: #FFFFFF;          /* Blanco Secundario */
+    --color-dark: #000000;           /* Negro / Colores de Estado */
 
     /* --- Neutros y Superficies --- */
     --color-bg-light: #F3F3F8;

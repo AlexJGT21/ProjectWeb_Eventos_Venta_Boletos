@@ -1,3 +1,7 @@
+/* =========================================================
+   ESTILOS DE LA SECCIÓN DE EVENTOS EN CARTELERA (GRID)
+   ========================================================= */
+
 .events-main-section {
     max-width: 1200px;
     margin: 32px auto 60px auto;
@@ -5,6 +9,9 @@
     font-family: var(--font-body);
 }
 
+/* ---------------------------------------------------------
+   1. BARRA DE FILTROS SUPERIOR
+   --------------------------------------------------------- */
 .filters-container {
     background: #FFFFFF;
     border: 1px solid #E2E8F0;
@@ -149,6 +156,9 @@
     margin-left: 8px;
 }
 
+/* ---------------------------------------------------------
+   2. ENCABEZADO DE LA SECCIÓN
+   --------------------------------------------------------- */
 .section-header {
     margin-bottom: 24px;
 }
@@ -179,6 +189,9 @@
     margin: 0;
 }
 
+/* ---------------------------------------------------------
+   3. LAYOUT GRID DE EVENTOS (4 Columnas)
+   --------------------------------------------------------- */
 .events-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -392,6 +405,9 @@
     opacity: 0.85;
 }
 
+/* ---------------------------------------------------------
+   4. RESPONSIVIDAD CON CSS GRID
+   --------------------------------------------------------- */
 @media (max-width: 1024px) {
     .events-grid {
         grid-template-columns: repeat(2, 1fr); /* 2 columnas en Tablets */
