@@ -1,0 +1,642 @@
+
+@font-face {
+    font-family: 'MuseoModerno';
+    src: url('../fonts/MuseoModerno-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'MuseoModerno';
+    src: url('../fonts/MuseoModerno-Italic-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+/* FUENTE HEADLINE (Myriad Pro Bold) */
+@font-face {
+    font-family: 'Myriad Pro Bold';
+    src: url('../fonts/MYRIADPRO-BOLD.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* FUENTE CUERPO DE TEXTO Y DESCRIPCIONES (Montserrat - Variable) */
+@font-face {
+    font-family: 'Montserrat';
+    src: url('../fonts/Montserrat-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url('../fonts/Montserrat-Italic-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+/* =========================================================
+   VARIABLES DE TEMA Y ESTILOS GENERALES DE ACCESO
+   ========================================================= */
+
+:root {
+    /* --- Paleta Oficial de Marca (Konticket) --- */
+    --color-primary: #0A1547;        /* Azul Oscuro Primario */
+    --color-accent: #E6005C;         /* Rosa Neón de Acento */
+    --color-accent-hover: #C5004E;   /* Hover para Botones */
+    --color-secondary-pink: #FFC0FE; /* Rosa Pastel Secundario */
+    --color-white: #FFFFFF;          /* Blanco Secundario */
+    --color-dark: #000000;           /* Negro */
+
+    /* --- Neutros y Superficies --- */
+    --color-bg-light: #F3F3F8;
+    --color-border: #E2E8F0;
+    --color-text-main: #1A1A1A;
+    --color-text-dark: #111827;
+    --color-text-muted: #8E8E93;
+    --color-text-subtle: #6B7280;
+
+    /* --- Tipografías Oficiales del Proyecto --- */
+    --font-display: 'MuseoModerno', sans-serif;
+    --font-heading: 'Myriad Pro Bold', sans-serif;
+    --font-body: 'Montserrat', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-body);
+}
+
+body.auth-body {
+    background-color: #F3F3F8;
+    background-image: radial-gradient(#E2E8F0 1px, transparent 1px);
+    background-size: 24px 24px;
+    color: var(--color-text-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* ---------------------------------------------------------
+   1. HEADER SIMPLIFICADO
+   --------------------------------------------------------- */
+.auth-header {
+    width: 100%;
+    padding: 20px 40px;
+}
+
+.header-container {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+}
+
+.header-logo a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.logo-img {
+    height: 36px;
+    width: auto;
+    object-fit: contain;
+}
+
+.header-nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+}
+
+.nav-help {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s ease;
+}
+
+.nav-help:hover {
+    color: var(--color-text-dark);
+}
+
+.help-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--color-text-muted);
+    border-radius: 50%;
+    font-size: 11px;
+}
+
+.lang-selector {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--color-text-dark);
+}
+
+/* ---------------------------------------------------------
+   2. CONTENEDOR CARTA SPLIT
+   --------------------------------------------------------- */
+.auth-main-container {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 16px;
+}
+
+.auth-card {
+    background: #FFFFFF;
+    border-radius: 28px;
+    box-shadow: 0 12px 40px rgba(10, 21, 71, 0.08);
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    max-width: 1060px;
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+/* ---------------------------------------------------------
+   3. SECCIÓN FORMULARIO (IZQUIERDA)
+   --------------------------------------------------------- */
+.auth-form-section {
+    padding: 44px 48px;
+    display: flex;
+    flex-direction: column;
+}
+
+.badge-pill-pink {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #FCE7F3;
+    color: #BE185D;
+    font-size: 10.5px;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    width: fit-content;
+    margin-bottom: 20px;
+}
+
+.dot-pink {
+    width: 6px;
+    height: 6px;
+    background-color: var(--color-accent);
+    border-radius: 50%;
+}
+
+.auth-title {
+    font-family: var(--font-heading);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--color-primary);
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+}
+
+.auth-subtitle {
+    font-size: 13.5px;
+    color: var(--color-text-muted);
+    margin-bottom: 28px;
+}
+
+/* Botones Social Login */
+.social-buttons-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.btn-social {
+    background: #F8FAFC;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--color-text-dark);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn-social:hover {
+    background: #F1F5F9;
+    border-color: #CBD5E1;
+}
+
+.apple-icon {
+    font-size: 16px;
+    line-height: 1;
+}
+
+/* Divisor */
+.auth-divider {
+    position: relative;
+    text-align: center;
+    margin: 4px 0 24px 0;
+}
+
+.auth-divider::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: #E2E8F0;
+}
+
+.auth-divider span {
+    position: relative;
+    background-color: #FFFFFF;
+    padding: 0 12px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    color: var(--color-text-subtle);
+}
+
+/* Formulario Campos */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.alert-error-box {
+    background-color: #FEE2E2;
+    border: 1px solid #FCA5A5;
+    color: #991B1B;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #334155;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 14px;
+    font-size: 14px;
+    color: var(--color-text-subtle);
+    pointer-events: none;
+}
+
+.input-wrapper input {
+    width: 100%;
+    padding: 12px 14px 12px 38px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    color: var(--color-text-dark);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-wrapper input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(10, 21, 71, 0.08);
+}
+
+.toggle-password {
+    position: absolute;
+    right: 14px;
+    background: transparent;
+    border: none;
+    color: var(--color-text-subtle);
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.checkbox-label input[type="checkbox"] {
+    accent-color: var(--color-primary);
+    width: 15px;
+    height: 15px;
+    border-radius: 4px;
+}
+
+.forgot-link {
+    color: var(--color-accent);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+}
+
+/* Botón Principal Submit */
+.btn-primary-submit {
+    margin-top: 8px;
+    background-color: var(--color-accent);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-family: var(--font-heading);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-primary-submit:hover {
+    background-color: var(--color-accent-hover);
+}
+
+.btn-primary-submit:active {
+    transform: scale(0.99);
+}
+
+/* Footer del Formulario */
+.form-footer-bar {
+    margin-top: auto;
+    padding-top: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+}
+
+.register-text {
+    color: var(--color-text-muted);
+}
+
+.register-link {
+    color: var(--color-accent);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.register-link:hover {
+    text-decoration: underline;
+}
+
+.encryption-pill {
+    background: #F1F5F9;
+    color: var(--color-text-muted);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 8px;
+}
+
+/* ---------------------------------------------------------
+   4. SECCIÓN HERO / PANEL DERECHO (DARK THEME)
+   --------------------------------------------------------- */
+.auth-hero-section {
+    background: linear-gradient(160deg, #0A1547 0%, #080D2B 100%);
+    color: #FFFFFF;
+    padding: 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+}
+
+.hero-top-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.badge-smart-access {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.pass-brand {
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.hero-content {
+    margin: 32px 0;
+}
+
+.hero-title {
+    font-family: var(--font-heading);
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+}
+
+.hero-description {
+    font-size: 13.5px;
+    color: #94A3B8;
+    line-height: 1.5;
+    margin-bottom: 32px;
+}
+
+.features-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.feature-icon-box {
+    background: rgba(230, 0, 92, 0.2);
+    border: 1px solid rgba(230, 0, 92, 0.4);
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.feature-info strong {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 2px;
+}
+
+.feature-info p {
+    font-size: 11.5px;
+    color: #94A3B8;
+    line-height: 1.4;
+}
+
+/* Tarjeta de Estadísticas inferior */
+.hero-stats-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.stat-box {
+    flex: 1;
+}
+
+.stat-number {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 700;
+    color: #FFFFFF;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: #94A3B8;
+    letter-spacing: 0.6px;
+}
+
+.stat-divider {
+    width: 1px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.12);
+    margin: 0 16px;
+}
+
+/* ---------------------------------------------------------
+   5. FOOTER GENERAL
+   --------------------------------------------------------- */
+.auth-footer {
+    width: 100%;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--color-text-subtle);
+}
+
+.footer-legal {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.footer-legal a {
+    color: var(--color-text-subtle);
+    text-decoration: none;
+}
+
+.footer-legal a:hover {
+    color: var(--color-text-dark);
+}
+
+/* ---------------------------------------------------------
+   6. RESPONSIVIDAD
+   --------------------------------------------------------- */
+@media (max-width: 900px) {
+    .auth-card {
+        grid-template-columns: 1fr;
+        max-width: 520px;
+    }
+
+    .auth-hero-section {
+        display: none;
+    }
+
+    .auth-header {
+        padding: 16px 20px;
+    }
+
+    .auth-form-section {
+        padding: 32px 24px;
+    }
+}

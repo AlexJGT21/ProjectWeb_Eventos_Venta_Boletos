@@ -1,0 +1,668 @@
+/* =========================================================
+   IMPORTACIÓN DE FUENTES LOCALES DEL PROYECTO
+   ========================================================= */
+
+@font-face {
+    font-family: 'MuseoModerno';
+    src: url('../fonts/MuseoModerno-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Myriad Pro Bold';
+    src: url('../fonts/MYRIADPRO-BOLD.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url('../fonts/Montserrat-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* =========================================================
+   VARIABLES DE TEMA REGISTRO
+   ========================================================= */
+
+:root {
+    --color-primary: #0A1547;        /* Azul Oscuro Primario */
+    --color-accent: #E6005C;         /* Rosa Neón de Acento */
+    --color-accent-hover: #C5004E;   /* Hover para Botones */
+    --color-purple-bg: #F3E8FF;      /* Morado claro para badge de registro */
+    --color-purple-text: #6B21A8;
+
+    --color-bg-light: #F8FAFC;
+    --color-border: #E2E8F0;
+    --color-text-dark: #0F172A;
+    --color-text-muted: #64748B;
+    --color-text-subtle: #94A3B8;
+
+    --font-display: 'MuseoModerno', sans-serif;
+    --font-heading: 'Myriad Pro Bold', sans-serif;
+    --font-body: 'Montserrat', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-body);
+}
+
+body.auth-body {
+    background-color: #F8FAFC;
+    background-image: radial-gradient(#E2E8F0 1px, transparent 1px);
+    background-size: 24px 24px;
+    color: var(--color-text-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* ---------------------------------------------------------
+   1. HEADER DE REGISTRO
+   --------------------------------------------------------- */
+.auth-header {
+    width: 100%;
+    padding: 16px 40px;
+}
+
+.header-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-logo-group {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.logo-img {
+    height: 32px;
+    width: auto;
+    object-fit: contain;
+}
+
+.header-tagline {
+    font-size: 10.5px;
+    font-weight: 800;
+    color: var(--color-accent);
+    letter-spacing: 0.8px;
+}
+
+.header-nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+}
+
+.header-security-pill {
+    font-size: 11px;
+    color: #64748B;
+}
+
+.nav-help {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.help-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--color-text-muted);
+    border-radius: 50%;
+    font-size: 11px;
+}
+
+.lang-selector {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--color-text-dark);
+}
+
+/* ---------------------------------------------------------
+   2. CONTENEDOR CARTA SPLIT
+   --------------------------------------------------------- */
+.auth-main-container {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 16px;
+}
+
+.auth-card {
+    background: #FFFFFF;
+    border-radius: 24px;
+    box-shadow: 0 16px 48px rgba(10, 21, 71, 0.08);
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    max-width: 1100px;
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+}
+
+/* ---------------------------------------------------------
+   3. SECCIÓN FORMULARIO (IZQUIERDA)
+   --------------------------------------------------------- */
+.auth-form-section {
+    padding: 40px 44px;
+    display: flex;
+    flex-direction: column;
+}
+
+.badge-pill-purple {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--color-purple-bg);
+    color: var(--color-purple-text);
+    font-size: 10.5px;
+    font-weight: 800;
+    padding: 5px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    width: fit-content;
+    margin-bottom: 16px;
+}
+
+.auth-title {
+    font-family: var(--font-heading);
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--color-primary);
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+}
+
+.auth-subtitle {
+    font-size: 13px;
+    color: var(--color-text-muted);
+    margin-bottom: 24px;
+    line-height: 1.4;
+}
+
+/* Botones Social Login */
+.social-buttons-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.btn-social {
+    background: #F8FAFC;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 10px;
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--color-text-dark);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s ease;
+}
+
+.btn-social:hover {
+    background: #F1F5F9;
+}
+
+/* Divisor */
+.auth-divider {
+    position: relative;
+    text-align: center;
+    margin: 4px 0 20px 0;
+}
+
+.auth-divider::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: #E2E8F0;
+}
+
+.auth-divider span {
+    position: relative;
+    background-color: #FFFFFF;
+    padding: 0 12px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    color: var(--color-text-subtle);
+}
+
+/* Formulario */
+.register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.alert-error-box {
+    background-color: #FEE2E2;
+    border: 1px solid #FCA5A5;
+    color: #991B1B;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.form-row-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.form-group label {
+    font-size: 10.5px;
+    font-weight: 800;
+    color: #475569;
+    letter-spacing: 0.5px;
+}
+
+.label-with-hint {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hint-text {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--color-text-subtle);
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 14px;
+    font-size: 13px;
+    color: var(--color-text-subtle);
+    pointer-events: none;
+}
+
+.input-wrapper input {
+    width: 100%;
+    padding: 11px 14px 11px 38px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--color-text-dark);
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.input-wrapper input:focus {
+    background: #FFFFFF;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(10, 21, 71, 0.08);
+}
+
+.toggle-password {
+    position: absolute;
+    right: 14px;
+    background: transparent;
+    border: none;
+    color: var(--color-text-subtle);
+    cursor: pointer;
+    font-size: 13px;
+}
+
+/* Checkbox Términos */
+.terms-option {
+    margin-top: 4px;
+}
+
+.checkbox-label-terms {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 11px;
+    color: var(--color-text-muted);
+    line-height: 1.4;
+    cursor: pointer;
+}
+
+.checkbox-label-terms input[type="checkbox"] {
+    accent-color: var(--color-accent);
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.checkbox-label-terms a {
+    color: var(--color-accent);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.checkbox-label-terms a:hover {
+    text-decoration: underline;
+}
+
+/* Botón Principal */
+.btn-primary-submit {
+    margin-top: 6px;
+    background-color: var(--color-accent);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 12px;
+    padding: 13px;
+    font-family: var(--font-heading);
+    font-size: 13.5px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-primary-submit:hover {
+    background-color: var(--color-accent-hover);
+}
+
+.btn-primary-submit:active {
+    transform: scale(0.99);
+}
+
+/* Pie del Formulario */
+.form-footer-bar {
+    margin-top: auto;
+    padding-top: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.login-text {
+    color: var(--color-text-muted);
+}
+
+.login-link {
+    color: var(--color-accent);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.login-link:hover {
+    text-decoration: underline;
+}
+
+.privacy-guarantee {
+    font-size: 10.5px;
+    color: var(--color-text-subtle);
+}
+
+/* ---------------------------------------------------------
+   4. SECCIÓN HERO / PANEL DERECHO (DARK THEME)
+   --------------------------------------------------------- */
+.auth-hero-section {
+    background: linear-gradient(165deg, #0A1547 0%, #050A24 100%);
+    color: #FFFFFF;
+    padding: 36px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.hero-top-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.badge-experience {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 4px 10px;
+    border-radius: 16px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.badge-verified {
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.hero-content {
+    margin: 20px 0;
+}
+
+.hero-category {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #94A3B8;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.hero-title {
+    font-family: var(--font-heading);
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 20px;
+}
+
+.text-highlight-pink {
+    color: var(--color-accent);
+}
+
+/* Tarjeta Imagen Concierto */
+.hero-media-card {
+    width: 100%;
+    height: 140px;
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(10, 21, 71, 0.9) 100%),
+    url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=800&q=80') center/cover no-repeat;
+    position: relative;
+    margin-bottom: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.media-overlay-tags {
+    position: absolute;
+    bottom: 12px;
+    left: 14px;
+    right: 14px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 9.5px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Lista de Características */
+.features-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.feature-icon-box {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.feature-info strong {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 2px;
+}
+
+.feature-info p {
+    font-size: 11px;
+    color: #94A3B8;
+    line-height: 1.35;
+}
+
+/* Footer Shield */
+.hero-shield-card {
+    background: rgba(230, 0, 92, 0.15);
+    border: 1px solid rgba(230, 0, 92, 0.3);
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.shield-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.shield-icon {
+    font-size: 16px;
+    color: var(--color-accent);
+}
+
+.shield-info strong {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #FFFFFF;
+}
+
+.shield-info p {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.info-circle-icon {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* ---------------------------------------------------------
+   5. FOOTER GENERAL
+   --------------------------------------------------------- */
+.auth-footer {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 16px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11.5px;
+    color: var(--color-text-subtle);
+}
+
+.footer-legal {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.footer-legal a {
+    color: var(--color-text-subtle);
+    text-decoration: none;
+}
+
+.footer-legal a:hover {
+    color: var(--color-text-dark);
+}
+
+/* ---------------------------------------------------------
+   6. RESPONSIVIDAD
+   --------------------------------------------------------- */
+@media (max-width: 960px) {
+    .auth-card {
+        grid-template-columns: 1fr;
+        max-width: 520px;
+    }
+
+    .auth-hero-section {
+        display: none;
+    }
+
+    .auth-header {
+        padding: 16px 20px;
+    }
+
+    .header-security-pill {
+        display: none;
+    }
+
+    .auth-form-section {
+        padding: 32px 24px;
+    }
+
+    .form-row-2col {
+        grid-template-columns: 1fr;
+    }
+}

@@ -14,6 +14,17 @@ import java.util.Map;
 @Controller
 public class EventoController {
 
+
+    @GetMapping({"/user-login"})
+    public String login(){
+        return "login-user";
+    }
+
+    @GetMapping({"/registro"})
+    public String registro(){
+        return "registro";
+    }
+
     @GetMapping({"/", "/index"})
     public String catalogoEventos(Model model, HttpSession session) {
         List<Map<String, Object>> eventos = obtenerListaEventos();
