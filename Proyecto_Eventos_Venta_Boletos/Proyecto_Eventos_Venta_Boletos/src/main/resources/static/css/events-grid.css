@@ -1,6 +1,9 @@
-/* =========================================================
-   ESTILOS DE LA SECCIÓN DE EVENTOS EN CARTELERA (GRID)
-   ========================================================= */
+:root {
+    --color-primary: #0A1547;
+    --color-accent: #E6005C;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
 
 .events-main-section {
     max-width: 1200px;
@@ -9,9 +12,6 @@
     font-family: var(--font-body);
 }
 
-/* ---------------------------------------------------------
-   1. BARRA DE FILTROS SUPERIOR
-   --------------------------------------------------------- */
 .filters-container {
     background: #FFFFFF;
     border: 1px solid #E2E8F0;
@@ -49,9 +49,16 @@
     margin-right: 4px;
 }
 
+/* Ocultar los inputs de tipo Radio */
+.filter-radio-hidden {
+    display: none !important;
+}
+
+
+/* Botones de Género */
 .genre-btn {
     background: #F1F5F9;
-    border: none;
+    border: 1px solid transparent;
     padding: 8px 16px;
     border-radius: 20px;
     font-size: 13px;
@@ -59,17 +66,20 @@
     color: #475569;
     cursor: pointer;
     transition: all 0.2s ease;
+    user-select: none;
 }
 
 .genre-btn:hover {
     background: #E2E8F0;
 }
 
+.filter-radio-hidden:checked + .genre-btn,
 .genre-btn.active {
     background: var(--color-primary, #0A1547);
     color: #FFFFFF;
 }
 
+/* Botones de Tiempo */
 .time-btn {
     background: transparent;
     border: none;
@@ -78,7 +88,9 @@
     color: #64748B;
     padding: 6px 12px;
     cursor: pointer;
-    border-radius: 8px;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+    user-select: none;
 }
 
 .time-btn:hover {
@@ -86,7 +98,13 @@
     color: #0F172A;
 }
 
-/* Fila Inferior Filtros */
+.filter-radio-hidden:checked + .time-btn,
+.time-btn.active {
+    background: var(--color-primary, #0A1547);
+    color: #FFFFFF;
+}
+
+/* Fila Inferior - Filtro de Precio */
 .price-filter {
     display: flex;
     align-items: center;
@@ -112,6 +130,7 @@
     width: 140px;
 }
 
+/* Fila Inferior - Disponibilidad */
 .filter-label-inline {
     font-size: 12px;
     color: #64748B;
@@ -130,10 +149,19 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    transition: all 0.2s ease;
+    user-select: none;
 }
 
+.avail-btn:hover {
+    background: #F1F5F9;
+}
+
+.filter-radio-hidden:checked + .avail-btn,
 .avail-btn.active {
     background: #E2E8F0;
+    border-color: #CBD5E1;
+    font-weight: 700;
 }
 
 .status-dot {
@@ -146,6 +174,24 @@
 .status-dot.green { background-color: #10B981; }
 .status-dot.red { background-color: #E6005C; }
 
+/* Botón "Filtrar" */
+.btn-submit-filter {
+    background: var(--color-primary, #0A1547);
+    color: #FFFFFF;
+    border: none;
+    padding: 7px 18px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn-submit-filter:hover {
+    background: #1E293B;
+}
+
+/* Botón "Limpiar" */
 .btn-clear {
     background: transparent;
     border: none;
@@ -153,12 +199,15 @@
     color: #64748B;
     font-weight: 600;
     cursor: pointer;
-    margin-left: 8px;
+    margin-left: 4px;
+    text-decoration: none;
+    padding: 6px 10px;
 }
 
-/* ---------------------------------------------------------
-   2. ENCABEZADO DE LA SECCIÓN
-   --------------------------------------------------------- */
+.btn-clear:hover {
+    color: #0F172A;
+}
+
 .section-header {
     margin-bottom: 24px;
 }
@@ -189,9 +238,6 @@
     margin: 0;
 }
 
-/* ---------------------------------------------------------
-   3. LAYOUT GRID DE EVENTOS (4 Columnas)
-   --------------------------------------------------------- */
 .events-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -216,7 +262,6 @@
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
-/* Tarjeta Seleccionada / Destacada */
 .event-card-item.highlighted {
     border: 2px solid var(--color-accent, #E6005C);
     box-shadow: 0 0 16px rgba(230, 0, 92, 0.15);
@@ -228,7 +273,7 @@
     width: 100%;
     height: 160px;
     overflow: hidden;
-    background-color: #090A1A;
+    background: linear-gradient(135deg, #090A1A 0%, #1E293B 100%);
 }
 
 .card-thumb img {
@@ -256,6 +301,11 @@
 .badge-green {
     background-color: #FFFFFF;
     color: #059669;
+}
+
+.badge-disabled {
+    background-color: #334155;
+    color: #94A3B8;
 }
 
 .badge-date {
@@ -376,7 +426,7 @@
     color: #64748B;
 }
 
-/* Botones de acción según la tarjeta */
+/* Botones de Acción de Tarjetas */
 .btn-action {
     text-decoration: none;
     padding: 8px 14px;
@@ -384,6 +434,8 @@
     font-size: 12px;
     font-weight: 700;
     transition: opacity 0.2s ease;
+    display: inline-block;
+    text-align: center;
 }
 
 .btn-dark {
@@ -401,22 +453,43 @@
     color: #E6005C;
 }
 
-.btn-action:hover {
+.btn-disabled {
+    background-color: #F1F5F9;
+    color: #94A3B8;
+    border: 1px solid #E2E8F0;
+    cursor: not-allowed;
+}
+
+.btn-action:hover:not(.btn-disabled) {
     opacity: 0.85;
 }
 
-/* ---------------------------------------------------------
-   4. RESPONSIVIDAD CON CSS GRID
-   --------------------------------------------------------- */
+/* Configuración del botón Guardar basado en label/checkbox */
+.btn-save {
+    cursor: pointer;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.save-checkbox {
+    display: none;
+}
+
+.save-checkbox:checked + svg {
+    fill: currentColor;
+}
+
 @media (max-width: 1024px) {
     .events-grid {
-        grid-template-columns: repeat(2, 1fr); /* 2 columnas en Tablets */
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (max-width: 640px) {
     .events-grid {
-        grid-template-columns: 1fr; /* 1 columna en Móviles */
+        grid-template-columns: 1fr;
     }
     .filters-top-row, .filters-bottom-row {
         flex-direction: column;
