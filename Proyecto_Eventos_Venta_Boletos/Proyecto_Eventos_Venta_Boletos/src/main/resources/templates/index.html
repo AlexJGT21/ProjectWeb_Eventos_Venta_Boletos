@@ -1,290 +1,77 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Konticket</title>
-    <link rel="stylesheet" href="/css/header.css">
-    <link rel="stylesheet" href="/css/hero-slider.css">
-    <link rel="stylesheet" href="/css/events-grid.css">
+    <link rel="stylesheet" th:href="@{/css/header.css}" href="/css/header.css">
+    <link rel="stylesheet" th:href="@{/css/hero-slider.css}" href="/css/hero-slider.css">
+    <link rel="stylesheet" th:href="@{/css/events-grid.css}" href="/css/events-grid.css">
 </head>
 <body>
 
     <!-- Checkbox oculto que controla el estado del menú -->
     <input type="checkbox" id="profile-menu-toggle" class="menu-toggle-checkbox">
 
-    <!-- Header Principal -->
-    <header class="main-header">
-        
-        <!-- Logo -->
-        <div class="header-logo">
-            <a href="#">
-                <img src="../static/img/Logotipo_FullColor.svg" alt="Konticket" class="logo-img">
-            </a>
-        </div>
+    <!-- 1. Carga el fragmento main-header -->
+    <header th:replace="~{fragmentos/header :: main-header}"></header>
 
-        <!-- Buscador -->
-        <div class="header-search">
-            <span class="search-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-            </span>
-            <input type="text" class="search-input" placeholder="Buscar eventos, artistas..." aria-label="Buscar">
-        </div>
-
-        <!-- Categorías -->
-        <nav class="categories-nav">
-            <a href="#" class="category-link active">Música</a>
-            <a href="#" class="category-link">Festivales</a>
-            <a href="#" class="category-link">Indie Rock</a>
-            <a href="#" class="category-link">Electrónica</a>
-        </nav>
-
-        <!-- Acciones de Usuario -->
-        <div class="user-actions">
-            
-            <button type="button" class="action-btn notification-btn" aria-label="Notificaciones">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                </svg>
-                <span class="notification-badge"></span>
-            </button>
-
-            <button type="button" class="action-btn ticket-btn" aria-label="Mis entradas">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="2" y="6" width="20" height="12" rx="2"></rect>
-                    <line x1="6" y1="6" x2="6" y2="18"></line>
-                    <line x1="18" y1="6" x2="18" y2="18"></line>
-                </svg>
-                <span class="ticket-count">2</span>
-            </button>
-
-            <!-- El botón de perfil ahora es un LABEL vinculado al checkbox -->
-            <label for="profile-menu-toggle" class="action-btn profile-btn" aria-label="Mi Perfil">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-            </label>
-
-        </div>
-
-    </header>
-
-    <!-- Overlay oscuro para cerrar el menú al hacer clic fuera -->
+    <!-- Overlay oscuro para cerrar el menú -->
     <label for="profile-menu-toggle" class="sidebar-overlay"></label>
 
-    <!-- Menú Lateral Desplegable -->
-    <aside class="profile-sidebar">
-        
-        <!-- Tarjeta de Usuario -->
-        <div class="user-card">
-            <div class="user-avatar">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-            </div>
-            <div class="user-info">
-                <span class="user-name">Emily Lara</span>
-                <span class="user-role">Fan & Organizador</span>
-            </div>
-            <div class="user-selector-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="m7 15 5 5 5-5"></path>
-                    <path d="m7 9 5-5 5 5"></path>
-                </svg>
-            </div>
-        </div>
-
-        <!-- Conmutador de Rol -->
-        <div class="role-switcher">
-            <button type="button" class="role-tab active">Asistente</button>
-            <button type="button" class="role-tab">Organizador</button>
-        </div>
-
-        <!-- Opciones del Menú -->
-        <nav class="sidebar-menu">
-            <a href="#" class="sidebar-item active">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
-                </svg>
-                <span>Explorar Eventos</span>
-            </a>
-
-            <a href="#" class="sidebar-item">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="2" y="6" width="20" height="12" rx="2"></rect>
-                    <line x1="6" y1="6" x2="6" y2="18"></line>
-                    <line x1="18" y1="6" x2="18" y2="18"></line>
-                </svg>
-                <span>Mis Boletos</span>
-                <span class="badge">2</span>
-            </a>
-
-            <a href="#" class="sidebar-item">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                </svg>
-                <span>Notificaciones</span>
-            </a>
-
-            <a href="#" class="sidebar-item">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
-                    <circle cx="12" cy="12" r="3"></circle>
-                </svg>
-                <span>Ajustes</span>
-            </a>
-        </nav>
-    </aside>
+    <!-- 2. Carga el fragmento perfil-sidebar -->
+    <aside th:replace="~{fragmentos/header :: perfil-sidebar}"></aside>
 
     <!-- Sección del Slider Hero -->
     <section class="hero-slider-section">
-
-        <!-- Radio buttons ocultos para controlar las diapositivas dinámicamente -->
         <input type="radio" name="hero-slider" id="slide-1" checked class="slider-radio">
         <input type="radio" name="hero-slider" id="slide-2" class="slider-radio">
         <input type="radio" name="hero-slider" id="slide-3" class="slider-radio">
 
-        <!-- Contenedor del Slider -->
         <div class="slider-container">
             <div class="slider-track">
-
                 <!-- EVENTO 1 -->
                 <article class="event-card">
                     <div class="event-card-overlay"></div>
                     <div class="event-card-content">
-                        
-                        <!-- Encabezado superior / Badges -->
                         <div class="card-top-bar">
                             <div class="top-left-badges">
-                                <span class="badge badge-featured">
-                                    <span class="dot"></span> EVENTO DESTACADO
-                                </span>
-                                <span class="badge badge-glass">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                    Quedan <span>42</span> boletos
-                                </span>
+                                <span class="badge badge-featured"><span class="dot"></span> EVENTO DESTACADO</span>
+                                <span class="badge badge-glass">Quedan <span>42</span> boletos</span>
                             </div>
                             <div class="top-right-badges">
-                                <span class="badge badge-glass">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                                    Organizado por: <strong>Luces & Sonido SONORA</strong>
-                                </span>
+                                <span class="badge badge-glass">Organizado por: <strong>Luces & Sonido SONORA</strong></span>
                             </div>
                         </div>
-
-                        <!-- Información Principal del Evento -->
                         <div class="card-main-info">
-                            <p class="event-meta">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                <span>SÁBADO 26 DE SEPTIEMBRE, 2026</span> 
-                                · 
-                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                                <span>DESIERTO BAR</span>
-                            </p>
-
+                            <p class="event-meta">SÁBADO 26 DE SEPTIEMBRE, 2026 · DESIERTO BAR</p>
                             <h2 class="event-title">Noche Indie: Neon Waves Fest</h2>
-
-                            <p class="event-description">
-                                La cumbre del synthwave y dream-pop latinoamericano con 6 bandas en vivo, iluminación inmersiva y dos escenarios simultáneos en el Desierto Bar
-                            </p>
-                        </div>
-
-                        <!-- Pie de la tarjeta: Precio y Botones -->
-                        <div class="card-footer">
-                            <div class="price-container">
-                                Entradas desde <span class="price-amount">$150 <small>MXN</small></span>
-                            </div>
-
-                            <div class="card-actions">
-                                <button type="button" class="btn-save">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m19 21-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-                                    Guardar
-                                </button>
-                                <a href="/venta-boletos" class="btn-buy">
-                                    COMPRAR BOLETOS ➔
-                                </a>
-                            </div>
-                        </div>
-
-                    </div>
-                </article>
-
-                <!-- EVENTO 2 -->
-                <article class="event-card">
-                    <div class="event-card-overlay"></div>
-                    <div class="event-card-content">
-                        <div class="card-top-bar">
-                            <div class="top-left-badges">
-                                <span class="badge badge-featured"><span class="dot"></span> EVENTO DESTACADO</span>
-                                <span class="badge badge-glass">Quedan 18 boletos</span>
-                            </div>
-                        </div>
-                        <div class="card-main-info">
-                            <p class="event-meta">VIERNES 15 DE OCTUBRE, 2026 · FORO SOL</p>
-                            <h2 class="event-title">Electro Dark Summit</h2>
-                            <p class="event-description">El festival de música electrónica más grande del año con DJs internacionales en vivo.</p>
+                            <p class="event-description">La cumbre del synthwave y dream-pop latinoamericano con 6 bandas en vivo.</p>
                         </div>
                         <div class="card-footer">
-                            <div class="price-container">Entradas desde <span class="price-amount">$320 <small>MXN</small></span></div>
+                            <div class="price-container">Entradas desde <span class="price-amount">$150 <small>MXN</small></span></div>
                             <div class="card-actions">
                                 <button type="button" class="btn-save">Guardar</button>
-                                <a href="/venta-boletos" class="btn-buy">COMPRAR BOLETOS ➔</a>
+                                <a th:href="@{/venta-boletos(id=1)}" class="btn-buy">COMPRAR BOLETOS ➔</a>
                             </div>
                         </div>
                     </div>
                 </article>
-
-                <!-- EVENTO 3 -->
-                <article class="event-card">
-                    <div class="event-card-overlay"></div>
-                    <div class="event-card-content">
-                        <div class="card-top-bar">
-                            <div class="top-left-badges">
-                                <span class="badge badge-featured"><span class="dot"></span> EVENTO DESTACADO</span>
-                                <span class="badge badge-glass">Últimos boletos</span>
-                            </div>
-                        </div>
-                        <div class="card-main-info">
-                            <p class="event-meta">DOMINGO 01 DE NOVIEMBRE, 2026 · ARENA VIRTUAL</p>
-                            <h2 class="event-title">Rock & Jam Session</h2>
-                            <p class="event-description">Una noche épica recordando lo mejor del rock en español de los 90s y 2000s.</p>
-                        </div>
-                        <div class="card-footer">
-                            <div class="price-container">Entradas desde <span class="price-amount">$200 <small>MXN</small></span></div>
-                            <div class="card-actions">
-                                <button type="button" class="btn-save">Guardar</button>
-                                <a href="/venta-boletos" class="btn-buy">COMPRAR BOLETOS ➔</a>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-
             </div>
         </div>
 
-        <!-- Puntos de navegación (Dots) del Slider -->
         <div class="slider-dots">
             <label for="slide-1" class="dot-btn"></label>
             <label for="slide-2" class="dot-btn"></label>
             <label for="slide-3" class="dot-btn"></label>
         </div>
-
     </section>
 
     <!-- Sección de Filtros y Cartelera -->
     <section class="events-main-section">
-        
+
         <!-- Barra de Filtros Superior -->
         <div class="filters-container">
-            <!-- Fila Superior: Géneros y Tiempo -->
             <div class="filters-top-row">
                 <div class="genre-filters">
                     <span class="filter-label">Géneros:</span>
@@ -293,7 +80,6 @@
                     <button type="button" class="genre-btn">Rock</button>
                     <button type="button" class="genre-btn">Electrónica</button>
                     <button type="button" class="genre-btn">Urbano</button>
-                    <button type="button" class="genre-btn">Hip-Hop</button>
                 </div>
                 <div class="time-filters">
                     <button type="button" class="time-btn">Hoy</button>
@@ -302,17 +88,16 @@
                 </div>
             </div>
 
-            <!-- Fila Inferior: Rango de precio, Disponibilidad y Limpiar -->
             <div class="filters-bottom-row">
                 <div class="price-filter">
                     <span class="filter-sublabel">RANGO DE PRECIO</span>
-                    <span class="price-value">$200 - $1,500 MXN</span>
-                    <input type="range" min="200" max="1500" value="800" class="price-range-slider">
+                    <span class="price-value">$50 - $1,500 MXN</span>
+                    <input type="range" min="50" max="1500" value="800" class="price-range-slider">
                 </div>
 
                 <div class="availability-filter">
                     <span class="filter-label-inline">Disponibilidad:</span>
-                    <button type="button" class="avail-btn active">Todos (18)</button>
+                    <button type="button" class="avail-btn active">Todos</button>
                     <button type="button" class="avail-btn"><span class="status-dot green"></span> Disponibles</button>
                     <button type="button" class="avail-btn"><span class="status-dot red"></span> Casi agotados</button>
                     <button type="button" class="btn-clear"><span class="icon-refresh">↺</span> Limpiar</button>
@@ -322,56 +107,56 @@
 
         <!-- Encabezado de Sección -->
         <div class="section-header">
-            <span class="update-badge">ACTUALIZADO HACE 2M</span>
-            <h2 class="section-title">Eventos en Cartelera</h2>
-            <p class="section-subtitle">Mostrando conciertos confirmados con validación de aforo en vivo</p>
+            <span class="update-badge">ACTUALIZADO EN VIVO</span>
+            <h2 class="section-title" th:text="${tituloPagina}">Catálogo de Eventos Locales</h2>
+            <p class="section-subtitle">Mostrando eventos confirmados en la región</p>
         </div>
 
+        <!-- GRID DE EVENTOS DINÁMICOS -->
         <div class="events-grid">
 
-            <article class="event-card-item highlighted">
-                
-                <div class="card-thumb">
-                    <img src="../img/default-event.jpg" alt="Midnight Echoes Tour">
-                    
-                    <span class="badge-status badge-pink">
-                        POCOS BOLETOS
-                    </span>
+            <!-- Iteramos sobre la lista de eventos que viene desde el Controller -->
+            <article class="event-card-item" th:each="evento : ${eventos}">
 
-                    <span class="badge-date">📅 28 Mayo</span>
+                <div class="card-thumb">
+                    <img th:src="@{/img/default-event.jpg}" src="../img/default-event.jpg" th:alt="${evento.nombre}">
+
+                    <!-- Insignia si está disponible o agotado -->
+                    <span class="badge-status"
+                          th:classappend="${evento.disponible} ? 'badge-pink' : 'badge-disabled'"
+                          th:text="${evento.disponible} ? 'DISPONIBLE' : 'AGOTADO'">
+                            DISPONIBLE
+                        </span>
+
+                    <span class="badge-date" th:text="'📅 ' + ${evento.fecha}">📅 Fecha</span>
                 </div>
 
                 <div class="card-details">
                     <div class="card-category-row">
-                        <span class="card-category">INDIE / POST-PUNK</span>
-                        <span class="card-organizer">Por Radar Indie</span>
+                        <span class="card-category">EVENTO LOCAL</span>
+                        <span class="card-organizer">Konticket</span>
                     </div>
 
-                    <h3 class="card-event-title">Midnight Echoes Tour</h3>
-                    <p class="card-venue">📍 Sala Roma Norte</p>
-
-                    <div class="card-capacity">
-                        <div class="capacity-info">
-                            <span>Capacidad:</span>
-                            <strong class="text-pink">
-                                85% Lleno (255 / 300)
-                            </strong>
-                        </div>
-                        <div class="progress-bar-bg">
-                            <div class="progress-bar-fill fill-pink" style="width: 85%;"></div>
-                        </div>
-                    </div>
+                    <h3 class="card-event-title" th:text="${evento.nombre}">Nombre del Evento</h3>
+                    <p class="card-venue" th:text="'📍 ' + ${evento.lugar}">📍 Lugar</p>
 
                     <div class="card-footer-action">
                         <div class="price-box">
                             <small>Desde</small>
-                            <div class="price-tag">
+                            <div class="price-tag" th:text="'$' + ${#numbers.formatDecimal(evento.precio, 1, 'COMMA', 2, 'POINT')} + ' MXN'">
                                 $350 MXN
                             </div>
                         </div>
-                        <a href="/venta-boletos" class="btn-action btn-dark">
+
+                        <!-- Redirige a /venta-boletos pasando el ID del evento -->
+                        <a th:if="${evento.disponible}"
+                           th:href="@{/venta-boletos(id=${evento.id})}"
+                           class="btn-action btn-dark">
                             Ver Boletos ➔
                         </a>
+                        <span th:if="${!evento.disponible}" class="btn-action btn-disabled">
+                                Agotado
+                            </span>
                     </div>
                 </div>
 

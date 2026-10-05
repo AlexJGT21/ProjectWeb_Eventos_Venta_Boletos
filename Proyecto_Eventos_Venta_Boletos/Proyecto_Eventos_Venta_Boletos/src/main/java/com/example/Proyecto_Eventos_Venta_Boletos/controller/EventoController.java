@@ -24,7 +24,6 @@ public class EventoController {
         // Guardamos información opcional en la sesión
         session.setAttribute("moduloActual", "Venta de Boletos Locales");
 
-        // Retorna la vista: src/main/resources/templates/eventos.html
         return "index";
     }
 
