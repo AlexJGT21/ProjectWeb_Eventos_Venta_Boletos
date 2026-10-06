@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Konticket - Venta de Boletos</title>
-    <!-- CSS del Header y Sidebar -->
-    <link rel="stylesheet" th:href="@{/css/header.css}" href="/css/header.css">
-    <!-- CSS propio de esta vista -->
-    <link rel="stylesheet" th:href="@{/css/styles.css}" href="/css/styles.css">
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Konticket - Venta de Boletos</title>
+        <!-- CSS del Header y Sidebar -->
+        <link rel="stylesheet" th:href="@{/css/header.css}" href="/css/header.css">
+        <!-- CSS propio de esta vista -->
+        <link rel="stylesheet" th:href="@{/css/styles.css}" href="/css/venta-boletos.css">
+    </head>
 <body>
 
     <!-- Checkbox oculto que controla el estado del menú -->
@@ -43,7 +43,7 @@
             </div>
             <div class="timer-card">
                 <span class="timer-label">TIEMPO PARA COMPLETAR</span>
-                <span class="timer-clock">09:47 min</span>
+                <span class="timer-clock">00:00 min</span>
             </div>
         </section>
 
@@ -281,10 +281,20 @@
 
             <!-- Columna Derecha: Sidebar de Compra -->
             <div class="right-column">
-                <aside class="purchase-sidebar-card">
+                <form th:action="@{/form-compra}" method="POST" id="seat-selection-form" class="purchase-sidebar-card">
+
+                    <!-- CAMPOS OCULTOS QUE GUARDAN Y ENVIAN LOS DATOS -->
+                    <input type="hidden" name="eventoId" id="input-evento-id" th:value="${evento != null ? evento.id : '1'}">
+                    <input type="hidden" name="seccion" id="input-seccion" value="Sección A (Zona Platino)">
+                    <input type="hidden" name="fila" id="input-fila" value="Fila B">
+                    <input type="hidden" name="asientos" id="input-asientos" value="07,08">
+                    <input type="hidden" name="cantidad" id="input-cantidad" value="2">
+                    <input type="hidden" name="precioBase" id="input-precio-base" value="2900.00">
+                    <input type="hidden" name="totalFinal" id="input-total-final" value="3767.68">
+
                     <div class="sidebar-title">
                         <span>Detalles del Asiento & Compra</span>
-                        <span class="ticket-icon">🎟️</span>
+                        <span class="ticket-icon">🎟️️</span>
                     </div>
 
                     <div class="stage-view-preview">
@@ -298,15 +308,15 @@
                         <tbody>
                         <tr>
                             <td>Ubicación</td>
-                            <td>Estadio GNP • Sección A (Zona Platino)</td>
+                            <td>Estadio GNP • <span id="display-seccion">Sección A (Zona Platino)</span></td>
                         </tr>
                         <tr>
                             <td>Fila Activa</td>
-                            <td class="text-pink">Fila B</td>
+                            <td class="text-pink" id="display-fila">Fila B</td>
                         </tr>
                         <tr>
                             <td>Números de Asientos</td>
-                            <td>Asiento 07, Asiento 08</td>
+                            <td id="display-asientos">Asiento 07, Asiento 08</td>
                         </tr>
                         <tr>
                             <td>Tipo de Entrada</td>
@@ -318,24 +328,24 @@
                     <div class="quantity-selector-row">
                         <span>Cantidad de Boletos:</span>
                         <div class="qty-controls">
-                            <button type="button" class="qty-btn">-</button>
-                            <span class="qty-count">2</span>
-                            <button type="button" class="qty-btn">+</button>
+                            <button type="button" class="qty-btn" id="btn-qty-minus">-</button>
+                            <span class="qty-count" id="display-cantidad">2</span>
+                            <button type="button" class="qty-btn" id="btn-qty-plus">+</button>
                         </div>
                     </div>
 
                     <div class="price-breakdown-list">
                         <div class="breakdown-row">
-                            <span>Precio Base (2 boletos x $1,450)</span>
-                            <span>$2,900 MXN</span>
+                            <span>Precio Base (<span id="display-qty-sub">2</span> boletos x $1,450)</span>
+                            <span id="display-subtotal">$2,900 MXN</span>
                         </div>
                         <div class="breakdown-row">
                             <span>Cargos por Servicio Konticket (12%) ℹ️</span>
-                            <span>$348 MXN</span>
+                            <span id="display-cargos">$348 MXN</span>
                         </div>
                         <div class="breakdown-row">
                             <span>IVA (16%)</span>
-                            <span>$519.68 MXN</span>
+                            <span id="display-iva">$519.68 MXN</span>
                         </div>
                         <div class="breakdown-row highlight-free">
                             <span>Procesamiento Seguro y Emisión</span>
@@ -345,11 +355,12 @@
 
                     <div class="total-checkout-box">
                         <div class="total-label">TOTAL FINAL</div>
-                        <div class="total-price-amount">$3,767.68 MXN</div>
+                        <div class="total-price-amount" id="display-total">$3,767.68 MXN</div>
                     </div>
 
-                    <button type="button" class="btn-primary-checkout">
-                        CONTINUAR COMPRA (2 BOLETOS) ➔
+                    <!-- BOTÓN DE ENVÍO TIPO SUBMIT -->
+                    <button type="submit" class="btn-primary-checkout">
+                        CONTINUAR COMPRA (<span id="btn-qty-text">2</span> BOLETOS) ➔
                     </button>
 
                     <button type="button" class="btn-secondary-action">
@@ -369,7 +380,7 @@
                         <span>OXXO Pay</span>
                     </div>
 
-                </aside>
+                </form>
             </div>
 
         </div>

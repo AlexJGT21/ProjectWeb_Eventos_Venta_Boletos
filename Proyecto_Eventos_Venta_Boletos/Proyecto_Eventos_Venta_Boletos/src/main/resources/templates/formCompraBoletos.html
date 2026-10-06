@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konticket - Proceso de Pago</title>
+    <!-- CSS del Header y Sidebar -->
+    <link rel="stylesheet" th:href="@{/css/header.css}" href="/css/header.css">
+    <!-- CSS propio de esta vista -->
+    <link rel="stylesheet" th:href="@{/css/form-compra.css}" href="/css/form-compra.css">
+</head>
+<body>
+
+    <!-- Checkbox oculto que controla el estado del menú -->
+    <input type="checkbox" id="profile-menu-toggle" class="menu-toggle-checkbox">
+
+    <!-- 1. Carga del Header Principal desde el fragmento -->
+    <header th:replace="~{fragmentos/header :: main-header}"></header>
+
+    <!-- Overlay oscuro para cerrar el menú al hacer clic fuera -->
+    <label for="profile-menu-toggle" class="sidebar-overlay"></label>
+
+    <!-- 2. Carga del Menú Lateral (Perfil) desde el fragmento -->
+    <aside th:replace="~{fragmentos/header :: perfil-sidebar}"></aside>
+
+    <!-- Contenido Principal -->
+    <main class="checkout-container">
+
+        <!-- Barra de Pasos / Stepper y Temporizador -->
+        <section class="checkout-stepper-bar">
+            <div class="stepper-steps">
+                <div class="step-item completed">
+                    <span class="step-icon">✓</span>
+                    <span class="step-label">1. Selección</span>
+                </div>
+                <div class="step-divider active"></div>
+                <div class="step-item active">
+                    <span class="step-number">2</span>
+                    <span class="step-label">2. Datos y Pago</span>
+                </div>
+                <div class="step-divider"></div>
+                <div class="step-item">
+                    <span class="step-number">3</span>
+                    <span class="step-label">3. Confirmación</span>
+                </div>
+            </div>
+
+            <div class="timer-alert-box">
+                <span class="timer-clock-icon">⏱</span>
+                <span class="timer-text">TIEMPO RESTANTE: <strong>00:00 min</strong> • Fila B reservada temporalmente</span>
+            </div>
+        </section>
+
+    <div class="sales-content-grid">
+
+        <!-- Columna Izquierda: Formularios de Datos y Métodos de Pago -->
+        <div class="left-column">
+            <form action="#" method="POST" class="checkout-form">
+
+                <!-- Sección 1: Datos del Titular -->
+                <div class="sales-card form-section">
+                    <div class="section-header">
+                        <div class="section-number">1</div>
+                        <div class="section-title-group">
+                            <h2>Datos del Titular de la Compra</h2>
+                            <p>Los boletos digitales con código QR dinámico serán enviados a este correo.</p>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label for="fullName">Nombre Completo *</label>
+                            <input type="text" id="fullName" name="fullName" placeholder="Emily" required>
+                        </div>
+
+                        <div class="form-group half-width">
+                            <label for="firstLastName">Primer Apellido *</label>
+                            <input type="text" id="firstLastName" name="firstLastName" placeholder="Lara" required>
+                        </div>
+
+                        <div class="form-group half-width">
+                            <label for="secondLastName">Segundo Apellido (Opcional)</label>
+                            <input type="text" id="secondLastName" name="secondLastName" placeholder="opcional">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="phone">Teléfono Móvil (Para confirmación y SMS de acceso) *</label>
+                            <div class="phone-input-group">
+                                <div class="country-code">
+                                    <span class="flag">🇲🇽</span> +52
+                                </div>
+                                <input type="tel" id="phone" name="phone" placeholder="644 7981 415" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group half-width">
+                            <label for="email">Correo Electrónico *</label>
+                            <input type="email" id="email" name="email" placeholder="EmyLar@gmail.com" required>
+                        </div>
+
+                        <div class="form-group half-width">
+                            <label for="confirmEmail">Confirmar Correo Electrónico *</label>
+                            <input type="email" id="confirmEmail" name="confirmEmail" placeholder="EmyLar@gmail.com" required>
+                        </div>
+
+                        <div class="form-group full-width checkbox-group">
+                            <label class="custom-checkbox">
+                                <input type="checkbox" checked>
+                                <span class="checkbox-box"></span>
+                                <span class="checkbox-text">Deseo recibir actualizaciones del evento, alertas de apertura de puertas e información de acceso por SMS/WhatsApp oficial.</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección 2: Opciones de Pago -->
+                <div class="sales-card form-section">
+                    <div class="section-header">
+                        <div class="section-number">2</div>
+                        <div class="section-title-group">
+                            <h2>Opciones de Pago</h2>
+                            <p>Selecciona el método de pago disponible para completar tu orden.</p>
+                        </div>
+                    </div>
+
+                    <div class="payment-methods-list">
+
+                        <!-- Método: Tarjeta de Crédito/Débito (Seleccionado) -->
+                        <div class="payment-method-card active">
+                            <label class="payment-radio-header">
+                                <input type="radio" name="paymentMethod" value="card" checked>
+                                <span class="radio-custom"></span>
+                                <div class="payment-method-info">
+                                    <span class="method-title">Tarjetas Nacionales (Débito y Crédito)</span>
+                                    <span class="method-sub">Pagos procesados de forma segura con cifrado bancario SSL 256-bit</span>
+                                </div>
+                                <div class="card-badges">
+                                    <span class="badge-card">VISA</span>
+                                    <span class="badge-card">MC</span>
+                                    <span class="badge-card">AMEX</span>
+                                    <span class="badge-card">CARNET</span>
+                                </div>
+                            </label>
+
+                            <div class="payment-card-body">
+                                <div class="form-grid">
+                                    <div class="form-group full-width">
+                                        <div class="label-with-badge">
+                                            <label for="cardNumber">Número de Tarjeta</label>
+                                            <span class="encrypted-tag">🔒 Conexión Cifrada</span>
+                                        </div>
+                                        <div class="input-with-icon">
+                                            <input type="text" id="cardNumber" name="cardNumber" value="4915 2280 8192 4810" required>
+                                            <span class="input-icon">💳</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group full-width">
+                                        <label for="cardName">Nombre Impreso en la Tarjeta</label>
+                                        <input type="text" id="cardName" name="cardName" value="VALERIA S MENDOZA" required>
+                                    </div>
+
+                                    <div class="form-group half-width">
+                                        <label for="cardExp">Fecha de Vencimiento</label>
+                                        <input type="text" id="cardExp" name="cardExp" value="09/28" placeholder="MM/AA" required>
+                                    </div>
+
+                                    <div class="form-group half-width">
+                                        <div class="label-with-badge">
+                                            <label for="cardCvv">Código de Seguridad (CVV)</label>
+                                            <a href="#" class="help-link">¿Qué es?</a>
+                                        </div>
+                                        <input type="password" id="cardCvv" name="cardCvv" value="842" maxlength="4" required>
+                                    </div>
+
+                                    <div class="form-group full-width">
+                                        <label for="installments">Plan de Pago y Mensualidades</label>
+                                        <select id="installments" name="installments">
+                                            <option value="1">1 solo pago - $3,248.00 MXN</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Método: Mercado Pago -->
+                        <div class="payment-method-card disabled">
+                            <label class="payment-radio-header">
+                                <input type="radio" name="paymentMethod" value="mercadopago" disabled>
+                                <span class="radio-custom"></span>
+                                <div class="payment-method-info">
+                                    <span class="method-title">Mercado Pago / Wallet Digital <span class="badge-coming-soon">PRÓXIMAMENTE</span></span>
+                                    <span class="method-sub">Paga con saldo en cuenta o mensualidades sin tarjeta física.</span>
+                                </div>
+                                <span class="payment-icon">👛</span>
+                            </label>
+                        </div>
+
+                        <!-- Método: SPEI / CoDi -->
+                        <div class="payment-method-card disabled">
+                            <label class="payment-radio-header">
+                                <input type="radio" name="paymentMethod" value="spei" disabled>
+                                <span class="radio-custom"></span>
+                                <div class="payment-method-info">
+                                    <span class="method-title">Transferencia SPEI / CoDi <span class="badge-coming-soon">PRÓXIMAMENTE</span></span>
+                                    <span class="method-sub">Acreditación instantánea sin comisiones bancarias.</span>
+                                </div>
+                                <span class="payment-icon">🏦</span>
+                            </label>
+                        </div>
+
+                        <!-- Método: Efectivo OXXO -->
+                        <div class="payment-method-card disabled">
+                            <label class="payment-radio-header">
+                                <input type="radio" name="paymentMethod" value="oxxo" disabled>
+                                <span class="radio-custom"></span>
+                                <div class="payment-method-info">
+                                    <span class="method-title">Pago en Efectivo (OXXO Pay / Tiendas de Conveniencia) <span class="badge-coming-soon">PRÓXIMAMENTE</span></span>
+                                    <span class="method-sub">Genera tu ficha de pago y completa en cualquier sucursal.</span>
+                                </div>
+                                <span class="payment-icon">🏪</span>
+                            </label>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Botón Principal de Pago -->
+                <div class="checkout-action-area">
+                    <button type="submit" class="btn-primary-checkout full-btn">
+                        PAGAR $3,767.68 MXN Y OBTENER BOLETOS →
+                    </button>
+                    <p class="terms-disclaimer">
+                        Al hacer clic aceptas los <a href="#">Términos y Condiciones</a> y la <a href="#">Política de Privacidad</a> de Konticket.
+                    </p>
+                </div>
+
+            </form>
+        </div>
+
+        <!-- Columna Derecha: Resumen del Pedido -->
+        <div class="right-column">
+            <aside class="purchase-sidebar-card">
+
+                <!-- Banner de Evento -->
+                <div class="event-summary-banner">
+                    <div class="banner-overlay"></div>
+                    <div class="banner-content">
+                        <span class="tour-tag">TOUR MÉXICO 2026</span>
+                        <h3 class="event-title-summary">INDIE / POST-PUNK: Midnight Echoes Tour</h3>
+                    </div>
+                </div>
+
+                <!-- Detalles del Evento -->
+                <div class="summary-event-details">
+                    <div class="detail-item">
+                        <span class="icon">📅</span>
+                        <span>Sábado 26 de Septiembre, 2026 • 20:30 hrs</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="icon">📍</span>
+                        <span>Estadio GNP / Foro Sol, CDMX (Acceso Puerta 6 y 7)</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="icon">🎟️</span>
+                        <span><strong>Sección A • VIP Platino Frontal</strong></span>
+                    </div>
+                </div>
+
+                <hr class="sidebar-divider">
+
+                <!-- Asientos Asignados -->
+                <div class="assigned-seats-section">
+                    <span class="seats-title">Tus Asientos Asignados:</span>
+
+                    <div class="seat-badge-row">
+                        <div class="seat-pill-tag">
+                            <span class="seat-code">B7</span>
+                            <span>Fila B • Asiento 07</span>
+                        </div>
+                        <span class="seat-price">$1,450.00 MXN</span>
+                    </div>
+
+                    <div class="seat-badge-row">
+                        <div class="seat-pill-tag">
+                            <span class="seat-code">B8</span>
+                            <span>Fila B • Asiento 08</span>
+                        </div>
+                        <span class="seat-price">$1,450.00 MXN</span>
+                    </div>
+                </div>
+
+                <hr class="sidebar-divider">
+
+                <!-- Desglose de Precios -->
+                <div class="price-breakdown-list">
+                    <div class="breakdown-row">
+                        <span>Subtotal (2 boletos)</span>
+                        <span>$2,900.00 MXN</span>
+                    </div>
+                    <div class="breakdown-row">
+                        <span>Cargos por Servicio Konticket (12%) ℹ️</span>
+                        <span>$348.00 MXN</span>
+                    </div>
+                    <div class="breakdown-row">
+                        <span>IVA (16%) ℹ️</span>
+                        <span>$519.68 MXN</span>
+                    </div>
+                    <div class="breakdown-row highlight-free">
+                        <span>Procesamiento Seguro y Emisión</span>
+                        <span>GRATIS</span>
+                    </div>
+                </div>
+
+                <hr class="sidebar-divider">
+
+                <!-- Total Final -->
+                <div class="total-checkout-box inline-total">
+                    <div class="total-label-group">
+                        <span class="total-label">Total a Pagar</span>
+                        <span class="total-sub">Impuestos e IVA incluidos</span>
+                    </div>
+                    <div class="total-price-amount">$3,767.68 MXN</div>
+                </div>
+
+                <!-- Bloque de Garantía -->
+                <div class="guarantee-box">
+                    <div class="guarantee-icon">🛡️</div>
+                    <div class="guarantee-info">
+                        <strong>Garantía 100% Oficial Konticket</strong>
+                        <p>Tus boletos son intransferibles contra clonación con tecnología de Código QR Dinámico cifrado activo.</p>
+                    </div>
+                </div>
+
+            </aside>
+        </div>
+
+    </div>
+
+</main>
+
+    <footer class="sales-footer">
+        <div><strong>Konticket</strong> • © 2026 Konticket Live Entertainment Technologies. Todos los derechos reservados.</div>
+        <div class="sales-footer-links">
+            <a href="#">Términos de Servicio</a>
+            <a href="#">Privacidad</a>
+            <a href="#">Soporte y Ayuda</a>
+        </div>
+    </footer>
+
+</body>
+</html>

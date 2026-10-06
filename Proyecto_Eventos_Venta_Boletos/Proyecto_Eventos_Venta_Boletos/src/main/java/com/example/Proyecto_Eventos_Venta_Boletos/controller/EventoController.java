@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
@@ -139,4 +140,36 @@ public class EventoController {
 
         return lista;
     }
+
+    @PostMapping("/form-compra")
+    public String procesarSeleccionAsientos(
+            @RequestParam("eventoId") String eventoId,
+            @RequestParam("seccion") String seccion,
+            @RequestParam("fila") String fila,
+            @RequestParam("asientos") String asientos,
+            @RequestParam("cantidad") Integer cantidad,
+            @RequestParam("precioBase") Double precioBase,
+            @RequestParam("totalFinal") Double totalFinal,
+            Model model,
+            HttpSession session) {
+
+        Evento evento = obtenerListaEventos().stream()
+                .filter(e -> e.getId().equals(eventoId))
+                .findFirst()
+                .orElse(null);
+
+        model.addAttribute("evento", evento);
+        model.addAttribute("seccion", seccion);
+        model.addAttribute("fila", fila);
+        model.addAttribute("asientos", asientos);
+        model.addAttribute("cantidad", cantidad);
+        model.addAttribute("precioBase", precioBase);
+        model.addAttribute("totalFinal", totalFinal);
+
+        session.setAttribute("resumenCompra", List.of(seccion, fila, asientos, totalFinal));
+
+        return "formCompraBoletos";
+    }
+
+
 }
