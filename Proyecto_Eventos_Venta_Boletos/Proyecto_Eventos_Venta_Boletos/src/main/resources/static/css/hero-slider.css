@@ -1,7 +1,3 @@
-/* =========================================================
-   1. CARGA DE FUENTES LOCALES
-   ========================================================= */
-
 /* FUENTE DISPLAY (MuseoModerno) */
 @font-face {
     font-family: 'MuseoModerno';
@@ -22,8 +18,7 @@
 /* FUENTE HEADLINE (Myriad Pro Bold) */
 @font-face {
     font-family: 'Myriad Pro Bold';
-    src: url('../fonts/MYRIADPRO-BOLD.otf') format('opentype'),
-         url('../fonts/MYRIADPRO-BOLD.ttf') format('truetype');
+    src: url('../fonts/MYRIADPRO-BOLD.otf') format('opentype');
     font-weight: 700;
     font-style: normal;
     font-display: swap;

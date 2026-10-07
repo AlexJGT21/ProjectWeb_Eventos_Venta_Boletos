@@ -347,7 +347,7 @@
 }
 
 .card-event-title {
-    font-family: var(--font-heading, sans-serif);
+    font-family: var(--font-display, sans-serif);
     font-size: 18px;
     font-weight: 800;
     color: #0F172A;

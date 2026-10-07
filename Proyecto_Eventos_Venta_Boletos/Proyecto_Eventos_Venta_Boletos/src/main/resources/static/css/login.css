@@ -72,7 +72,7 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: var(--font-body);
+    font-family: var(--font-body), serif;
 }
 
 body.auth-body {
@@ -86,9 +86,7 @@ body.auth-body {
     justify-content: space-between;
 }
 
-/* ---------------------------------------------------------
-   1. HEADER SIMPLIFICADO
-   --------------------------------------------------------- */
+
 .auth-header {
     width: 100%;
     padding: 20px 40px;
@@ -161,9 +159,6 @@ body.auth-body {
     color: var(--color-text-dark);
 }
 
-/* ---------------------------------------------------------
-   2. CONTENEDOR CARTA SPLIT
-   --------------------------------------------------------- */
 .auth-main-container {
     flex-grow: 1;
     display: flex;
@@ -184,9 +179,6 @@ body.auth-body {
     border: 1px solid rgba(226, 232, 240, 0.8);
 }
 
-/* ---------------------------------------------------------
-   3. SECCIÓN FORMULARIO (IZQUIERDA)
-   --------------------------------------------------------- */
 .auth-form-section {
     padding: 44px 48px;
     display: flex;
@@ -216,7 +208,7 @@ body.auth-body {
 }
 
 .auth-title {
-    font-family: var(--font-heading);
+    font-family: var(--font-display), serif;
     font-size: 32px;
     font-weight: 700;
     color: var(--color-primary);
@@ -243,7 +235,7 @@ body.auth-body {
     border: 1px solid var(--color-border);
     border-radius: 12px;
     padding: 10px 14px;
-    font-family: var(--font-body);
+    font-family: var(--font-body), serif;
     font-size: 12.5px;
     font-weight: 700;
     color: var(--color-text-dark);
@@ -341,7 +333,7 @@ body.auth-body {
     background: #FFFFFF;
     border: 1px solid #E2E8F0;
     border-radius: 12px;
-    font-family: var(--font-body);
+    font-family: var(--font-body), serif;
     font-size: 13.5px;
     color: var(--color-text-dark);
     outline: none;
@@ -405,7 +397,7 @@ body.auth-body {
     border: none;
     border-radius: 12px;
     padding: 14px;
-    font-family: var(--font-heading);
+    font-family: var(--font-heading), serif;
     font-size: 14px;
     font-weight: 700;
     letter-spacing: 0.5px;
@@ -454,9 +446,6 @@ body.auth-body {
     border-radius: 8px;
 }
 
-/* ---------------------------------------------------------
-   4. SECCIÓN HERO / PANEL DERECHO (DARK THEME)
-   --------------------------------------------------------- */
 .auth-hero-section {
     background: linear-gradient(160deg, #0A1547 0%, #080D2B 100%);
     color: #FFFFFF;
@@ -484,7 +473,7 @@ body.auth-body {
 }
 
 .pass-brand {
-    font-family: var(--font-display);
+    font-family: var(--font-display), serif;
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 1.2px;
@@ -496,7 +485,7 @@ body.auth-body {
 }
 
 .hero-title {
-    font-family: var(--font-heading);
+    font-family: var(--font-display), serif;
     font-size: 34px;
     font-weight: 700;
     line-height: 1.15;
@@ -567,7 +556,7 @@ body.auth-body {
 }
 
 .stat-number {
-    font-family: var(--font-display);
+    font-family: var(--font-display), serif;
     font-size: 26px;
     font-weight: 700;
     color: #FFFFFF;

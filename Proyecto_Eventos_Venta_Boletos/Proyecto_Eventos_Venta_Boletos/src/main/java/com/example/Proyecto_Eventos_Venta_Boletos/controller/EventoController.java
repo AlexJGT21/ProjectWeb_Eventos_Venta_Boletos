@@ -31,6 +31,11 @@ public class EventoController {
         return "registro";
     }
 
+    @GetMapping("/mis-boletos")
+    public String misBoletos() {
+        return "misBoletos";
+    }
+
     @GetMapping({"/", "/index", "/eventos"})
     public String catalogoEventos(
             @RequestParam(name = "categoria", required = false, defaultValue = "Todos") String categoria,
