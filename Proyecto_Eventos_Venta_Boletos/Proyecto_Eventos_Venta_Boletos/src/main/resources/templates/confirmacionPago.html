@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konticket - Confirmación de Compra</title>
+    <!-- CSS del Header y Sidebar -->
+    <link rel="stylesheet" th:href="@{/css/header.css}" href="/css/header.css">
+    <!-- CSS propio de esta vista -->
+    <link rel="stylesheet" th:href="@{/css/confirmacion-pago.css}" href="/css/confirmacion-pago.css">
+</head>
+<body>
+
+    <!-- Checkbox oculto que controla el estado del menú -->
+    <input type="checkbox" id="profile-menu-toggle" class="menu-toggle-checkbox">
+
+    <!-- 1. Header Principal -->
+    <header th:replace="~{fragmentos/header :: main-header}"></header>
+
+    <!-- Overlay oscuro -->
+    <label for="profile-menu-toggle" class="sidebar-overlay"></label>
+
+    <!-- 2. Menú Lateral -->
+    <aside th:replace="~{fragmentos/header :: perfil-sidebar}"></aside>
+
+    <!-- Contenido Principal -->
+    <main class="checkout-container">
+
+        <!-- Barra de Pasos / Stepper completado -->
+        <section class="checkout-stepper-bar">
+            <div class="stepper-steps">
+                <div class="step-item completed">
+                    <span class="step-icon">✓</span>
+                    <span class="step-label">1. Selección</span>
+                </div>
+                <div class="step-divider completed"></div>
+                <div class="step-item completed">
+                    <span class="step-icon">✓</span>
+                    <span class="step-label">2. Datos y Pago</span>
+                </div>
+                <div class="step-divider active"></div>
+                <div class="step-item active">
+                    <span class="step-number">3</span>
+                    <span class="step-label">3. Confirmación</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="confirmation-success-banner">
+            <div class="success-banner-left">
+                <div class="status-badge-container">
+                    <div class="status-icon-circle">
+                        <span class="ticket-status-icon">🎟️</span>
+                        <span class="check-badge">✓</span>
+                    </div>
+                    <div class="status-text-content">
+                        <span class="pago-aprobado-pill">✓ PAGO APROBADO</span>
+                        <h1 class="success-title">¡Tu compra ha sido confirmada con éxito!</h1>
+                        <p class="success-subtext">
+                            Hemos enviado el comprobante digital y los boletos interactivos a:
+                            <strong th:text="${titularEmail}">correo@ejemplo.com</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="success-banner-right">
+                <div class="order-code-box">
+                    <span class="order-label">CÓDIGO DE PEDIDO</span>
+                    <span class="order-number" th:text="${codigoPedido}">#KT-2026-89421</span>
+                    <span class="order-timestamp" th:text="${fechaCompra}">26 Sep 2026 • 19:42 hrs</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="confirmation-grid">
+
+            <div class="left-column">
+
+                <div class="sales-card">
+                    <div class="card-title-header">
+                        <div class="title-with-icon">
+                            <span class="header-icon">🎟️</span>
+                            <h2>Detalle de la Reserva</h2>
+                        </div>
+                        <span class="badge-tickets-count" th:text="${cantidadBoletos} + ' Boletos Digitales'">2 Boletos Digitales</span>
+                    </div>
+
+                    <!-- Resumen del Evento -->
+                    <div class="reservation-event-card">
+                        <div class="event-thumb">
+                            <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=300&q=80" alt="Concierto">
+                            <span class="live-tag">EN VIVO</span>
+                        </div>
+                        <div class="event-info">
+                            <span class="tour-subhead">TOUR MÉXICO 2026</span>
+                            <h3 class="event-name" th:text="${evento != null ? evento.nombre : 'Nombre del Evento'}">INDIE / POST-PUNK: Midnight Echoes Tour</h3>
+                            <p class="lineup-text" th:text="${evento != null ? evento.descripcion : 'Headliners & Invitados Especiales'}">Descripción</p>
+                            <p class="event-date-time" th:text="${evento != null ? '📅 ' + #temporals.format(evento.fechaHora, 'EEEE dd ' + 'de' + ' MMMM, yyyy • HH:mm ' + 'hrs', #locales.create('es', 'ES')) : 'Fecha'}">📅 Fecha</p>
+                        </div>
+                    </div>
+
+                    <div class="details-spec-grid">
+                        <div class="spec-item">
+                            <span class="spec-label">🏰 Recinto & Lugar</span>
+                            <strong class="spec-value" th:text="${evento != null ? evento.lugar : 'Lugar'}">Estadio GNP / Foro Sol</strong>
+                            <span class="spec-sub">México</span>
+                        </div>
+
+                        <div class="spec-item">
+                            <span class="spec-label">🚪 Acceso y Puertas</span>
+                            <strong class="spec-value" th:text="${evento != null ? evento.encargado : 'Acceso Principal'}">Acceso Puerta 6 y 7</strong>
+                            <span class="spec-sub">Apertura de puertas: 18:00 hrs</span>
+                        </div>
+
+                        <div class="spec-item full-width highlight-spec">
+                            <span class="spec-label">🪑 Ubicación Asignada</span>
+                            <strong class="spec-value highlight-pink" th:text="'Fila ' + ${fila} + ' • ' + ${asientos}">Fila B • Asientos</strong>
+                            <span class="spec-sub" th:text="'Zona: ' + ${seccion}">Zona: Sección VIP</span>
+                        </div>
+
+                        <div class="spec-item full-width">
+                            <span class="spec-label">👤 Titular de la Compra</span>
+                            <strong class="spec-value" th:text="${titularNombre}">Nombre Completo</strong>
+                            <span class="spec-sub">Identificación oficial vigente (INE/Pasaporte) requerida para ingreso preferencial</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sales-card">
+                    <div class="card-title-header simple-header">
+                        <div class="title-with-icon">
+                            <span class="header-icon">📥</span>
+                            <h2>Opciones de Descarga y Formatos Digitales</h2>
+                        </div>
+                    </div>
+                    <div class="download-action-box">
+                        <button class="btn-download-pdf" type="button">
+                            <span class="pdf-icon">📄</span>
+                            Descargar Boletos en Código QR (PDF)
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="right-column">
+
+                <!-- Boleto Digital Interactivo -->
+                <article class="digital-ticket-card">
+
+                    <div class="ticket-header">
+                        <div class="brand-logo">
+                            <span class="brand-k">K</span>
+                            <span class="brand-text">Konticket</span>
+                        </div>
+                        <div class="ticket-badges">
+                            <span class="badge-fastpass">VIP FAST PASS</span>
+                            <span class="badge-live-pill">LIVE</span>
+                        </div>
+                    </div>
+
+                    <div class="ticket-event-body">
+                        <span class="ticket-subtitle">CONCIERTO EXCLUSIVO</span>
+                        <h2 class="ticket-artist-title" th:text="${evento != null ? evento.nombre : 'Midnight Echoes Tour'}">Midnight Echoes Tour</h2>
+
+                        <div class="ticket-meta-pills">
+                            <div class="meta-pill">
+                                <span class="meta-label">FECHA</span>
+                                <strong class="meta-val" th:text="${evento != null ? #temporals.format(evento.fechaHora, 'dd MMM yyyy', #locales.create('es', 'ES')) : '2026'}">28 MAY 2026</strong>
+                            </div>
+                            <div class="meta-pill">
+                                <span class="meta-label">HORA ACCESO</span>
+                                <strong class="meta-val" th:text="${evento != null ? #temporals.format(evento.fechaHora, 'HH:mm ' + 'HRS', #locales.create('es', 'ES')) : '20:00 HRS'}">20:00 HRS</strong>
+                            </div>
+                            <div class="meta-pill">
+                                <span class="meta-label">VENUE</span>
+                                <strong class="meta-val" th:text="${evento != null ? evento.lugar : 'Lugar'}">Desert Bar</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ticket-qr-container">
+                        <div class="qr-header">
+                            <span class="qr-title">CÓDIGO DE ACCESO</span>
+                            <span class="qr-code-id" th:text="${codigoAcceso}">KT-VIP-7789-Q4</span>
+                        </div>
+
+                        <div class="qr-code-wrapper">
+                            <!-- Generación dinámica de QR con la API pública de QR -->
+                            <img th:src="@{'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + ${codigoAcceso}}" alt="Código QR" style="width: 130px; height: 130px; border-radius: 8px;">
+                        </div>
+
+                        <div class="qr-footer-status">
+                            <span class="sync-indicator"><span class="spin-icon">🔄</span> Token rotativo activo</span>
+                        </div>
+                    </div>
+
+                    <div class="ticket-footer-details">
+                        <div class="ticket-col">
+                            <span class="tf-label">ACCESO</span>
+                            <strong class="tf-val">Puerta B</strong>
+                            <span class="tf-sub">Fast Pass</span>
+                        </div>
+                        <div class="ticket-col">
+                            <span class="tf-label">ZONA / LUGAR</span>
+                            <strong class="tf-val" th:text="${seccion}">General A</strong>
+                        </div>
+                        <div class="ticket-col">
+                            <span class="tf-label">TITULAR</span>
+                            <strong class="tf-val" th:text="${titularNombre}">Titular</strong>
+                        </div>
+                    </div>
+
+                    <div class="wallet-actions-row">
+                        <button class="btn-wallet" type="button">
+                            <span class="wallet-icon">💳</span>
+                            Añadir a Apple / Google Wallet
+                        </button>
+                    </div>
+
+                </article>
+
+                <div class="confirmation-actions-list">
+                    <a th:href="@{/eventos}" class="btn-secondary-nav">
+                        <span>🔍 Explorar más conciertos y eventos</span>
+                        <span class="arrow">›</span>
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="sales-footer">
+        <div><strong>Konticket</strong> • © 2026 Konticket Live Entertainment Technologies. Todos los derechos reservados.</div>
+        <div class="sales-footer-links">
+            <a href="#">Términos de Servicio</a>
+            <a href="#">Privacidad</a>
+            <a href="#">Soporte y Ayuda</a>
+        </div>
+    </footer>
+
+    </body>
+    </html>

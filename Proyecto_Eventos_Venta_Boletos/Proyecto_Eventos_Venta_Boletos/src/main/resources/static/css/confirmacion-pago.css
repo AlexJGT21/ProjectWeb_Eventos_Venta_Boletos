@@ -1,0 +1,869 @@
+/* FUENTES Y VARIABLES OFICIALES KONTICKET */
+@font-face {
+    font-family: 'MuseoModerno';
+    src: url('../fonts/MuseoModerno-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Myriad Pro Bold';
+    src: url('../fonts/MYRIADPRO-BOLD.otf') format('opentype'),
+    url('../fonts/MYRIADPRO-BOLD.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url('../fonts/Montserrat-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    --color-primary: #0A1547;        /* Azul Oscuro Primario */
+    --color-accent: #E6005C;         /* Rosa Neón de Acento */
+    --color-secondary-pink: #FFC0FE; /* Rosa Pastel Secundario */
+    --color-white: #FFFFFF;          /* Blanco */
+    --color-dark: #000000;           /* Negro */
+
+    --color-bg-light: #F3F3F8;
+    --color-text-main: #1A1A1A;
+    --color-text-dark: #111827;
+    --color-text-muted: #8E8E93;
+    --color-text-subtle: #6B7280;
+    --color-border: #E5E7EB;
+
+    --font-display: 'MuseoModerno', sans-serif;
+    --font-heading: 'Myriad Pro Bold', sans-serif;
+    --font-body: 'Montserrat', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--color-bg-light);
+    color: var(--color-text-main);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+.checkout-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 24px 16px 48px;
+}
+
+/* ==========================================
+   1. BARRA DE PASOS / STEPPER
+   ========================================== */
+.checkout-stepper-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--color-white);
+    padding: 14px 24px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.stepper-steps {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.step-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--color-text-muted);
+}
+
+.step-item.active {
+    color: var(--color-accent);
+}
+
+.step-item.completed {
+    color: #10B981;
+}
+
+.step-icon, .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.step-item.completed .step-icon {
+    background-color: #E6F4EA;
+    color: #10B981;
+}
+
+.step-item.active .step-number {
+    background-color: var(--color-accent);
+    color: var(--color-white);
+}
+
+.step-divider {
+    width: 48px;
+    height: 2px;
+    background-color: var(--color-border);
+}
+
+.step-divider.completed, .step-divider.active {
+    background-color: #10B981;
+}
+
+/* ==========================================
+   2. BANNER DE PAGO APROBADO / ÉXITO
+   ========================================== */
+.confirmation-success-banner {
+    background: linear-gradient(135deg, #0A1547 0%, #0F1C5C 60%, #162473 100%);
+    border-radius: 14px;
+    padding: 24px 28px;
+    color: var(--color-white);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 14px rgba(10, 21, 71, 0.2);
+}
+
+.status-badge-container {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.status-icon-circle {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    background-color: var(--color-accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    flex-shrink: 0;
+}
+
+.check-badge {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    background-color: #10B981;
+    color: white;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    font-size: 0.65rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #0A1547;
+    font-weight: bold;
+}
+
+.pago-aprobado-pill {
+    display: inline-block;
+    background-color: rgba(16, 185, 129, 0.2);
+    color: #34D399;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 12px;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.success-title {
+    font-family: var(--font-heading);
+    font-size: 1.35rem;
+    margin-bottom: 4px;
+}
+
+.success-subtext {
+    font-size: 0.82rem;
+    color: #CBD5E1;
+}
+
+.order-code-box {
+    text-align: right;
+    background-color: rgba(255, 255, 255, 0.08);
+    padding: 12px 18px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.order-label {
+    display: block;
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    color: #94A3B8;
+    font-weight: 700;
+}
+
+.order-number {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    color: var(--color-white);
+    letter-spacing: 0.5px;
+}
+
+.order-timestamp {
+    display: block;
+    font-size: 0.72rem;
+    color: #94A3B8;
+}
+
+/* ==========================================
+   3. ESTRUCTURA GRID (2 COLUMNAS)
+   ========================================== */
+.confirmation-grid {
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 24px;
+    align-items: start;
+}
+
+.sales-card {
+    background-color: var(--color-white);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.card-title-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.title-with-icon {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.title-with-icon h2 {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    color: var(--color-primary);
+}
+
+.badge-tickets-count {
+    background-color: #FFE4EF;
+    color: var(--color-accent);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+/* Resumen del Evento en Detalle */
+.reservation-event-card {
+    display: flex;
+    gap: 16px;
+    background-color: #FAFAFA;
+    border: 1px solid var(--color-border);
+    padding: 14px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.event-thumb {
+    position: relative;
+    width: 100px;
+    height: 90px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.event-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.live-tag {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    background-color: var(--color-accent);
+    color: white;
+    font-size: 0.58rem;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.tour-subhead {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    letter-spacing: 0.5px;
+}
+
+.event-name {
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    color: var(--color-primary);
+    line-height: 1.2;
+    margin-bottom: 2px;
+}
+
+.lineup-text {
+    font-size: 0.75rem;
+    color: var(--color-text-subtle);
+    margin-bottom: 6px;
+}
+
+.event-date-time {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-text-dark);
+}
+
+/* Grid de especificaciones de reserva */
+.details-spec-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.spec-item {
+    background-color: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    padding: 12px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.spec-item.full-width {
+    grid-column: span 2;
+}
+
+.spec-label {
+    font-size: 0.72rem;
+    color: var(--color-text-subtle);
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.spec-value {
+    font-size: 0.88rem;
+    color: var(--color-text-dark);
+    font-weight: 700;
+}
+
+.spec-sub {
+    font-size: 0.72rem;
+    color: var(--color-text-muted);
+}
+
+.highlight-spec {
+    background-color: #FFF0F5;
+    border-color: #FFD6E8;
+}
+
+.highlight-pink {
+    color: var(--color-accent);
+}
+
+/* Botón Descarga PDF */
+.btn-download-pdf {
+    width: 100%;
+    background-color: var(--color-accent);
+    color: var(--color-white);
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background-color 0.2s;
+}
+
+.btn-download-pdf:hover {
+    background-color: #C7004C;
+}
+
+/* ==========================================
+   4. BOLETO DIGITAL INTERACTIVO (COL DERECHA)
+   ========================================== */
+.digital-ticket-card {
+    background: linear-gradient(180deg, #0A1547 0%, #050B26 100%);
+    border-radius: 16px;
+    padding: 20px;
+    color: var(--color-white);
+    box-shadow: 0 10px 30px rgba(10, 21, 71, 0.3);
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ticket-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.brand-k {
+    background-color: var(--color-accent);
+    color: white;
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+}
+
+.ticket-badges {
+    display: flex;
+    gap: 6px;
+}
+
+.badge-fastpass {
+    background-color: var(--color-accent);
+    color: white;
+    font-size: 0.6rem;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.badge-live-pill {
+    background-color: rgba(255, 255, 255, 0.2);
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.ticket-subtitle {
+    font-size: 0.62rem;
+    letter-spacing: 1px;
+    color: #94A3B8;
+    display: block;
+    font-weight: 700;
+}
+
+.ticket-artist-title {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    line-height: 1.1;
+    margin: 2px 0 4px;
+    background: linear-gradient(90deg, #FFFFFF, #E2E8F0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.ticket-guest-info {
+    font-size: 0.7rem;
+    color: #CBD5E1;
+    margin-bottom: 14px;
+}
+
+.ticket-meta-pills {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.meta-pill {
+    display: flex;
+    flex-direction: column;
+}
+
+.meta-label {
+    font-size: 0.58rem;
+    color: #94A3B8;
+    font-weight: 700;
+}
+
+.meta-val {
+    font-size: 0.72rem;
+    color: var(--color-white);
+    font-weight: 700;
+}
+
+/* Tarjeta contenedora del QR */
+.ticket-qr-container {
+    background-color: var(--color-white);
+    color: var(--color-text-dark);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin-bottom: 16px;
+}
+
+.qr-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--color-text-subtle);
+    margin-bottom: 12px;
+}
+
+.qr-code-id {
+    color: var(--color-accent);
+}
+
+.qr-code-wrapper {
+    width: 170px;
+    height: 170px;
+    margin: 0 auto 12px;
+}
+
+.qr-svg {
+    width: 100%;
+    height: 100%;
+}
+
+.qr-footer-status {
+    border-top: 1px dashed var(--color-border);
+    padding-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--color-accent);
+}
+
+.spin-icon {
+    display: inline-block;
+    animation: spin 8s linear infinite;
+}
+
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+.sync-timer {
+    font-family: monospace;
+    color: var(--color-text-subtle);
+}
+
+/* Detalles en pie de boleto */
+.ticket-footer-details {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.tf-label {
+    display: block;
+    font-size: 0.58rem;
+    color: #94A3B8;
+    font-weight: 700;
+}
+
+.tf-val {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--color-white);
+    font-weight: 700;
+}
+
+.tf-sub {
+    display: block;
+    font-size: 0.62rem;
+    color: #64748B;
+}
+
+/* Wallet y compartir */
+.wallet-actions-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.btn-wallet {
+    flex-grow: 1;
+    background-color: var(--color-accent);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-family: var(--font-heading);
+    font-size: 0.82rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.btn-share-icon {
+    width: 42px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.security-disclaimer {
+    display: flex;
+    gap: 8px;
+    background-color: rgba(255, 255, 255, 0.04);
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.68rem;
+    color: #94A3B8;
+    line-height: 1.3;
+}
+
+.security-disclaimer strong {
+    color: var(--color-white);
+}
+
+/* Botones de Navegación Secundarios */
+.confirmation-actions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.btn-secondary-nav {
+    background-color: var(--color-white);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    color: var(--color-text-dark);
+    font-size: 0.85rem;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    transition: background-color 0.2s;
+}
+
+.btn-secondary-nav:hover {
+    background-color: #FAFAFA;
+}
+
+.btn-secondary-nav .arrow {
+    font-size: 1.2rem;
+    color: var(--color-text-muted);
+}
+
+/* Footer general */
+.sales-footer {
+    max-width: 1280px;
+    margin: 40px auto 0;
+    padding: 20px 16px;
+    border-top: 1px solid #E5E7EB;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    font-size: 0.78rem;
+    color: var(--color-text-subtle);
+}
+
+@media (min-width: 768px) {
+    .sales-footer {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}
+
+.sales-footer-links {
+    display: flex;
+    gap: 16px;
+}
+
+.sales-footer-links a {
+    color: var(--color-text-subtle);
+    text-decoration: none;
+}
+
+/* ==========================================
+   5. RESPONSIVE DESIGN (TABLET: max-width 768px)
+   ========================================== */
+@media (max-width: 768px) {
+    .checkout-container {
+        padding: 16px 12px 32px;
+    }
+
+    .confirmation-success-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 18px;
+        padding: 20px;
+    }
+
+    .order-code-box {
+        text-align: left;
+        width: 100%;
+    }
+
+    .confirmation-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .digital-ticket-card {
+        max-width: 480px;
+        margin: 0 auto;
+    }
+}
+
+/* ==========================================
+   6. RESPONSIVE DESIGN (MÓVIL: max-width 425px)
+   ========================================== */
+@media (max-width: 425px) {
+    .checkout-container {
+        padding: 12px 8px 24px;
+    }
+
+    /* Stepper móvil */
+    .step-label {
+        display: none;
+    }
+
+    .step-divider {
+        width: 24px;
+    }
+
+    /* Banner éxito móvil */
+    .status-badge-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .status-icon-circle {
+        width: 44px;
+        height: 44px;
+        font-size: 1.2rem;
+    }
+
+    .success-title {
+        font-size: 1.1rem;
+    }
+
+    .success-subtext {
+        font-size: 0.78rem;
+    }
+
+    /* Tarjeta Reserva */
+    .sales-card {
+        padding: 16px;
+        border-radius: 10px;
+    }
+
+    .reservation-event-card {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .event-thumb {
+        width: 100%;
+        height: 120px;
+    }
+
+    .details-spec-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .spec-item.full-width {
+        grid-column: span 1;
+    }
+
+    /* Boleto interactivo móvil */
+    .digital-ticket-card {
+        padding: 14px;
+        border-radius: 12px;
+    }
+
+    .ticket-artist-title {
+        font-size: 1.3rem;
+    }
+
+    .ticket-meta-pills {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+
+    .qr-code-wrapper {
+        width: 140px;
+        height: 140px;
+    }
+
+    .ticket-footer-details {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        background: rgba(255, 255, 255, 0.03);
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    .wallet-actions-row {
+        flex-direction: column;
+    }
+
+    .btn-share-icon {
+        width: 100%;
+        height: 38px;
+    }
+
+    /* Footer enlaces */
+    .sales-footer-links {
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+    }
+}

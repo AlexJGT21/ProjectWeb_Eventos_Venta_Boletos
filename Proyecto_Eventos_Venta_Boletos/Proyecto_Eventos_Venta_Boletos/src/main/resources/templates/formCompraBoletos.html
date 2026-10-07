@@ -55,7 +55,7 @@
 
         <!-- Columna Izquierda: Formularios de Datos y Métodos de Pago -->
         <div class="left-column">
-            <form action="#" method="POST" class="checkout-form">
+            <form th:action="@{/procesar-pago}" method="POST" class="checkout-form">
 
                 <!-- Sección 1: Datos del Titular -->
                 <div class="sales-card form-section">
@@ -228,7 +228,7 @@
                 <!-- Botón Principal de Pago -->
                 <div class="checkout-action-area">
                     <button type="submit" class="btn-primary-checkout full-btn">
-                        PAGAR $3,767.68 MXN Y OBTENER BOLETOS →
+                        PAGAR $3,767.68 MXN Y OBTENER BOLETOS → <!--AQUÍ-->
                     </button>
                     <p class="terms-disclaimer">
                         Al hacer clic aceptas los <a href="#">Términos y Condiciones</a> y la <a href="#">Política de Privacidad</a> de Konticket.

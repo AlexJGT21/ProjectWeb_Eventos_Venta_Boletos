@@ -1,7 +1,3 @@
-/* ==========================================================================
-   FUENTES Y VARIABLES
-   ========================================================================== */
-
 /* FUENTE DISPLAY (MuseoModerno - Variable) */
 @font-face {
     font-family: 'MuseoModerno';
@@ -29,7 +25,6 @@
     font-display: swap;
 }
 
-/* FUENTE CUERPO DE TEXTO Y DESCRIPCIONES (Montserrat - Variable) */
 @font-face {
     font-family: 'Montserrat';
     src: url('../fonts/Montserrat-VariableFont_wght.ttf') format('truetype');
@@ -64,15 +59,11 @@
     --color-overlay: rgba(0, 0, 0, 0.3);
     --color-border: #E5E7EB;
 
-    /* --- Tipografías de Marca --- */
     --font-display: 'MuseoModerno', sans-serif;
     --font-heading: 'Myriad Pro Bold', sans-serif;
     --font-body: 'Montserrat', sans-serif;
 }
 
-/* ==========================================================================
-   RESET & ESTILOS BASE
-   ========================================================================== */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -93,9 +84,6 @@ body {
     padding: 24px 16px 48px;
 }
 
-/* ==========================================================================
-   BARRA DE PASOS / STEPPER & TIMER
-   ========================================================================== */
 .checkout-stepper-bar {
     display: flex;
     justify-content: space-between;
@@ -182,9 +170,6 @@ body {
     font-family: var(--font-heading);
 }
 
-/* ==========================================================================
-   ESTRUSTURA GRID 2 COLUMNAS
-   ========================================================================== */
 .sales-content-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -197,7 +182,6 @@ body {
     }
 }
 
-/* Tarjetas Generales */
 .sales-card {
     background-color: var(--color-white);
     border-radius: 14px;
@@ -206,9 +190,6 @@ body {
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
-/* ==========================================================================
-   FORMULARIOS SECCIÓN 1 Y 2
-   ========================================================================== */
 .section-header {
     display: flex;
     align-items: flex-start;
@@ -363,9 +344,6 @@ input:focus, select:focus {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E");
 }
 
-/* ==========================================================================
-   MÉTODOS DE PAGO
-   ========================================================================== */
 .payment-methods-list {
     display: flex;
     flex-direction: column;
@@ -469,7 +447,6 @@ input[type="radio"]:checked + .radio-custom::after {
     background-color: var(--color-white);
 }
 
-/* Acciones Finales */
 .checkout-action-area {
     margin-top: 24px;
     text-align: center;
@@ -503,9 +480,6 @@ input[type="radio"]:checked + .radio-custom::after {
     text-decoration: underline;
 }
 
-/* ==========================================================================
-   COLUMNA DERECHA: SIDEBAR DE RESUMEN DE COMPRA
-   ========================================================================== */
 .purchase-sidebar-card {
     background-color: var(--color-white);
     border-radius: 14px;
@@ -520,7 +494,6 @@ input[type="radio"]:checked + .radio-custom::after {
     height: 120px;
     border-radius: 10px;
     overflow: hidden;
-    background: url('../images/event-bg.jpg') center/cover no-repeat;
     background-color: var(--color-primary);
     display: flex;
     align-items: flex-end;
@@ -688,9 +661,6 @@ input[type="radio"]:checked + .radio-custom::after {
     line-height: 1.3;
 }
 
-/* ==========================================================================
-   FOOTER
-   ========================================================================== */
 .sales-footer {
     max-width: 1280px;
     margin: 40px auto 0;
@@ -704,23 +674,175 @@ input[type="radio"]:checked + .radio-custom::after {
     color: var(--color-text-subtle);
 }
 
-@media (min-width: 768px) {
-    .sales-footer {
-        flex-direction: row;
+/*---TABLET---*/
+@media (max-width: 768px) {
+    .checkout-container {
+        padding: 16px 12px 32px;
+    }
+
+    .checkout-stepper-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 14px 16px;
+    }
+
+    .stepper-steps {
         justify-content: space-between;
+        width: 100%;
+    }
+
+    .step-divider {
+        flex-grow: 1;
+        width: auto;
+    }
+
+    .timer-alert-box {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .purchase-sidebar-card {
+        position: static;
+        padding: 18px;
+    }
+
+    .payment-radio-header {
+        flex-wrap: wrap;
+        gap: 8px 12px;
+    }
+
+    .card-badges {
+        width: 100%;
+        margin-left: 30px;
+    }
+
+    .sales-footer {
+        text-align: center;
+        gap: 16px;
     }
 }
 
-.sales-footer-links {
-    display: flex;
-    gap: 16px;
-}
+/*---MOVIL---*/
+@media (max-width: 425px) {
+    .checkout-container {
+        padding: 12px 8px 24px;
+    }
 
-.sales-footer-links a {
-    color: var(--color-text-subtle);
-    text-decoration: none;
-}
+    /* Stepper Simplificado */
+    .checkout-stepper-bar {
+        padding: 10px 12px;
+        border-radius: 10px;
+    }
 
-.sales-footer-links a:hover {
-    color: var(--color-text-dark);
+    .step-label {
+        display: none;
+    }
+
+    .step-item {
+        font-size: 0.8rem;
+    }
+
+    .timer-alert-box {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+    }
+
+    .sales-card,
+    .purchase-sidebar-card {
+        padding: 14px;
+        border-radius: 10px;
+        margin-bottom: 16px;
+    }
+
+    .section-header {
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .section-number {
+        width: 24px;
+        height: 24px;
+        font-size: 0.8rem;
+    }
+
+    .section-title-group h2 {
+        font-size: 1rem;
+    }
+
+    .section-title-group p {
+        font-size: 0.75rem;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .form-group.full-width,
+    .form-group.half-width {
+        grid-column: span 1;
+    }
+
+    .phone-input-group {
+        flex-direction: row;
+    }
+
+    .payment-radio-header {
+        padding: 12px;
+    }
+
+    .payment-card-body {
+        padding: 12px;
+    }
+
+    .method-title {
+        font-size: 0.82rem;
+    }
+
+    .method-sub {
+        font-size: 0.7rem;
+    }
+
+    .badge-coming-soon {
+        display: inline-block;
+        margin-left: 0;
+        margin-top: 2px;
+    }
+
+    .card-badges {
+        margin-left: 0;
+    }
+
+    .event-summary-banner {
+        height: 100px;
+        padding: 10px;
+    }
+
+    .event-title-summary {
+        font-size: 0.88rem;
+    }
+
+    .total-checkout-box.inline-total {
+        align-items: flex-start;
+    }
+
+    .total-price-amount {
+        font-size: 1.1rem;
+    }
+
+    .btn-primary-checkout {
+        padding: 14px;
+        font-size: 0.9rem;
+    }
+
+    .terms-disclaimer {
+        font-size: 0.7rem;
+    }
+
+    .sales-footer-links {
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+    }
 }

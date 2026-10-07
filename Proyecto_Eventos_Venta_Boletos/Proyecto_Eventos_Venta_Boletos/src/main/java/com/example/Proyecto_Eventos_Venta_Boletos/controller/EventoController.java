@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Controller
@@ -141,6 +144,7 @@ public class EventoController {
         return lista;
     }
 
+    // Paso 1: Recibir selección de mapa de asientos -> Ir al Formulario de Pago
     @PostMapping("/form-compra")
     public String procesarSeleccionAsientos(
             @RequestParam("eventoId") String eventoId,
@@ -158,6 +162,15 @@ public class EventoController {
                 .findFirst()
                 .orElse(null);
 
+        // Guardar la selección en la sesión HTTP
+        session.setAttribute("eventoId", eventoId);
+        session.setAttribute("seccion", seccion);
+        session.setAttribute("fila", fila);
+        session.setAttribute("asientos", asientos);
+        session.setAttribute("cantidad", cantidad);
+        session.setAttribute("precioBase", precioBase);
+        session.setAttribute("totalFinal", totalFinal);
+
         model.addAttribute("evento", evento);
         model.addAttribute("seccion", seccion);
         model.addAttribute("fila", fila);
@@ -166,10 +179,87 @@ public class EventoController {
         model.addAttribute("precioBase", precioBase);
         model.addAttribute("totalFinal", totalFinal);
 
-        session.setAttribute("resumenCompra", List.of(seccion, fila, asientos, totalFinal));
-
         return "formCompraBoletos";
     }
 
+    // Paso 2: Recibir los datos de la tarjeta y cliente -> Ir a Confirmación
+    @PostMapping("/procesar-pago")
+    public String procesarPago(
+            @RequestParam("fullName") String fullName,
+            @RequestParam("firstLastName") String firstLastName,
+            @RequestParam(value = "secondLastName", required = false) String secondLastName,
+            @RequestParam("phone") String phone,
+            @RequestParam("email") String email,
+            @RequestParam(value = "eventoId", required = false) String eventoIdParam,
+            @RequestParam(value = "paymentMethod", defaultValue = "Tarjeta de Crédito / Débito") String paymentMethod,
+            Model model,
+            HttpSession session) {
+
+        // Recuperar información del boleto desde la sesión
+        String eventoId = eventoIdParam != null ? eventoIdParam : (String) session.getAttribute("eventoId");
+        String seccion = (String) session.getAttribute("seccion");
+        String fila = (String) session.getAttribute("fila");
+        String asientos = (String) session.getAttribute("asientos");
+        Integer cantidad = (Integer) session.getAttribute("cantidad");
+        Double totalFinal = (Double) session.getAttribute("totalFinal");
+
+        Evento evento = obtenerListaEventos().stream()
+                .filter(e -> e.getId().equals(eventoId != null ? eventoId : "1"))
+                .findFirst()
+                .orElse(obtenerListaEventos().get(0));
+
+        String nombreCompleto = fullName + " " + firstLastName +
+                (secondLastName != null && !secondLastName.isBlank() ? " " + secondLastName : "");
+
+        Random random = new Random();
+        String codigoPedido = "#KT-2026-" + (10000 + random.nextInt(90000));
+        String codigoAcceso = "KT-VIP-" + (1000 + random.nextInt(9000)) + "-Q4";
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy • HH:mm 'hrs'", Locale.forLanguageTag("es-ES"));
+        String fechaHoraRegistro = LocalDateTime.now().format(formatter);
+
+        // Atributos para la vista confirmacion-pago.html
+        model.addAttribute("evento", evento);
+        model.addAttribute("titularNombre", nombreCompleto);
+        model.addAttribute("titularEmail", email);
+        model.addAttribute("titularTelefono", phone);
+        model.addAttribute("codigoPedido", codigoPedido);
+        model.addAttribute("codigoAcceso", codigoAcceso);
+        model.addAttribute("fechaCompra", fechaHoraRegistro);
+        model.addAttribute("metodoPago", paymentMethod);
+
+        model.addAttribute("seccion", seccion != null ? seccion : "Sección A • VIP Platino");
+        model.addAttribute("fila", fila != null ? fila : "B");
+        model.addAttribute("asientos", asientos != null ? asientos : "07 y 08");
+        model.addAttribute("cantidadBoletos", cantidad != null ? cantidad : 2);
+        model.addAttribute("totalPagado", totalFinal != null ? totalFinal : 3767.68);
+
+        return "confirmacionPago";
+    }
+
+    private List<Evento> obtenerListaEvento() {
+        List<Evento> lista = new ArrayList<>();
+
+        List<Boleto> boletos1 = List.of(
+                new Boleto(1, "General", 150.0f, "DISPONIBLE"),
+                new Boleto(2, "VIP", 300.0f, "DISPONIBLE")
+        );
+        lista.add(new Evento("1", "INDIE / POST-PUNK: Midnight Echoes Tour",
+                "La cumbre del synthwave y dream-pop latinoamericano con 6 bandas en vivo.",
+                "Indie", LocalDateTime.now().plusDays(5), null, 500,
+                "Luces & Sonido SONORA", EstadoEvento.ACTIVO, "Estadio GNP / Foro Sol", boletos1));
+
+        List<Boleto> boletos2 = List.of(
+                new Boleto(3, "General", 300.0f, "DISPONIBLE"),
+                new Boleto(4, "VIP", 600.0f, "DISPONIBLE")
+        );
+        lista.add(new Evento("2", "Techno Underground: Dark Beats",
+                "Una noche inmersiva con DJs internacionales y un sistema de audio envolvente de 360°.",
+                "Electrónica", LocalDateTime.now().plusDays(12), null, 300,
+                "Sound System MX", EstadoEvento.ACTIVO, "Arena Metropolitana", boletos2));
+
+        return lista;
+    }
 
 }
+

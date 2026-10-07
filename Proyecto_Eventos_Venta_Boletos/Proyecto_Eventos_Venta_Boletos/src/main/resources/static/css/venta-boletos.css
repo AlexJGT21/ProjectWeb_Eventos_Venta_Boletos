@@ -1278,11 +1278,8 @@ body {
 .sales-footer-links a:hover {
     color: var(--color-text-dark);
 }
-/* ==========================================================================
-   AJUSTES RESPONSIVOS DEL HEADER (Agregar dentro de las Media Queries)
-   ========================================================================== */
 
-/* --- TABLET (Máximo 768px) --- */
+/* ---TABLET--- */
 @media (max-width: 768px) {
     .main-header {
         flex-wrap: wrap;
@@ -1290,14 +1287,12 @@ body {
         gap: 12px;
     }
 
-    /* Pasa el buscador a una fila completa debajo del logo y botones */
     .header-search {
         order: 3;
         max-width: 100%;
         width: 100%;
     }
 
-    /* Permite scroll horizontal en las categorías si no caben */
     .categories-nav {
         order: 4;
         width: 100%;
@@ -1313,7 +1308,6 @@ body {
 
 /*MÓVIL*/
 @media (max-width: 480px) {
-    /* 1. Header */
     .main-header {
         padding: 10px 12px;
     }
@@ -1335,13 +1329,11 @@ body {
         height: 34px;
     }
 
-    /* 2. Contenedor Principal */
     .ticket-sales-container {
         padding: 0 10px;
         margin: 10px auto;
     }
 
-    /* 3. Encabezado del Evento */
     .event-banner {
         flex-direction: column;
         align-items: stretch;
@@ -1354,9 +1346,8 @@ body {
         margin-top: 8px;
     }
 
-    /* 4. Mapa y Escenario */
     .stage-grid {
-        grid-template-columns: 1fr; /* Cambia de 3 columnas a 1 columna apilada */
+        grid-template-columns: 1fr;
         gap: 10px;
     }
 
@@ -1380,16 +1371,14 @@ body {
         align-items: flex-start;
     }
 
-    /* 5. Tarjetas Secundarias y Panel Lateral */
     .mini-cards-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 
     .purchase-sidebar-card {
-        position: static; /* Desactiva el posicionamiento pegajoso en móvil */
+        position: static;
     }
 
-    /* 6. Footer */
     .sales-footer {
         flex-direction: column;
         align-items: center;
