@@ -9,7 +9,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -34,6 +36,12 @@ public class EventoController {
     @GetMapping("/mis-boletos")
     public String misBoletos() {
         return "misBoletos";
+    }
+
+    @GetMapping("/formEvento")
+    public String mostrarFormularioEvento(Model model) {
+        model.addAttribute("evento", new Evento());
+        return "formEvento";
     }
 
     @GetMapping({"/", "/index", "/eventos"})
@@ -147,6 +155,38 @@ public class EventoController {
                 "Deportes Sonora", EstadoEvento.ACTIVO, "Estadio Municipal", boletos4));
 
         return lista;
+    }
+
+    @PostMapping("/guardar-evento")
+    public String guardarEvento(Evento evento, 
+                                @RequestParam("imagenFile") MultipartFile imagenFile,
+                                @RequestParam(value = "croquisFile", required = false) MultipartFile croquisFile) {
+        try {
+            // Convertir la imagen principal a byte[] para la entidad Evento
+            if (!imagenFile.isEmpty()) {
+                evento.setImagen(imagenFile.getBytes());
+            }
+
+            // Aquí se puede procesar el croquis si se asigna a un objeto Recinto
+            if (croquisFile != null && !croquisFile.isEmpty()) {
+                byte[] croquisBytes = croquisFile.getBytes();
+                // recinto.setCroquis(croquisBytes);
+            }
+
+            // Como aún no hay base de datos esto es para checar si funciona
+            System.out.println("¡Evento recibido exitosamente!");
+            System.out.println("Nombre: " + evento.getNombre());
+            System.out.println("Categoría: " + evento.getCategoria());
+            System.out.println("Fecha y Hora: " + evento.getFechaHora());
+            System.out.println("Capacidad: " + evento.getCapacidad());
+            System.out.println("Estado: " + evento.getEstadoEvento());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Redirige a la misma página
+        return "redirect:/formEvento"; 
     }
 
     // Paso 1: Recibir selección de mapa de asientos -> Ir al Formulario de Pago
@@ -265,6 +305,8 @@ public class EventoController {
 
         return lista;
     }
+
+
 
 }
 

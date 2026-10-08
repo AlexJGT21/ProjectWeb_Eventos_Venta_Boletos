@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konticket - Crear Evento</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/style.css}" href="../static/style.css">
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="logo-area">Konticket</div>
+        <div class="user-profile">
+            <div class="avatar">EL</div>
+            <div class="user-info">
+                <strong>Emily Lara</strong>
+                <span>Fan & Organizador</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#"><i class="fas fa-home"></i> Panel Organizador</a></li>
+                <li class="active"><a href="#"><i class="fas fa-calendar-alt"></i> Eventos</a></li>
+                <li><a href="#"><i class="fas fa-chart-line"></i> Ventas y Aforos</a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> Ajustes</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        
+        <!-- Header inyectado desde fragmentos -->
+        <header th:replace="~{fragmentos/header :: main-header}"></header>
+
+        <nav class="stepper-nav">
+            <a href="javascript:void(0)" id="nav-paso1" class="activo" onclick="cambiarPaso(1)">
+                <span class="num">1</span> <div class="step-text"><small>PASO 1</small><br><strong>Información Básica</strong></div>
+            </a>
+            <a href="javascript:void(0)" id="nav-paso2" onclick="cambiarPaso(2)">
+                <span class="num">2</span> <div class="step-text"><small>PASO 2</small><br><strong>Fecha y Recinto</strong></div>
+            </a>
+            <a href="javascript:void(0)" id="nav-paso3" onclick="cambiarPaso(3)">
+                <span class="num">3</span> <div class="step-text"><small>PASO 3</small><br><strong>Boletos y Aforo</strong></div>
+            </a>
+            <a href="javascript:void(0)" id="nav-paso4" onclick="cambiarPaso(4)">
+                <span class="num">4</span> <div class="step-text"><small>REVISIÓN FINAL</small><br><strong>Configuración</strong></div>
+            </a>
+        </nav>
+
+        <div class="form-container">
+            <!-- Formulario principal enlazado a la entidad Evento -->
+            <form th:action="@{/guardar-evento}" th:object="${evento}" method="POST" enctype="multipart/form-data">
+
+                <!-- PASO 1: INFO BÁSICA (Basado en entidad Evento) -->
+                <div id="paso1" class="step-section activo">
+                    <h2 class="section-title">Paso 1: Información Básica</h2>
+                    <div class="grid-layout">
+                        <div class="main-col">
+                            <div class="card">
+                                <h3><i class="fas fa-info-circle"></i> Detalles Generales del Evento</h3>
+                                <div class="form-group">
+                                    <label>Nombre oficial del evento *</label>
+                                    <input type="text" th:field="*{nombre}" placeholder="Ej. Festival Distorsión" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Descripción o Slogan del evento</label>
+                                    <input type="text" th:field="*{descripcion}" placeholder="12 horas continuas de techno...">
+                                </div>
+                                <div class="grid-2">
+                                    <div class="form-group">
+                                        <label>Categoría principal *</label>
+                                        <select th:field="*{categoria}">
+                                            <option value="Música en Vivo / Festivales">Música en Vivo / Festivales</option>
+                                            <option value="Arte y Teatro">Arte y Teatro</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Productora u organizador</label>
+                                        <input type="text" th:field="*{organizador}" placeholder="Nombre del organizador">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <h3><i class="fas fa-image"></i> Arte y Material Multimedia</h3>
+                                <div class="upload-area">
+                                    <div class="upload-box banner-box">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <p>Banner Principal Hero (Horizontal 16:9) *</p>
+                                        <!-- Archivo Multipart para luego convertir a byte[] en el backend -->
+                                        <input type="file" name="imagenFile" accept="image/*">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="side-col">
+                            <div class="card preview-card">
+                                <h3>Vista Previa App Konticket</h3>
+                                <div class="preview-mockup">
+                                    <div class="mockup-img"></div>
+                                    <h4>Festival Distorsión Electrónica</h4>
+                                    <span class="mockup-tag">Música en Vivo / Festivales</span>
+                                    <div class="mockup-btn">Ver Boletos</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-navigation">
+                        <div></div>
+                        <button type="button" class="btn-submit" onclick="cambiarPaso(2)">Siguiente Paso <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- PASO 2: FECHA Y RECINTO (Basado en entidades Evento y Recinto) -->
+                <div id="paso2" class="step-section">
+                    <h2 class="section-title">Paso 2: Fecha y Recinto</h2>
+                    <div class="grid-layout">
+                        <div class="main-col">
+                            <div class="card">
+                                <h3><i class="far fa-calendar-alt"></i> Modalidad y Calendario</h3>
+                                <div class="grid-2">
+                                    <div class="form-group">
+                                        <label>Fecha y Hora del Evento *</label>
+                                        <!-- Input combinado para mapear a LocalDateTime -->
+                                        <input type="datetime-local" th:field="*{fechaHora}" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <h3><i class="fas fa-map-marker-alt"></i> Ubicación y Recinto Oficial</h3>
+                                <div class="form-group">
+                                    <label>Lugar del Evento *</label>
+                                    <div class="input-with-icon">
+                                        <i class="fas fa-search"></i>
+                                        <input type="text" th:field="*{lugar}" placeholder="Ej. Foro Pegaso, Toluca - CDMX">
+                                    </div>
+                                </div>
+                                <div class="grid-2">
+                                    <div class="form-group">
+                                        <label>Capacidad Comercial Planeada</label>
+                                        <input type="number" th:field="*{capacidad}" placeholder="Ej. 8500">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="side-col">
+                            <div class="card">
+                                <h3>Croquis del Recinto</h3>
+                                <div class="upload-box map-box">
+                                    <i class="fas fa-map"></i>
+                                    <p>Sube el mapa de zonas (Opcional)</p>
+                                    <!-- Input para el byte[] croquis de la entidad Recinto -->
+                                    <input type="file" name="croquisFile" accept="image/*">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-navigation">
+                        <button type="button" class="btn-secondary" onclick="cambiarPaso(1)"><i class="fas fa-arrow-left"></i> Volver</button>
+                        <button type="button" class="btn-submit" onclick="cambiarPaso(3)">Siguiente Paso <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- PASO 3: BOLETOS Y AFORO (Diseño visual sin binding directo a Boleto) -->
+                <div id="paso3" class="step-section">
+                    <h2 class="section-title">Paso 3: Boletos y Aforo</h2>
+                    <div class="grid-layout">
+                        <div class="main-col">
+                            <div class="card">
+                                <h3><i class="fas fa-layer-group"></i> Lotes y Fases de Venta</h3>
+                                <div class="fase-item">
+                                    <div>
+                                        <strong>Fase 1 - Early Bird</strong>
+                                        <p>Venta anticipada a precio especial.</p>
+                                    </div>
+                                    <div class="fase-actions">
+                                        <span class="badge active-badge">Activa</span>
+                                        <button type="button" class="btn-icon"><i class="fas fa-edit"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <h3><i class="fas fa-ticket-alt"></i> Tipos de Boletos Configurados</h3>
+                                <p style="font-size: 13px; color: #7e8299; margin-bottom: 15px;">
+                                    * Los boletos se generarán y enlazarán en el administrador de inventario posteriormente.
+                                </p>
+                                <div class="ticket-type">
+                                    <div class="ticket-info">
+                                        <h4># Boleto General A</h4>
+                                        <p>Acceso a explanada principal, zonas de comida y barras.</p>
+                                    </div>
+                                    <div class="ticket-stats">
+                                        <div class="price">$650 MXN</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="side-col">
+                            <div class="card financial-card">
+                                <h3><i class="fas fa-chart-pie"></i> Proyección Financiera</h3>
+                                <div class="finance-block">
+                                    <p>Recaudación Bruta Estimada (Sold Out)</p>
+                                    <h2>$4,775,000 MXN</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-navigation">
+                        <button type="button" class="btn-secondary" onclick="cambiarPaso(2)"><i class="fas fa-arrow-left"></i> Volver</button>
+                        <button type="button" class="btn-submit" onclick="cambiarPaso(4)">Ir a Configuración Final <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- PASO 4: CONFIGURACIÓN -->
+                <div id="paso4" class="step-section">
+                    <h2 class="section-title">Paso 4: Configuración, Pagos y Salida</h2>
+                    <div class="grid-layout">
+                        <div class="main-col">
+                            <div class="card">
+                                <h3><i class="fas fa-credit-card"></i> Estado de Publicación</h3>
+                                <div class="form-group" style="margin-top: 15px;">
+                                    <label>Estado Inicial del Evento *</label>
+                                    <!-- Mapeo al Enum EstadoEvento -->
+                                    <select th:field="*{estadoEvento}">
+                                        <option value="DISPONIBLE">Público / Disponible para venta</option>
+                                        <option value="AGOTADO">Oculto / Agotado</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="side-col">
+                            <div class="card publish-card">
+                                <h3>Resumen Final</h3>
+                                <p style="font-size: 13px; color: var(--text-light); margin-bottom: 20px;">
+                                    Al publicar, el evento será creado en la base de datos de Konticket.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-navigation">
+                        <button type="button" class="btn-secondary" onclick="cambiarPaso(3)"><i class="fas fa-arrow-left"></i> Volver</button>
+                        <button type="submit" class="btn-submit"><i class="fas fa-rocket"></i> PUBLICAR EVENTO EN VIVO</button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </main>
+
+    <script>
+        function cambiarPaso(numeroPaso) {
+            const pasos = document.querySelectorAll('.step-section');
+            pasos.forEach(paso => paso.classList.remove('activo'));
+            const navLinks = document.querySelectorAll('.stepper-nav a');
+            navLinks.forEach(link => link.classList.remove('activo'));
+
+            document.getElementById('paso' + numeroPaso).classList.add('activo');
+            document.getElementById('nav-paso' + numeroPaso).classList.add('activo');
+
+            document.querySelector('.main-content').scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
