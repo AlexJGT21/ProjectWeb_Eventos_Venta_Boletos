@@ -63,9 +63,6 @@ body {
     padding: 24px 16px 48px;
 }
 
-/* ==========================================
-   1. BARRA DE PASOS / STEPPER
-   ========================================== */
 .checkout-stepper-bar {
     display: flex;
     justify-content: center;
@@ -131,9 +128,6 @@ body {
     background-color: #10B981;
 }
 
-/* ==========================================
-   2. BANNER DE PAGO APROBADO / ÉXITO
-   ========================================== */
 .confirmation-success-banner {
     background: linear-gradient(135deg, #0A1547 0%, #0F1C5C 60%, #162473 100%);
     border-radius: 14px;
@@ -235,9 +229,6 @@ body {
     color: #94A3B8;
 }
 
-/* ==========================================
-   3. ESTRUCTURA GRID (2 COLUMNAS)
-   ========================================== */
 .confirmation-grid {
     display: grid;
     grid-template-columns: 1fr 420px;
@@ -281,7 +272,6 @@ body {
     border-radius: 20px;
 }
 
-/* Resumen del Evento en Detalle */
 .reservation-event-card {
     display: flex;
     gap: 16px;
@@ -346,7 +336,6 @@ body {
     color: var(--color-text-dark);
 }
 
-/* Grid de especificaciones de reserva */
 .details-spec-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -393,7 +382,6 @@ body {
     color: var(--color-accent);
 }
 
-/* Botón Descarga PDF */
 .btn-download-pdf {
     width: 100%;
     background-color: var(--color-accent);
@@ -415,9 +403,6 @@ body {
     background-color: #C7004C;
 }
 
-/* ==========================================
-   4. BOLETO DIGITAL INTERACTIVO (COL DERECHA)
-   ========================================== */
 .digital-ticket-card {
     background: linear-gradient(180deg, #0A1547 0%, #050B26 100%);
     border-radius: 16px;
@@ -530,7 +515,6 @@ body {
     font-weight: 700;
 }
 
-/* Tarjeta contenedora del QR */
 .ticket-qr-container {
     background-color: var(--color-white);
     color: var(--color-text-dark);
@@ -589,7 +573,6 @@ body {
     color: var(--color-text-subtle);
 }
 
-/* Detalles en pie de boleto */
 .ticket-footer-details {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -617,7 +600,6 @@ body {
     color: #64748B;
 }
 
-/* Wallet y compartir */
 .wallet-actions-row {
     display: flex;
     gap: 8px;
@@ -667,7 +649,6 @@ body {
     color: var(--color-white);
 }
 
-/* Botones de Navegación Secundarios */
 .confirmation-actions-list {
     display: flex;
     flex-direction: column;
@@ -699,7 +680,6 @@ body {
     color: var(--color-text-muted);
 }
 
-/* Footer general */
 .sales-footer {
     max-width: 1280px;
     margin: 40px auto 0;
@@ -730,9 +710,7 @@ body {
     text-decoration: none;
 }
 
-/* ==========================================
-   5. RESPONSIVE DESIGN (TABLET: max-width 768px)
-   ========================================== */
+/*---TABLET---*/
 @media (max-width: 768px) {
     .checkout-container {
         padding: 16px 12px 32px;
@@ -761,15 +739,12 @@ body {
     }
 }
 
-/* ==========================================
-   6. RESPONSIVE DESIGN (MÓVIL: max-width 425px)
-   ========================================== */
+/*---MOVIL---*/
 @media (max-width: 425px) {
     .checkout-container {
         padding: 12px 8px 24px;
     }
 
-    /* Stepper móvil */
     .step-label {
         display: none;
     }
@@ -778,7 +753,6 @@ body {
         width: 24px;
     }
 
-    /* Banner éxito móvil */
     .status-badge-container {
         flex-direction: column;
         align-items: flex-start;
@@ -799,7 +773,6 @@ body {
         font-size: 0.78rem;
     }
 
-    /* Tarjeta Reserva */
     .sales-card {
         padding: 16px;
         border-radius: 10px;
@@ -823,7 +796,6 @@ body {
         grid-column: span 1;
     }
 
-    /* Boleto interactivo móvil */
     .digital-ticket-card {
         padding: 14px;
         border-radius: 12px;
@@ -860,7 +832,6 @@ body {
         height: 38px;
     }
 
-    /* Footer enlaces */
     .sales-footer-links {
         flex-direction: column;
         gap: 8px;
