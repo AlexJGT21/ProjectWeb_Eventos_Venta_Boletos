@@ -5,34 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Konticket - Crear Evento</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" th:href="@{/style.css}" href="../static/style.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <aside class="sidebar">
-        <div class="logo-area">Konticket</div>
-        <div class="user-profile">
-            <div class="avatar">EL</div>
-            <div class="user-info">
-                <strong>Emily Lara</strong>
-                <span>Fan & Organizador</span>
-            </div>
-        </div>
-        <nav class="sidebar-nav">
-            <ul>
-                <li><a href="#"><i class="fas fa-home"></i> Panel Organizador</a></li>
-                <li class="active"><a href="#"><i class="fas fa-calendar-alt"></i> Eventos</a></li>
-                <li><a href="#"><i class="fas fa-chart-line"></i> Ventas y Aforos</a></li>
-                <li><a href="#"><i class="fas fa-cog"></i> Ajustes</a></li>
-            </ul>
-        </nav>
-    </aside>
+    <!-- CONTROLADOR DEL MENÚ -->
+    <input type="checkbox" id="profile-menu-toggle" style="display: none;">
 
+    <!-- CONTENEDOR PRINCIPAL -->
     <main class="main-content">
         
         <!-- Header inyectado desde fragmentos -->
         <header th:replace="~{fragmentos/header :: main-header}"></header>
 
+<!-- Menú Lateral Desplegable (Estado Invitado) -->
+    <aside th:fragment="perfil-sidebar" class="perfil-sidebar">
+
+        <!-- Tarjeta de Invitado / Iniciar Sesión -->
+        <div class="auth-guest-card">
+            <div class="guest-header">
+                <div class="guest-avatar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <div class="info-invitado">
+                    <span class="titulo-invitado">¡Bienvenido!</span>
+                    <span class="subtitulo-invitado">Accede a tus entradas y perfil</span>
+                </div>
+            </div>
+
+            <!-- Botón Principal Redirección a Login -->
+            <a th:href="@{/user-login}" href="/user-login" class="btn-sidebar-login">
+                <span>INICIAR SESIÓN</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                    <polyline points="10 17 15 12 10 7"></polyline>
+                    <line x1="15" y1="12" x2="3" y2="12"></line>
+                </svg>
+            </a>
+
+        </div>
+
+        <!-- Navegación General -->
+        <nav class="sidebar-menu">
+            <a th:href="@{/eventos}" class="sidebar-item active">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                </svg>
+                <span>Explorar Eventos</span>
+            </a>
+            <a th:href="@{/user-login}" class="sidebar-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+                    <line x1="6" y1="6" x2="6" y2="18"></line>
+                    <line x1="18" y1="6" x2="18" y2="18"></line>
+                </svg>
+                <span>Mis Boletos</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                <span>Ayuda y Soporte</span>
+            </a>
+        </nav>
+
+    </aside>
+
+        <!-- Stepper -->
         <nav class="stepper-nav">
             <a href="javascript:void(0)" id="nav-paso1" class="activo" onclick="cambiarPaso(1)">
                 <span class="num">1</span> <div class="step-text"><small>PASO 1</small><br><strong>Información Básica</strong></div>
@@ -52,7 +97,7 @@
             <!-- Formulario principal enlazado a la entidad Evento -->
             <form th:action="@{/guardar-evento}" th:object="${evento}" method="POST" enctype="multipart/form-data">
 
-                <!-- PASO 1: INFO BÁSICA (Basado en entidad Evento) -->
+                <!-- PASO 1: INFO BÁSICA -->
                 <div id="paso1" class="step-section activo">
                     <h2 class="section-title">Paso 1: Información Básica</h2>
                     <div class="grid-layout">
@@ -88,7 +133,6 @@
                                     <div class="upload-box banner-box">
                                         <i class="fas fa-cloud-upload-alt"></i>
                                         <p>Banner Principal Hero (Horizontal 16:9) *</p>
-                                        <!-- Archivo Multipart para luego convertir a byte[] en el backend -->
                                         <input type="file" name="imagenFile" accept="image/*">
                                     </div>
                                 </div>
@@ -114,7 +158,7 @@
                     </div>
                 </div>
 
-                <!-- PASO 2: FECHA Y RECINTO (Basado en entidades Evento y Recinto) -->
+                <!-- PASO 2: FECHA Y RECINTO -->
                 <div id="paso2" class="step-section">
                     <h2 class="section-title">Paso 2: Fecha y Recinto</h2>
                     <div class="grid-layout">
@@ -124,7 +168,6 @@
                                 <div class="grid-2">
                                     <div class="form-group">
                                         <label>Fecha y Hora del Evento *</label>
-                                        <!-- Input combinado para mapear a LocalDateTime -->
                                         <input type="datetime-local" th:field="*{fechaHora}" required>
                                     </div>
                                 </div>
@@ -154,7 +197,6 @@
                                 <div class="upload-box map-box">
                                     <i class="fas fa-map"></i>
                                     <p>Sube el mapa de zonas (Opcional)</p>
-                                    <!-- Input para el byte[] croquis de la entidad Recinto -->
                                     <input type="file" name="croquisFile" accept="image/*">
                                 </div>
                             </div>
@@ -167,7 +209,7 @@
                     </div>
                 </div>
 
-                <!-- PASO 3: BOLETOS Y AFORO (Diseño visual sin binding directo a Boleto) -->
+                <!-- PASO 3: BOLETOS Y AFORO -->
                 <div id="paso3" class="step-section">
                     <h2 class="section-title">Paso 3: Boletos y Aforo</h2>
                     <div class="grid-layout">
@@ -229,7 +271,6 @@
                                 <h3><i class="fas fa-credit-card"></i> Estado de Publicación</h3>
                                 <div class="form-group" style="margin-top: 15px;">
                                     <label>Estado Inicial del Evento *</label>
-                                    <!-- Mapeo al Enum EstadoEvento -->
                                     <select th:field="*{estadoEvento}">
                                         <option value="DISPONIBLE">Público / Disponible para venta</option>
                                         <option value="AGOTADO">Oculto / Agotado</option>
@@ -258,10 +299,35 @@
         </div>
     </main>
 
+    <!-- MENÚ LATERAL DESPLEGABLE -->
+    <aside class="perfil-sidebar">
+        <div class="user-profile">
+            <div class="avatar">EL</div>
+            <div class="user-info">
+                <strong>Emily Lara</strong>
+                <span>Fan & Organizador</span>
+            </div>
+            <!-- Botón para cerrar el menú (desmarca el checkbox) -->
+            <label for="profile-menu-toggle" class="close-menu-btn" aria-label="Cerrar menú">
+                <i class="fas fa-times"></i>
+            </label>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#"><i class="fas fa-home"></i> Panel Organizador</a></li>
+                <li class="active"><a href="#"><i class="fas fa-calendar-alt"></i> Eventos</a></li>
+                <li><a href="#"><i class="fas fa-chart-line"></i> Ventas y Aforos</a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> Ajustes</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- SCRIPT DEL WIZARD -->
     <script>
         function cambiarPaso(numeroPaso) {
             const pasos = document.querySelectorAll('.step-section');
             pasos.forEach(paso => paso.classList.remove('activo'));
+            
             const navLinks = document.querySelectorAll('.stepper-nav a');
             navLinks.forEach(link => link.classList.remove('activo'));
 
