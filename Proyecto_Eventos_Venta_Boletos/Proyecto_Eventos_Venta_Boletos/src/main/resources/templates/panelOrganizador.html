@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konticket - Panel Organizador & Estadísticas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <input type="checkbox" id="profile-menu-toggle" style="display: none;">
+
+    <main class="main-content">
+        <header th:replace="~{fragmentos/header :: main-header}"></header>
+
+        <div class="dashboard-container">
+            
+            <!-- Cabecera Dinámica -->
+            <div class="dashboard-header-row">
+                <div class="title-block">
+                    <span class="text-pink text-xs fw-bold">● CENTRO DE CONTROL OPERATIVO</span>
+                    <h1 th:text="'Panel de Gestión • ' + ${evento.organizador}">Panel de Gestión</h1>
+                    <p class="text-light-gray text-sm">Supervisión financiera en tiempo real, inventario de aforo y logística de taquilla.</p>
+                </div>
+                <div class="filters-block">
+                    <div class="form-group-inline">
+                        <label>Evento Activo</label>
+                        <select><option th:text="${evento.nombre}">Nombre Evento</option></select>
+                    </div>
+                    <div class="form-group-inline">
+                        <label>Periodo</label>
+                        <select><option>Últimos 30 días</option></select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="staff-banner">
+                <div class="banner-info">
+                    <div class="icon-box"><i class="fas fa-qrcode"></i></div>
+                    <div>
+                        <h3 style="margin-bottom: 5px;">Puertas y Accesos de Staff <span class="badge-soft">Próximo evento</span></h3>
+                        <p class="text-sm" style="opacity: 0.8;">Sincroniza escáneres en línea o descarga credenciales maestras de validación.</p>
+                    </div>
+                </div>
+                <div class="banner-actions">
+                    <button class="btn-pink-light"><i class="fas fa-expand"></i> ABRIR ESCÁNER QR</button>
+                    <button class="btn-purple-dark"><i class="fas fa-download"></i> REPORTE CSV / PDF</button>
+                </div>
+            </div>
+
+            <!-- Grid de Métricas Dinámicas -->
+            <div class="metrics-grid">
+                <div class="card metric-card">
+                    <div class="metric-head">
+                        <span class="metric-title">INGRESOS TOTALES</span>
+                        <i class="fas fa-money-bill-wave text-pink"></i>
+                    </div>
+                    <!-- Formato decimal para monedas -->
+                    <h2 class="metric-value">
+                        <span th:text="${'$' + #numbers.formatDecimal(ingresosTotales, 0, 'COMMA', 0, 'POINT')}">$0</span>
+                        <small>MXN</small>
+                    </h2>
+                    <p class="metric-trend text-green"><i class="fas fa-arrow-trend-up"></i> +18.4% <span class="text-light-gray">vs. mes anterior</span></p>
+                </div>
+                
+                <div class="card metric-card">
+                    <div class="metric-head">
+                        <span class="metric-title">BOLETOS VENDIDOS</span>
+                        <i class="fas fa-ticket-alt text-purple"></i>
+                    </div>
+                    <h2 class="metric-value">
+                        <span th:text="${#numbers.formatInteger(boletosVendidos, 0, 'COMMA')}">0</span> 
+                        <span class="text-light-gray" th:text="'/ ' + ${#numbers.formatInteger(capacidadTotal, 0, 'COMMA')}">/ 0</span>
+                    </h2>
+                    <div class="progress-bar-container mt-2">
+                        <!-- Ancho dinámico según porcentaje -->
+                        <div class="progress-fill bg-pink" th:style="'width: ' + ${porcentajeOcupacion} + '%;'"></div>
+                    </div>
+                    <div class="metric-foot mt-2">
+                        <span class="text-pink fw-bold text-xs" th:text="${#numbers.formatDecimal(porcentajeOcupacion, 1, 1)} + '% capacidad ocupada'">0% capacidad ocupada</span>
+                        <span class="text-light-gray text-xs" th:text="${boletosRestantes} + ' restantes'">0 restantes</span>
+                    </div>
+                </div>
+                
+                <div class="card metric-card">
+                    <div class="metric-head">
+                        <span class="metric-title">ASISTENCIA - CHECK-IN</span>
+                        <i class="fas fa-user-check text-gray"></i>
+                    </div>
+                    <h2 class="metric-value">0% <span class="text-light-gray text-sm" th:text="'(0 / ' + ${#numbers.formatInteger(boletosVendidos, 0, 'COMMA')} + ')'">(0 / 0)</span></h2>
+                    <p class="metric-trend text-light-gray mt-3"><span class="pulse-dot-yellow"></span> Apertura de puertas en 12 días</p>
+                </div>
+                
+                <div class="card metric-card">
+                    <div class="metric-head">
+                        <span class="metric-title">TICKET PROMEDIO</span>
+                        <i class="fas fa-chart-line text-pink"></i>
+                    </div>
+                    <h2 class="metric-value">
+                        <span th:text="${'$' + #numbers.formatDecimal(ticketPromedio, 0, 'COMMA', 0, 'POINT')}">$0</span>
+                        <small>MXN</small>
+                    </h2>
+                    <p class="metric-trend text-light-gray mt-2"><strong class="text-pink">VIP Lounge</strong> impulsa el valor promedio</p>
+                </div>
+            </div>
+
+            <!-- Grid de Gráficas (Permanecen visuales por ahora) -->
+            <div class="charts-grid">
+                <div class="card chart-card">
+                    <div class="chart-header">
+                        <div>
+                            <span class="text-pink text-xs fw-bold">CURVA DE CONVERSIÓN</span>
+                            <h3>Ritmo de Venta de Boletos por Día</h3>
+                        </div>
+                    </div>
+                    <div class="line-chart-wrapper">
+                        <svg viewBox="0 0 800 250" preserveAspectRatio="none" class="svg-line-chart">
+                            <defs><linearGradient id="grad-pink" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e91e63" stop-opacity="0.3"/><stop offset="100%" stop-color="#e91e63" stop-opacity="0"/></linearGradient></defs>
+                            <path d="M0,220 C100,210 200,200 300,180 C350,170 380,190 400,180 C450,150 480,50 500,40 C520,30 550,200 570,220 C600,240 650,40 680,60 C750,100 800,200 800,200 L800,250 L0,250 Z" fill="url(#grad-pink)" />
+                            <path d="M0,220 C100,210 200,200 300,180 C350,170 380,190 400,180 C450,150 480,50 500,40 C520,30 550,200 570,220 C600,240 650,40 680,60 C750,100 800,200 800,200" fill="none" stroke="#e91e63" stroke-width="4" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="card chart-card">
+                    <span class="text-pink text-xs fw-bold">ADQUISICIÓN</span>
+                    <h3>Canales de Venta</h3>
+                    <div class="donut-chart-container">
+                        <div class="donut-chart">
+                            <div class="donut-inner">
+                                <span class="text-xs fw-bold text-light-gray">CANAL LÍDER</span><h2 style="margin: 0;">72%</h2><span class="text-xs fw-bold text-pink">Web Oficial</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de Inventario Dinámica iterando el modelo DTO -->
+            <div class="inventory-section mt-4">
+                <div class="card">
+                    <div class="inventory-header">
+                        <div>
+                            <span class="text-pink text-xs fw-bold">CONFIGURACIÓN DE INVENTARIO</span>
+                            <h3>Gestión de Boletos por Tipo y Aforo</h3>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="inventory-table">
+                            <thead>
+                                <tr>
+                                    <th>TIPO DE BOLETO</th>
+                                    <th>PRECIO UNITARIO</th>
+                                    <th>VENDIDOS / CAPACIDAD</th>
+                                    <th>CAPACIDAD VISUAL</th>
+                                    <th>INGRESO GENERADO</th>
+                                    <th>ESTADO</th>
+                                    <th>ACCIONES</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Bucle Thymeleaf para generar las filas de la tabla dinámicamente -->
+                                <tr th:each="boleto : ${inventario}">
+                                    <td>
+                                        <div class="ticket-name-cell">
+                                            <i th:class="${boleto.iconoCss}"></i>
+                                            <div>
+                                                <strong th:text="${boleto.tipoBoleto}">Nombre Boleto</strong>
+                                                <span th:text="${boleto.descripcion}">Descripción</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong th:text="${'$' + #numbers.formatDecimal(boleto.precio, 0, 'COMMA', 0, 'POINT')}">$0</strong><br>
+                                        <span class="text-xs text-light-gray">MXN</span>
+                                    </td>
+                                    <td>
+                                        <strong th:text="${#numbers.formatInteger(boleto.vendidos, 0, 'COMMA')}">0</strong> 
+                                        <span class="text-light-gray" th:text="'/ ' + ${#numbers.formatInteger(boleto.capacidad, 0, 'COMMA')}">/ 0</span>
+                                    </td>
+                                    <td>
+                                        <div class="progress-bar-container">
+                                            <div th:class="'progress-fill ' + (${boleto.porcentaje >= 100} ? 'bg-gray' : 'bg-pink')" 
+                                                 th:style="'width: ' + ${boleto.porcentaje} + '%;'"></div>
+                                        </div>
+                                        <div class="text-right text-xs mt-1" 
+                                             th:classappend="${boleto.porcentaje >= 100} ? 'text-light-gray' : 'text-pink fw-bold'"
+                                             th:text="${#numbers.formatDecimal(boleto.porcentaje, 0, 0)} + '%'">0%</div>
+                                    </td>
+                                    <td>
+                                        <strong th:text="${'$' + #numbers.formatDecimal(boleto.ingresoGenerado, 0, 'COMMA', 0, 'POINT')}">$0</strong><br>
+                                        <span class="text-xs text-light-gray">MXN</span>
+                                    </td>
+                                    <td>
+                                        <span class="pill" 
+                                              th:classappend="${boleto.estado == 'AGOTADO'} ? 'pill-agotado' : (${boleto.estado == 'POCOS BOLETOS'} ? 'pill-pocos' : 'pill-disponible')"
+                                              th:text="'● ' + ${boleto.estado}">ESTADO</span>
+                                    </td>
+                                    <td class="table-actions">
+                                        <i class="fas fa-pen"></i> <i class="fas fa-download"></i>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Menú Lateral Dinámico inyectando entidad Asistente -->
+    <aside class="perfil-sidebar">
+        <div class="user-profile">
+            <div class="avatar" th:text="${#strings.substring(asistente.nombre, 0, 2).toUpperCase()}">AS</div>
+            <div class="user-info">
+                <strong th:text="${asistente.nombre}">Nombre Asistente</strong>
+                <span th:text="${asistente.correo}">correo@mail.com</span>
+            </div>
+            <label for="profile-menu-toggle" class="close-menu-btn"><i class="fas fa-times"></i></label>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="active"><a href="#"><i class="fas fa-chart-pie"></i> Panel Organizador</a></li>
+                <li><a th:href="@{/crear-evento}"><i class="fas fa-calendar-alt"></i> Crear Eventos</a></li>
+                <li><a href="#"><i class="fas fa-chart-line"></i> Ventas y Aforos</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+</body>
+</html>

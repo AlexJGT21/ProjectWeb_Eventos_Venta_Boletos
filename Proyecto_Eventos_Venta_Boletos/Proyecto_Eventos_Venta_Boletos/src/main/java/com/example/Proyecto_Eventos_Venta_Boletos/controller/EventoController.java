@@ -38,6 +38,36 @@ public class EventoController {
         return "misBoletos";
     }
 
+    /*
+    Para mostrar el panel del organizador con estadísticas y tabla de inventario
+     1. Se crean entidades base vacías para evitar errores de null en Thymeleaf
+     2. Se inicializan variables estadísticas en cero (sin lógica ni cálculos)
+     3. Se crea una lista vacía para la tabla de inventario
+    */
+    @GetMapping("/panel-organizador")
+    public String mostrarPanelOrganizador(Model model) {
+        
+        // 1. Entidades base vacías para evitar errores de null en Thymeleaf
+        model.addAttribute("evento", new Evento());
+        model.addAttribute("asistente", new Asistente());
+        
+        // 2. Variables estadísticas inicializadas en cero (sin lógica ni cálculos)
+        model.addAttribute("ingresosTotales", 0.0);
+        model.addAttribute("boletosVendidos", 0);
+        model.addAttribute("capacidadTotal", 0);
+        model.addAttribute("boletosRestantes", 0);
+        model.addAttribute("porcentajeOcupacion", 0.0);
+        model.addAttribute("ticketPromedio", 0.0);
+        
+        // 3. Lista vacía para la tabla de inventario
+        model.addAttribute("inventario", new ArrayList<>());
+
+        return "panelOrganizador";
+    }
+
+    /*
+    Para mostrar el formulario de creación de eventos
+    */
     @GetMapping("/formEvento")
     public String mostrarFormularioEvento(Model model) {
         model.addAttribute("evento", new Evento());
@@ -157,6 +187,9 @@ public class EventoController {
         return lista;
     }
 
+    /*
+    Método para guardar un nuevo evento con su imagen y croquis
+    */
     @PostMapping("/guardar-evento")
     public String guardarEvento(Evento evento, 
                                 @RequestParam("imagenFile") MultipartFile imagenFile,
@@ -185,7 +218,7 @@ public class EventoController {
             e.printStackTrace();
         }
 
-        // Redirige a la misma página
+        // Redirige a la misma página de momento
         return "redirect:/formEvento"; 
     }
 
