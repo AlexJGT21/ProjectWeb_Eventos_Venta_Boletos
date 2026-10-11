@@ -259,3 +259,58 @@ body {
     .stepper-nav a .num { width: 32px; height: 32px; font-size: 14px; }
     .step-text small { font-size: 11px; }
 }
+
+/* Color verde para pasos completados */
+.stepper-nav a.completado { border-bottom: 3px solid #10b981; }
+.stepper-nav a.completado .num { background: #10b981; color: white; }
+
+/* ==========================================
+   NUEVOS ESTILOS: FASES Y BOLETOS (Paso 3)
+   ========================================== */
+.fases-scroll-container { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px; }
+.fases-scroll-container::-webkit-scrollbar { height: 6px; }
+.fases-scroll-container::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+
+.fase-card { min-width: 220px; border: 1px solid var(--border-color); border-radius: 10px; padding: 15px; background: #fff; }
+.fase-card.activa { border: 2px solid var(--primary-color); }
+.fase-header { display: flex; justify-content: space-between; align-items: center; }
+
+.toggle-box { background: #fdfafb; border: 1px solid #f3e8f5; border-radius: 10px; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+.icon-circle { width: 35px; height: 35px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+/* Switch CSS Puro */
+.switch { position: relative; display: inline-block; width: 42px; height: 24px; flex-shrink: 0; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; }
+.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; }
+input:checked + .slider { background-color: var(--primary-color); }
+input:checked + .slider:before { transform: translateX(18px); }
+.slider.round { border-radius: 24px; }
+.slider.round:before { border-radius: 50%; }
+
+/* Botón Segmentado */
+.segmented-control { display: flex; background: #f4f5f8; border-radius: 8px; padding: 4px; }
+.segmented-control button { background: transparent; border: none; padding: 8px 15px; font-size: 12px; font-weight: bold; color: var(--text-light); border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+.segmented-control button.active { background: #1e1e2d; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+/* Tarjeta Detallada de Boleto */
+.ticket-card-detailed { border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 15px; background: #fff; }
+.ticket-card-detailed.alta-demanda { border: 1px solid var(--primary-color); position: relative; }
+.alta-demanda-badge { position: absolute; top: -10px; left: 20px; background: var(--primary-color); color: white; font-size: 9px; font-weight: bold; padding: 3px 8px; border-radius: 4px; }
+
+.ticket-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+.ticket-title-area { display: flex; gap: 12px; align-items: flex-start; }
+.ticket-icon { width: 40px; height: 40px; border-radius: 8px; background: #f4f5f8; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #5a32a3; font-weight: bold; }
+.ticket-card-detailed.alta-demanda .ticket-icon { background: #fdf2f6; color: var(--primary-color); }
+.ticket-price-area { text-align: right; }
+
+.ticket-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; padding: 15px 0; border-top: 1px dashed var(--border-color); border-bottom: 1px dashed var(--border-color); margin-bottom: 15px; }
+.stat-col span { display: block; font-size: 10px; color: var(--text-light); margin-bottom: 4px; }
+.stat-col strong { font-size: 13px; color: var(--text-dark); }
+
+.ticket-footer { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-light); }
+.ticket-actions i { margin-left: 15px; cursor: pointer; transition: color 0.2s; font-size: 14px; }
+.ticket-actions i:hover { color: var(--text-dark); }
+
+.btn-dashed-add { border: 2px dashed var(--border-color); background: #fafafa; border-radius: 10px; padding: 15px; text-align: center; color: var(--text-dark); font-weight: bold; cursor: pointer; width: 100%; transition: all 0.2s; font-size: 13px; }
+.btn-dashed-add:hover { border-color: var(--primary-color); color: var(--primary-color); background: #fdfafb; }
