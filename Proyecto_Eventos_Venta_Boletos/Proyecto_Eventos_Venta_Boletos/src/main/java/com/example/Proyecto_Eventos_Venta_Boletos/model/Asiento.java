@@ -1,42 +1,27 @@
 package com.example.Proyecto_Eventos_Venta_Boletos.model;
 
-public class Asiento {
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Column;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
-    private Integer id;
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstruct
+@Table(name = "asientos")
+public class Asiento {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private Integer numAsiento;
     private String tipoAsiento;
-
-    public Asiento() {
-        //Constructor vacio
-    }
-
-    public Asiento(Integer id, Integer numAsiento, String tipoAsiento) {
-        this.id = id;
-        this.numAsiento = numAsiento;
-        this.tipoAsiento = tipoAsiento;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getNumAsiento() {
-        return numAsiento;
-    }
-
-    public void setNumAsiento(Integer numAsiento) {
-        this.numAsiento = numAsiento;
-    }
-
-    public String getTipoAsiento() {
-        return tipoAsiento;
-    }
-
-    public void setTipoAsiento(String tipoAsiento) {
-        this.tipoAsiento = tipoAsiento;
-    }
+    @ManyToOne
+    @JoinColumn(name = "recinto_id", nullable = false)
+    private Recinto recinto;
 }
