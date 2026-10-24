@@ -1,6 +1,7 @@
 package com.example.Proyecto_Eventos_Venta_Boletos.controller;
 
 import com.example.Proyecto_Eventos_Venta_Boletos.EstadosENUM.EstadoEventoENUM;
+import com.example.Proyecto_Eventos_Venta_Boletos.model.Asistente;
 import com.example.Proyecto_Eventos_Venta_Boletos.model.Boleto;
 import com.example.Proyecto_Eventos_Venta_Boletos.model.Evento;
 import jakarta.servlet.http.HttpSession;

@@ -1,74 +1,38 @@
 package com.example.Proyecto_Eventos_Venta_Boletos.model;
 
 import java.util.Arrays;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
+import java.util.List;
+
+import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 @Entity
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
-@AllArgsConstruct
-@Table(name = "recintos")
+@Builder
+@Table(name = "Recinto")
 public class Recinto {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "nombre", nullable = false, length = 70)
     private String nombre;
+
+    @Column(name = "direccion", nullable = false, length = 30)
     private String direccion;
+
+    @Column(name = "croquis", nullable = false)
     private String croquis;
 
-<<<<<<< Updated upstream
+    //LADO INVERSO
     @OneToMany(mappedBy = "recinto", cascade = CascadeType.ALL)
-    private List<Asiento> asientos;
-=======
-    public Recinto() {
-        //Constructor vacio
-    }
-    public Recinto(Integer id, String nombre, String direccion, String croquis) {
-        this.id = id;
-        this.nombre = nombre;
-        this.direccion = direccion;
-        this.croquis = croquis;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getDireccion() {
-        return direccion;
-    }
-
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
-    }
-
-    public String getCroquis() {
-        return croquis;
-    }
-
-    public void setCroquis(String croquis) {
-        this.croquis = croquis;
-    }
+    private List<Zona> zonas;
 
     @Override
     public String toString() {
@@ -80,6 +44,5 @@ public class Recinto {
                 '}';
     }
 
->>>>>>> Stashed changes
 }
 

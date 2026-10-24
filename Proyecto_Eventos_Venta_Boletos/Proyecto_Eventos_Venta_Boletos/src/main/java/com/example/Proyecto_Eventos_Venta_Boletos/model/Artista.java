@@ -1,88 +1,41 @@
 package com.example.Proyecto_Eventos_Venta_Boletos.model;
 
-<<<<<<< Updated upstream
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
+import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-=======
 import java.util.Arrays;
-
-public class Artista {
->>>>>>> Stashed changes
+import java.util.List;
 
 @Entity
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
-@AllArgsConstruct
-@Table(name = "artista")
+@Builder
+@Table(name = "Artista")
 public class Artista {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "nombre", nullable = false, length = 20)
     private String nombre;
+
+    @Column(name = "edad", nullable = false)
     private Integer edad;
-<<<<<<< Updated upstream
-=======
+
+    @Column(name = "telefono",  nullable = false)
     private String telefono;
+
+    @Lob
+    @Column(name = "imagen", nullable = false, columnDefinition = "BLOB")
     private byte[] imagen;
 
-    public Artista() {
-        //Constructor vacio
-    }
-
-    public Artista(Integer id, String nombre, Integer edad, String telefono, byte[] imagen) {
-        this.id = id;
-        this.nombre = nombre;
-        this.edad = edad;
-        this.telefono = telefono;
-        this.imagen = imagen;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public Integer getEdad() {
-        return edad;
-    }
-
-    public void setEdad(Integer edad) {
-        this.edad = edad;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
-
-    public byte[] getImagen() {
-        return imagen;
-    }
-
-    public void setImagen(byte[] imagen) {
-        this.imagen = imagen;
-    }
+    //LADO INVERSO
+    @OneToMany(mappedBy = "artista", cascade = CascadeType.ALL)
+    private List<ArtistaEvento> artistaEventos;
 
     @Override
     public String toString() {
@@ -95,6 +48,6 @@ public class Artista {
                 '}';
     }
 
->>>>>>> Stashed changes
 }
+
 

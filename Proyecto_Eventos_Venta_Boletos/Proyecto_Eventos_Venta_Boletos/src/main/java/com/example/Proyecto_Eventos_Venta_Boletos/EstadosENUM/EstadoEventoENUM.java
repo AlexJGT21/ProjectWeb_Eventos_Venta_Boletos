@@ -4,9 +4,9 @@ public enum EstadoEventoENUM {
 
     PROGRAMADO,
     DISPONIBLE,
-    ACTIVO, PAUSADO,
+    ACTIVO,
+    PAUSADO,
     CANCELADO,
     AGOTADO
-
 }
 
