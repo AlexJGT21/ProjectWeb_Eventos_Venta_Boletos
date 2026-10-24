@@ -1,167 +1,66 @@
 package com.example.Proyecto_Eventos_Venta_Boletos.model;
 
+import com.example.Proyecto_Eventos_Venta_Boletos.EstadosENUM.BoletoEstadoENUM;
 import com.example.Proyecto_Eventos_Venta_Boletos.EstadosENUM.EstadoEventoENUM;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
+
+import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 @Entity
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
-@AllArgsConstruct
+@Builder
 @Table(name = "eventos")
 public class Evento {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String nombre;
-    private String descripcion;
-    private String categoria;
-    private LocalDateTime fechaHora;
-    private byte[] imagen;
-<<<<<<< Updated upstream
-    private Integer capacidad; // no recuerdo si esto seria la relacion con los boletos
-    @ManyToOne
-    @JoinColumn(name = "organizador_id", nullable = false)
-    private Organizador organizador;
-    @Enumerated(EnumType.STRING)
-    private EstadoEvento estado;
-    @ManyToOne
-    @JoinColumn(name = "organizador_id", nullable = false)
-    private Organizador organizador;
+
+    //LADO INVERSO
     @OneToMany(mappedBy = "evento", cascade = CascadeType.ALL)
-    private List<Boleto> boletos = new ArrayList<>();
+    private List<ArtistaEvento> artistaEventos;
 
-=======
+    @Column(name = "nombre", nullable = false, length = 50)
+    private String nombre;
+
+    @Column(name = "descripcion", nullable = false, length = 300)
+    private String descripcion;
+
+    @Column(name = "categoria", nullable = false, length = 50)
+    private String categoria;
+
+    @Column(name = "fechaHoraEvento", nullable = false)
+    private LocalDateTime fechaHoraEvento;
+
+    @Lob
+    @Column(name = "imagenEvento", columnDefinition = "BLOB")
+    private byte[] imagenEvento;
+
+    @Column(name = "capacidad", nullable = false)
     private Integer capacidad;
-    private String organizador;
+
+    @Enumerated(EnumType.STRING)
     private EstadoEventoENUM estadoEvento;
-    private String lugar;
 
-    // Relación 1..N con Boletos según el diagrama de clases
-    private List<Boleto> boletos = new ArrayList<>();
+    //LADO INVERSO
+    @OneToMany(mappedBy = "evento",  cascade = CascadeType.ALL)
+    private List<Boleto> boletos;
 
-    public Evento() {
-        //Constructor vacio
-    }
+    //LADO PROPIEDAD
+    @ManyToOne
+    @JoinColumn(name = "organizador_id", nullable = false)
+    private Organizador organizador;
 
-    public Evento(String id, String nombre, String descripcion, String categoria,
-                  LocalDateTime fechaHora, byte[] imagen, Integer capacidad,
-                  String organizador, EstadoEventoENUM estadoEvento, String lugar,
-                  List<Boleto> boletos) {
-        this.id = id;
-        this.nombre = nombre;
-        this.descripcion = descripcion;
-        this.categoria = categoria;
-        this.fechaHora = fechaHora;
-        this.imagen = imagen;
-        this.capacidad = capacidad;
-        this.organizador = organizador;
-        this.estadoEvento = estadoEvento;
-        this.lugar = lugar;
-        this.boletos = boletos != null ? boletos : new ArrayList<>();
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public String getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
-    }
-
-    public LocalDateTime getFechaHora() {
-        return fechaHora;
-    }
-
-    public void setFechaHora(LocalDateTime fechaHora) {
-        this.fechaHora = fechaHora;
-    }
-
-    public byte[] getImagen() {
-        return imagen;
-    }
-    public void setImagen(byte[] imagen) {
-        this.imagen = imagen;
-    }
-
-    public Integer getCapacidad() {
-        return capacidad;
-    }
-
-    public void setCapacidad(Integer capacidad) {
-        this.capacidad = capacidad;
-    }
-
-    public String getOrganizador() {
-        return organizador;
-    }
-
-    public void setOrganizador(String organizador) {
-        this.organizador = organizador;
-    }
-
-    public EstadoEventoENUM getEstadoEvento() {
-        return estadoEvento;
-    }
-
-    public void setEstadoEvento(EstadoEventoENUM estadoEvento) {
-        this.estadoEvento = estadoEvento;
-    }
-
-    public String getLugar() {
-        return lugar;
-    }
-
-    public void setLugar(String lugar) {
-        this.lugar = lugar;
-    }
-
-    public List<Boleto> getBoletos() {
-        return boletos;
-    }
-
-    public void setBoletos(List<Boleto> boletos) {
-        this.boletos = boletos;
-    }
-
->>>>>>> Stashed changes
     // Retorna el precio mínimo ("Desde $X MXN")
     public Double getPrecioMinimo() {
         if (boletos == null || boletos.isEmpty()) return 0.0;
@@ -186,7 +85,7 @@ public class Evento {
     public Integer getBoletosDisponibles() {
         if (boletos == null) return 0;
         return (int) boletos.stream()
-                .filter(b -> "DISPONIBLE".equalsIgnoreCase(b.getEstado()))
+                .filter(b -> b.getEstado() == BoletoEstadoENUM.DISPONIBLE)
                 .count();
     }
 
@@ -195,8 +94,8 @@ public class Evento {
     }
 
     public String getFecha() {
-        if (fechaHora == null) return "";
+        if (fechaHoraEvento == null) return "";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE dd MMM", new Locale("es", "ES"));
-        return fechaHora.format(formatter).toUpperCase();
+        return fechaHoraEvento.format(formatter).toUpperCase();
     }
 }
