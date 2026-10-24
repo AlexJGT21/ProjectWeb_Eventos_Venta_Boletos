@@ -1,6 +1,6 @@
 package com.example.Proyecto_Eventos_Venta_Boletos.controller;
 
-import com.example.Proyecto_Eventos_Venta_Boletos.EstadoENUM.EstadoEvento;
+import com.example.Proyecto_Eventos_Venta_Boletos.EstadosENUM.EstadoEventoENUM;
 import com.example.Proyecto_Eventos_Venta_Boletos.model.Boleto;
 import com.example.Proyecto_Eventos_Venta_Boletos.model.Evento;
 import jakarta.servlet.http.HttpSession;
@@ -153,7 +153,7 @@ public class EventoController {
         lista.add(new Evento("1", "Noche Indie: Neon Waves Fest",
                 "La cumbre del synthwave y dream-pop latinoamericano con 6 bandas en vivo.",
                 "Indie", LocalDateTime.now().plusDays(5), null, 500,
-                "Luces & Sonido SONORA", EstadoEvento.ACTIVO, "Desierto Bar", boletos1));
+                "Luces & Sonido SONORA", EstadoEventoENUM.ACTIVO, "Desierto Bar", boletos1));
 
         // Evento 2
         List<Boleto> boletos2 = List.of(
@@ -163,7 +163,7 @@ public class EventoController {
         lista.add(new Evento("2", "Techno Underground: Dark Beats",
                 "Una noche inmersiva con DJs internacionales y un sistema de audio envolvente de 360°.",
                 "Electrónica", LocalDateTime.now().plusDays(12), null, 300,
-                "Sound System MX", EstadoEvento.ACTIVO, "Arena Metropolitana", boletos2));
+                "Sound System MX", EstadoEventoENUM.ACTIVO, "Arena Metropolitana", boletos2));
 
         // Evento 3
         List<Boleto> boletos3 = List.of(
@@ -173,7 +173,7 @@ public class EventoController {
         lista.add(new Evento("3", "Noche Acústica & Jazz Latino",
                 "Un recorrido íntimo por los clásicos del bolero y jazz moderno al aire libre.",
                 "Rock", LocalDateTime.now().plusDays(25), null, 200,
-                "Culturas del Norte", EstadoEvento.AGOTADO, "Teatro de la Ciudad", boletos3));
+                "Culturas del Norte", EstadoEventoENUM.AGOTADO, "Teatro de la Ciudad", boletos3));
 
         // Evento 4
         List<Boleto> boletos4 = List.of(
@@ -182,7 +182,7 @@ public class EventoController {
         lista.add(new Evento("4", "Torneo de Fútbol Local",
                 "Gran final del torneo municipal de verano.",
                 "Urbano", LocalDateTime.now().plusDays(30), null, 1000,
-                "Deportes Sonora", EstadoEvento.ACTIVO, "Estadio Municipal", boletos4));
+                "Deportes Sonora", EstadoEventoENUM.ACTIVO, "Estadio Municipal", boletos4));
 
         return lista;
     }
@@ -325,7 +325,7 @@ public class EventoController {
         lista.add(new Evento("1", "INDIE / POST-PUNK: Midnight Echoes Tour",
                 "La cumbre del synthwave y dream-pop latinoamericano con 6 bandas en vivo.",
                 "Indie", LocalDateTime.now().plusDays(5), null, 500,
-                "Luces & Sonido SONORA", EstadoEvento.ACTIVO, "Estadio GNP / Foro Sol", boletos1));
+                "Luces & Sonido SONORA", EstadoEventoENUM.ACTIVO, "Estadio GNP / Foro Sol", boletos1));
 
         List<Boleto> boletos2 = List.of(
                 new Boleto(3, "General", 300.0f, "DISPONIBLE"),
@@ -334,7 +334,7 @@ public class EventoController {
         lista.add(new Evento("2", "Techno Underground: Dark Beats",
                 "Una noche inmersiva con DJs internacionales y un sistema de audio envolvente de 360°.",
                 "Electrónica", LocalDateTime.now().plusDays(12), null, 300,
-                "Sound System MX", EstadoEvento.ACTIVO, "Arena Metropolitana", boletos2));
+                "Sound System MX", EstadoEventoENUM.ACTIVO, "Arena Metropolitana", boletos2));
 
         return lista;
     }

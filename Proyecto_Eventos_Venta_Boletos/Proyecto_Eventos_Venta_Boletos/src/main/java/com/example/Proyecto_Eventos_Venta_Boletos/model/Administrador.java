@@ -28,4 +28,83 @@ public class Administrador {
     private String correo;
     @Column(nullable = false)
     private String contrasenia;
+<<<<<<< Updated upstream
+=======
+    private String telefono;
+
+    public Administrador() {
+        //Constructor vacio
+    }
+
+    public Administrador(Integer id, String nombre, Integer edad, String correo, String contrasenia,  String telefono) {
+        this.id = id;
+        this.nombre = nombre;
+        this.edad = edad;
+        this.correo = correo;
+        this.contrasenia = contrasenia;
+        this.telefono = telefono;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public Integer getEdad() {
+        return edad;
+    }
+
+    public void setEdad(Integer edad) {
+        this.edad = edad;
+    }
+
+    public String getCorreo() {
+        return correo;
+    }
+
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
+
+    public String getContrasenia() {
+        return contrasenia;
+    }
+
+    public void setContrasenia(String contrasenia) {
+        this.contrasenia = contrasenia;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    @Override
+    public String toString() {
+        return "Administrador{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", edad=" + edad +
+                ", correo='" + correo + '\'' +
+                ", contrasenia='" + contrasenia + '\'' +
+                ", telefono='" + telefono + '\'' +
+                '}';
+    }
+
+>>>>>>> Stashed changes
 }
+

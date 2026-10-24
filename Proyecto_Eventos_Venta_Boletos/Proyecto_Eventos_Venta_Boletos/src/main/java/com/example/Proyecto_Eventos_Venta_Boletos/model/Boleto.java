@@ -1,5 +1,6 @@
 package com.example.Proyecto_Eventos_Venta_Boletos.model;
 
+<<<<<<< Updated upstream
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
@@ -33,4 +34,91 @@ public class Boleto {
     @OneToOne
     @JoinColumn(name = "asiento_id")
     private Asiento asiento;
+=======
+import com.example.Proyecto_Eventos_Venta_Boletos.EstadosENUM.BoletoENUM;
+
+public class Boleto {
+
+    private Integer id;
+    private Integer asientoId;
+    private Integer tipoBoletoId;
+    private Double precio;
+    private Integer cantidad;
+    private BoletoENUM estado;
+
+    public Boleto() {
+        //Constructor vacio
+    }
+
+    public Boleto(Integer id, Integer asientoId, Integer tipoBoletoId, Double precio, Integer cantidad, BoletoENUM estado) {
+        this.id = id;
+        this.asientoId = asientoId;
+        this.tipoBoletoId = tipoBoletoId;
+        this.precio = precio;
+        this.cantidad = cantidad;
+        this.estado = estado;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getAsientoId() {
+        return asientoId;
+    }
+
+    public void setAsientoId(Integer asientoId) {
+        this.asientoId = asientoId;
+    }
+
+    public Integer getTipoBoletoId() {
+        return tipoBoletoId;
+    }
+
+    public void setTipoBoletoId(Integer tipoBoletoId) {
+        this.tipoBoletoId = tipoBoletoId;
+    }
+
+    public Double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(Double precio) {
+        this.precio = precio;
+    }
+
+    public Integer getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(Integer cantidad) {
+        this.cantidad = cantidad;
+    }
+
+    public BoletoENUM getEstado() {
+        return estado;
+    }
+
+    public void setEstado(BoletoENUM estado) {
+        this.estado = estado;
+    }
+
+    @Override
+    public String toString() {
+        return "Boleto{" +
+                "id=" + id +
+                ", asientoId=" + asientoId +
+                ", tipoBoletoId=" + tipoBoletoId +
+                ", precio=" + precio +
+                ", cantidad=" + cantidad +
+                ", estado=" + estado +
+                '}';
+    }
+
+>>>>>>> Stashed changes
 }
+
