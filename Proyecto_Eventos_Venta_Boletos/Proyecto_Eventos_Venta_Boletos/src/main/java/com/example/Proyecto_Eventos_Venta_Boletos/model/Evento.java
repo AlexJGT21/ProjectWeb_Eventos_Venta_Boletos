@@ -1,6 +1,6 @@
 package com.example.Proyecto_Eventos_Venta_Boletos.model;
 
-import com.example.Proyecto_Eventos_Venta_Boletos.EstadoENUM.EstadoEvento;
+import com.example.Proyecto_Eventos_Venta_Boletos.EstadosENUM.EstadoEventoENUM;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,6 +31,7 @@ public class Evento {
     private String categoria;
     private LocalDateTime fechaHora;
     private byte[] imagen;
+<<<<<<< Updated upstream
     private Integer capacidad; // no recuerdo si esto seria la relacion con los boletos
     @ManyToOne
     @JoinColumn(name = "organizador_id", nullable = false)
@@ -43,6 +44,124 @@ public class Evento {
     @OneToMany(mappedBy = "evento", cascade = CascadeType.ALL)
     private List<Boleto> boletos = new ArrayList<>();
 
+=======
+    private Integer capacidad;
+    private String organizador;
+    private EstadoEventoENUM estadoEvento;
+    private String lugar;
+
+    // Relación 1..N con Boletos según el diagrama de clases
+    private List<Boleto> boletos = new ArrayList<>();
+
+    public Evento() {
+        //Constructor vacio
+    }
+
+    public Evento(String id, String nombre, String descripcion, String categoria,
+                  LocalDateTime fechaHora, byte[] imagen, Integer capacidad,
+                  String organizador, EstadoEventoENUM estadoEvento, String lugar,
+                  List<Boleto> boletos) {
+        this.id = id;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.categoria = categoria;
+        this.fechaHora = fechaHora;
+        this.imagen = imagen;
+        this.capacidad = capacidad;
+        this.organizador = organizador;
+        this.estadoEvento = estadoEvento;
+        this.lugar = lugar;
+        this.boletos = boletos != null ? boletos : new ArrayList<>();
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+
+    public LocalDateTime getFechaHora() {
+        return fechaHora;
+    }
+
+    public void setFechaHora(LocalDateTime fechaHora) {
+        this.fechaHora = fechaHora;
+    }
+
+    public byte[] getImagen() {
+        return imagen;
+    }
+    public void setImagen(byte[] imagen) {
+        this.imagen = imagen;
+    }
+
+    public Integer getCapacidad() {
+        return capacidad;
+    }
+
+    public void setCapacidad(Integer capacidad) {
+        this.capacidad = capacidad;
+    }
+
+    public String getOrganizador() {
+        return organizador;
+    }
+
+    public void setOrganizador(String organizador) {
+        this.organizador = organizador;
+    }
+
+    public EstadoEventoENUM getEstadoEvento() {
+        return estadoEvento;
+    }
+
+    public void setEstadoEvento(EstadoEventoENUM estadoEvento) {
+        this.estadoEvento = estadoEvento;
+    }
+
+    public String getLugar() {
+        return lugar;
+    }
+
+    public void setLugar(String lugar) {
+        this.lugar = lugar;
+    }
+
+    public List<Boleto> getBoletos() {
+        return boletos;
+    }
+
+    public void setBoletos(List<Boleto> boletos) {
+        this.boletos = boletos;
+    }
+
+>>>>>>> Stashed changes
     // Retorna el precio mínimo ("Desde $X MXN")
     public Double getPrecioMinimo() {
         if (boletos == null || boletos.isEmpty()) return 0.0;
@@ -72,7 +191,7 @@ public class Evento {
     }
 
     public boolean isDisponible() {
-        return getBoletosDisponibles() > 0 && estadoEvento != EstadoEvento.AGOTADO;
+        return getBoletosDisponibles() > 0 && estadoEvento != EstadoEventoENUM.AGOTADO;
     }
 
     public String getFecha() {
