@@ -33,7 +33,7 @@ public class OrganizadorController {
     @GetMapping("/perfil")
     public String verPerfil(Model model) {
         model.addAttribute("organizador", organizadorService.obtenerPorId(ORGANIZADOR_ID));
-        return "perfilOrganizador"; // Necesitarás crear este HTML después
+        return "perfilOrganizador";
     }
 
     @PostMapping("/perfil/actualizar")
