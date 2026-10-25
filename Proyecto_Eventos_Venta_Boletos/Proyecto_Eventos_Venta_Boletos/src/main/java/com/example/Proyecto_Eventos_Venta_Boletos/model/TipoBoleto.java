@@ -1,5 +1,6 @@
 package com.example.Proyecto_Eventos_Venta_Boletos.model;
 
+import com.example.Proyecto_Eventos_Venta_Boletos.EstadosENUM.TipoBoletoENUM;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +20,7 @@ public class TipoBoleto {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private TipoBoletoENU2M tipoBoleto;
+    private TipoBoletoENUM tipoBoleto;
 
     @Column(name = "cantidadDisponible", nullable = false)
     private Integer cantidadDisponible;
