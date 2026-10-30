@@ -35,10 +35,10 @@ public class OrganizadorService {
     public Organizador actualizarPerfil(Long id, Organizador datosActualizados) {
         Organizador organizador = obtenerPorId(id);
         organizador.setNombre(datosActualizados.getNombre());
-        organizador.setEmail(datosActualizados.getEmail());
+        organizador.setCorreo(datosActualizados.getCorreo());
 
-        if(datosActualizados.getPassword() != null && !datosActualizados.getPassword().isEmpty()){
-            organizador.setPassword(datosActualizados.getPassword());
+        if(datosActualizados.getContrasenia() != null && !datosActualizados.getContrasenia().isEmpty()){
+            organizador.setContrasenia(datosActualizados.getContrasenia());
         }
         return organizadorRepository.save(organizador);
     }
@@ -58,7 +58,7 @@ public class OrganizadorService {
             evento.setOrganizador(organizador);
 
             if (imagenFile != null && !imagenFile.isEmpty()) {
-                evento.setImagen(imagenFile.getBytes());
+                evento.setImagenEvento((imagenFile.getBytes()));
             }
             eventoRepository.save(evento);
         } catch (IOException e) {

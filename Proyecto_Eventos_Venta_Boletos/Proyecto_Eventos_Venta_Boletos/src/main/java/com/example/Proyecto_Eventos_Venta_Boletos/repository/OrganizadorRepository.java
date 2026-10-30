@@ -8,5 +8,5 @@ import java.util.Optional;
 @Repository
 public interface OrganizadorRepository extends JpaRepository<Organizador, Long> {
     // Te servirá más adelante cuando implementes Spring Security real
-    Optional<Organizador> findByEmail(String email);
+    Optional<Organizador> findByCorreo(String correo);
 }

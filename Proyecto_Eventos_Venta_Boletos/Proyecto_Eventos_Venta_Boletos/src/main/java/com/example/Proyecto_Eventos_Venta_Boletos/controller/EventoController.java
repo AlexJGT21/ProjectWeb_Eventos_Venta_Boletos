@@ -101,9 +101,9 @@ public class EventoController {
                 // 4. Filtro por Tiempo
                 .filter(e -> {
                     if ("Hoy".equalsIgnoreCase(tiempo)) {
-                        return e.getFechaHora().toLocalDate().isEqual(LocalDateTime.now().toLocalDate());
+                        return e.getFechaHoraEvento().toLocalDate().isEqual(LocalDateTime.now().toLocalDate());
                     } else if ("ProximoMes".equalsIgnoreCase(tiempo)) {
-                        return e.getFechaHora().isBefore(LocalDateTime.now().plusMonths(1));
+                        return e.getFechaHoraEvento().isBefore(LocalDateTime.now().plusMonths(1));
                     }
                     return true; // "Todos" o "FinDeSemana"
                 })
@@ -147,43 +147,43 @@ public class EventoController {
         List<Evento> lista = new ArrayList<>();
 
         // Evento 1
-        List<Boleto> boletos1 = List.of(
-                new Boleto(1, "General", 150.0f, "DISPONIBLE"),
-                new Boleto(2, "VIP", 300.0f, "DISPONIBLE")
-        );
-        lista.add(new Evento("1", "Noche Indie: Neon Waves Fest",
-                "La cumbre del synthwave y dream-pop latinoamericano con 6 bandas en vivo.",
-                "Indie", LocalDateTime.now().plusDays(5), null, 500,
-                "Luces & Sonido SONORA", EstadoEventoENUM.ACTIVO, "Desierto Bar", boletos1));
-
-        // Evento 2
-        List<Boleto> boletos2 = List.of(
-                new Boleto(3, "General", 300.0f, "DISPONIBLE"),
-                new Boleto(4, "VIP", 600.0f, "DISPONIBLE")
-        );
-        lista.add(new Evento("2", "Techno Underground: Dark Beats",
-                "Una noche inmersiva con DJs internacionales y un sistema de audio envolvente de 360°.",
-                "Electrónica", LocalDateTime.now().plusDays(12), null, 300,
-                "Sound System MX", EstadoEventoENUM.ACTIVO, "Arena Metropolitana", boletos2));
+       // List<Boleto> boletos1 = List.of(
+         //       new Boleto(1, "General", 150.0f, "DISPONIBLE"),
+   //             new Boleto(2, "VIP", 300.0f, "DISPONIBLE")
+     //   );
+     //   lista.add(new Evento("1", "Noche Indie: Neon Waves Fest",
+      //          "La cumbre del synthwave y dream-pop latinoamericano con 6 bandas en vivo.",
+       //         "Indie", LocalDateTime.now().plusDays(5), null, 500,
+      //          "Luces & Sonido SONORA", EstadoEventoENUM.ACTIVO, "Desierto Bar", boletos1));
+///
+//        // Evento 2
+ //       List<Boleto> boletos2 = List.of(
+   //             new Boleto(3, "General", 300.0f, "DISPONIBLE"),
+     //           new Boleto(4, "VIP", 600.0f, "DISPONIBLE")
+//        );
+////        lista.add(new Evento("2", "Techno Underground: Dark Beats",
+  //              "Una noche inmersiva con DJs internacionales y un sistema de audio envolvente de 360°.",
+    //            "Electrónica", LocalDateTime.now().plusDays(12), null, 300,
+      //          "Sound System MX", EstadoEventoENUM.ACTIVO, "Arena Metropolitana", boletos2));
 
         // Evento 3
-        List<Boleto> boletos3 = List.of(
-                new Boleto(5, "General", 220.0f, "AGOTADO"),
-                new Boleto(6, "VIP", 450.0f, "AGOTADO")
-        );
-        lista.add(new Evento("3", "Noche Acústica & Jazz Latino",
-                "Un recorrido íntimo por los clásicos del bolero y jazz moderno al aire libre.",
-                "Rock", LocalDateTime.now().plusDays(25), null, 200,
-                "Culturas del Norte", EstadoEventoENUM.AGOTADO, "Teatro de la Ciudad", boletos3));
+//        List<Boleto> boletos3 = List.of(
+  //              new Boleto(5, "General", 220.0f, "AGOTADO"),
+    //            new Boleto(6, "VIP", 450.0f, "AGOTADO")
+      //  );
+//        lista.add(new Evento("3", "Noche Acústica & Jazz Latino",
+  //              "Un recorrido íntimo por los clásicos del bolero y jazz moderno al aire libre.",
+    //            "Rock", LocalDateTime.now().plusDays(25), null, 200,
+      //          "Culturas del Norte", EstadoEventoENUM.AGOTADO, "Teatro de la Ciudad", boletos3));
 
         // Evento 4
-        List<Boleto> boletos4 = List.of(
-                new Boleto(7, "General", 100.0f, "DISPONIBLE")
-        );
-        lista.add(new Evento("4", "Torneo de Fútbol Local",
-                "Gran final del torneo municipal de verano.",
-                "Urbano", LocalDateTime.now().plusDays(30), null, 1000,
-                "Deportes Sonora", EstadoEventoENUM.ACTIVO, "Estadio Municipal", boletos4));
+//        List<Boleto> boletos4 = List.of(
+  //              new Boleto(7, "General", 100.0f, "DISPONIBLE")
+    //    );
+      //  lista.add(new Evento("4", "Torneo de Fútbol Local",
+        //        "Gran final del torneo municipal de verano.",
+          //      "Urbano", LocalDateTime.now().plusDays(30), null, 1000,
+            //    "Deportes Sonora", EstadoEventoENUM.ACTIVO, "Estadio Municipal", boletos4));
 
         return lista;
     }
@@ -198,7 +198,7 @@ public class EventoController {
         try {
             // Convertir la imagen principal a byte[] para la entidad Evento
             if (!imagenFile.isEmpty()) {
-                evento.setImagen(imagenFile.getBytes());
+                evento.setImagenEvento(imagenFile.getBytes());
             }
 
             // Aquí se puede procesar el croquis si se asigna a un objeto Recinto
@@ -211,7 +211,7 @@ public class EventoController {
             System.out.println("¡Evento recibido exitosamente!");
             System.out.println("Nombre: " + evento.getNombre());
             System.out.println("Categoría: " + evento.getCategoria());
-            System.out.println("Fecha y Hora: " + evento.getFechaHora());
+            System.out.println("Fecha y Hora: " + evento.getFechaHoraEvento());
             System.out.println("Capacidad: " + evento.getCapacidad());
             System.out.println("Estado: " + evento.getEstadoEvento());
 
@@ -319,23 +319,23 @@ public class EventoController {
     private List<Evento> obtenerListaEvento() {
         List<Evento> lista = new ArrayList<>();
 
-        List<Boleto> boletos1 = List.of(
-                new Boleto(1, "General", 150.0f, "DISPONIBLE"),
-                new Boleto(2, "VIP", 300.0f, "DISPONIBLE")
-        );
-        lista.add(new Evento("1", "INDIE / POST-PUNK: Midnight Echoes Tour",
-                "La cumbre del synthwave y dream-pop latinoamericano con 6 bandas en vivo.",
-                "Indie", LocalDateTime.now().plusDays(5), null, 500,
-                "Luces & Sonido SONORA", EstadoEventoENUM.ACTIVO, "Estadio GNP / Foro Sol", boletos1));
+        //List<Boleto> boletos1 = List.of(
+          //      new Boleto(1, "General", 150.0f, "DISPONIBLE"),
+            //    new Boleto(2, "VIP", 300.0f, "DISPONIBLE")
+//        );
+  //      lista.add(new Evento("1", "INDIE / POST-PUNK: Midnight Echoes Tour",
+    //            "La cumbre del synthwave y dream-pop latinoamericano con 6 bandas en vivo.",
+      //          "Indie", LocalDateTime.now().plusDays(5), null, 500,
+        //        "Luces & Sonido SONORA", EstadoEventoENUM.ACTIVO, "Estadio GNP / Foro Sol", boletos1));
 
-        List<Boleto> boletos2 = List.of(
-                new Boleto(3, "General", 300.0f, "DISPONIBLE"),
-                new Boleto(4, "VIP", 600.0f, "DISPONIBLE")
-        );
-        lista.add(new Evento("2", "Techno Underground: Dark Beats",
-                "Una noche inmersiva con DJs internacionales y un sistema de audio envolvente de 360°.",
-                "Electrónica", LocalDateTime.now().plusDays(12), null, 300,
-                "Sound System MX", EstadoEventoENUM.ACTIVO, "Arena Metropolitana", boletos2));
+//        List<Boleto> boletos2 = List.of(
+  //              new Boleto(3, "General", 300.0f, "DISPONIBLE"),
+    //            new Boleto(4, "VIP", 600.0f, "DISPONIBLE")
+      //  );
+//        lista.add(new Evento("2", "Techno Underground: Dark Beats",
+  //              "Una noche inmersiva con DJs internacionales y un sistema de audio envolvente de 360°.",
+    //            "Electrónica", LocalDateTime.now().plusDays(12), null, 300,
+      //          "Sound System MX", EstadoEventoENUM.ACTIVO, "Arena Metropolitana", boletos2));
 
         return lista;
     }
