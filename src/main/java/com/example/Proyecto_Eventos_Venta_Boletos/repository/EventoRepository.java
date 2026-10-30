@@ -12,3 +12,5 @@ public interface EventoRepository extends JpaRepository<Evento, Long> {
     // Método personalizado para que el organizador pueda ver solo sus eventos
     List<Evento> findByOrganizadorId(Long organizadorId);
 }
+
+

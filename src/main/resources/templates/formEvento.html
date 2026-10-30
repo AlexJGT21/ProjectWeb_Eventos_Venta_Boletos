@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Konticket - Crear Evento</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" th:href="@{/css/formEvento.css}" href="/css/formEvento.css">
 </head>
 <body>
 
@@ -31,7 +31,7 @@
         </nav>
 
         <div class="form-container">
-            <form th:action="@{/guardar-evento}" th:object="${evento}" method="POST" enctype="multipart/form-data">
+            <form th:action="@{/organizador/evento/guardar}" th:object="${evento}" method="POST" enctype="multipart/form-data">
 
                 <!-- PASO 1: INFO BÁSICA -->
                 <div id="paso1" class="step-section activo">
@@ -58,7 +58,9 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Productora u organizador</label>
-                                        <input type="text" th:field="*{organizador}" placeholder="Nombre del organizador">
+                                        <!-- Informativo: el organizador se asigna automáticamente a partir de la sesión,
+                                             no es un campo editable del Evento (evita romper el binding con la entidad real). -->
+                                        <input type="text" th:value="${organizadorActual != null ? organizadorActual.nombre : ''}" disabled>
                                     </div>
                                 </div>
                             </div>
@@ -104,7 +106,7 @@
                                 <div class="grid-2">
                                     <div class="form-group">
                                         <label>Fecha y Hora del Evento *</label>
-                                        <input type="datetime-local" th:field="*{fechaHora}" required>
+                                        <input type="datetime-local" th:field="*{fechaHoraEvento}" required>
                                     </div>
                                 </div>
                             </div>
@@ -227,6 +229,12 @@
                                     <!-- Enlace eliminado a petición -->
                                 </div>
 
+                                <!-- Resumen en vivo: se guarda tal cual junto con el evento al publicar -->
+                                <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:12px 20px; margin-bottom:15px; background:#fafafa;">
+                                    <div><strong style="font-size:13px;">Aforo total asignado:</strong> <span id="totalAforo">0</span> boletos</div>
+                                    <div><strong style="font-size:13px;">Proyección de ingresos:</strong> <span id="totalProyeccion">$0 MXN</span></div>
+                                </div>
+
                                 <div id="listaBoletosVisual">
                                     <!-- Los boletos se insertarán aquí -->
                                 </div>
@@ -253,6 +261,14 @@
                                     <i class="fas fa-plus"></i> + Agregar Nueva Categoría o Nivel de Boleto
                                 </button>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="step-navigation">
+                        <button type="button" class="btn-secondary" onclick="cambiarPaso(2)"><i class="fas fa-arrow-left"></i> Volver</button>
+                        <button type="button" class="btn-submit" onclick="cambiarPaso(4)">Siguiente Paso <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
 
                 <!-- PASO 4: CONFIGURACIÓN -->
                 <div id="paso4" class="step-section">
@@ -444,8 +460,17 @@
             const safeNombre = nombre.replace(/'/g, "\\'");
             const safeDesc = desc.replace(/'/g, "\\'");
 
+            // Escapado para atributos HTML (comillas dobles) de los inputs ocultos que sí se envían al servidor
+            const attrNombre = nombre.replace(/"/g, '&quot;');
+            const attrDesc = desc.replace(/"/g, '&quot;');
+
             const html = `
                 <div class="${cardClass}">
+                    <!-- Campos reales que se envían al backend al publicar el evento (Paso 4) -->
+                    <input type="hidden" name="tipoNombre" value="${attrNombre}">
+                    <input type="hidden" name="tipoPrecio" value="${precioBase}">
+                    <input type="hidden" name="tipoAforo" value="${aforo}">
+                    <input type="hidden" name="tipoDescripcion" value="${attrDesc}">
                     ${badgeHTML}
                     <div class="ticket-header">
                         <div class="ticket-title-area">
@@ -522,3 +547,5 @@
     </script>
 </body>
 </html>
+
+

@@ -1,5 +1,6 @@
 package com.example.Proyecto_Eventos_Venta_Boletos.controller;
 
+import com.example.Proyecto_Eventos_Venta_Boletos.dto.MetricasOrganizadorDTO;
 import com.example.Proyecto_Eventos_Venta_Boletos.model.Evento;
 import com.example.Proyecto_Eventos_Venta_Boletos.model.Organizador;
 import com.example.Proyecto_Eventos_Venta_Boletos.service.OrganizadorService;
@@ -8,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/organizador")
@@ -25,7 +28,22 @@ public class OrganizadorController {
     // --- Panel Principal ---
     @GetMapping("/panel")
     public String panel(Model model) {
-        model.addAttribute("inventario", organizadorService.obtenerEventosPorOrganizador(ORGANIZADOR_ID));
+        Organizador organizador = organizadorService.obtenerPorId(ORGANIZADOR_ID);
+        List<Evento> eventos = organizadorService.obtenerEventosPorOrganizador(ORGANIZADOR_ID);
+
+        model.addAttribute("organizador", organizador);
+        model.addAttribute("eventos", eventos);
+        model.addAttribute("inventario", organizadorService.obtenerInventario(ORGANIZADOR_ID));
+
+        // Métricas/estimaciones calculadas en tiempo real a partir de los datos reales del organizador
+        MetricasOrganizadorDTO metricas = organizadorService.calcularMetricas(ORGANIZADOR_ID);
+        model.addAttribute("ingresosTotales", metricas.getIngresosTotales());
+        model.addAttribute("boletosVendidos", metricas.getBoletosVendidos());
+        model.addAttribute("capacidadTotal", metricas.getCapacidadTotal());
+        model.addAttribute("boletosRestantes", metricas.getBoletosRestantes());
+        model.addAttribute("porcentajeOcupacion", metricas.getPorcentajeOcupacion());
+        model.addAttribute("ticketPromedio", metricas.getTicketPromedio());
+
         return "panelOrganizador";
     }
 
@@ -46,13 +64,19 @@ public class OrganizadorController {
     @GetMapping("/evento/nuevo")
     public String nuevoEvento(Model model) {
         model.addAttribute("evento", new Evento());
+        model.addAttribute("organizadorActual", organizadorService.obtenerPorId(ORGANIZADOR_ID));
         return "formEvento";
     }
 
     @PostMapping("/evento/guardar")
     public String guardarEvento(@ModelAttribute Evento evento,
-                                @RequestParam("imagenFile") MultipartFile imagenFile) {
-        organizadorService.procesarYGuardarEvento(evento, imagenFile, ORGANIZADOR_ID);
+                                 @RequestParam("imagenFile") MultipartFile imagenFile,
+                                 @RequestParam(name = "tipoNombre", required = false) List<String> tipoNombre,
+                                 @RequestParam(name = "tipoPrecio", required = false) List<Double> tipoPrecio,
+                                 @RequestParam(name = "tipoAforo", required = false) List<Integer> tipoAforo,
+                                 @RequestParam(name = "tipoDescripcion", required = false) List<String> tipoDescripcion) {
+        organizadorService.procesarYGuardarEvento(evento, imagenFile, ORGANIZADOR_ID,
+                tipoNombre, tipoPrecio, tipoAforo, tipoDescripcion);
         return "redirect:/organizador/panel?eventoCreado";
     }
 

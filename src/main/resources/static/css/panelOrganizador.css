@@ -256,3 +256,5 @@ body {
     .charts-grid { grid-template-columns: 2fr 1fr; }
     .chart-header { flex-direction: row; justify-content: space-between; align-items: flex-start; }
 }
+
+

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Konticket - Panel Organizador & Estadísticas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="panelOrganizador.css">
+    <link rel="stylesheet" th:href="@{/css/panelOrganizador.css}" href="/css/panelOrganizador.css">
 </head>
 <body>
 
@@ -20,13 +20,16 @@
             <div class="dashboard-header-row">
                 <div class="title-block">
                     <span class="text-pink text-xs fw-bold">● CENTRO DE CONTROL OPERATIVO</span>
-                    <h1 th:text="'Panel de Gestión • ' + ${evento.organizador}">Panel de Gestión</h1>
+                    <h1 th:text="'Panel de Gestión • ' + (${organizador != null} ? ${organizador.nombre} : '')">Panel de Gestión</h1>
                     <p class="text-light-gray text-sm">Supervisión financiera en tiempo real, inventario de aforo y logística de taquilla.</p>
                 </div>
                 <div class="filters-block">
                     <div class="form-group-inline">
                         <label>Evento Activo</label>
-                        <select><option th:text="${evento.nombre}">Nombre Evento</option></select>
+                        <select>
+                            <option th:if="${eventos == null or #lists.isEmpty(eventos)}">Sin eventos registrados</option>
+                            <option th:each="ev : ${eventos}" th:value="${ev.id}" th:text="${ev.nombre}">Nombre Evento</option>
+                        </select>
                     </div>
                     <div class="form-group-inline">
                         <label>Periodo</label>
@@ -210,8 +213,26 @@
         </div>
     </main>
 
-    <!-- Menú Lateral -->
-    <aside th:replace="~{fragmentos/header :: perfil-sidebar}"></aside>
+    <!-- Menú Lateral Dinámico inyectando entidad Organizador -->
+    <aside class="perfil-sidebar">
+        <div class="user-profile">
+            <div class="avatar" th:text="${organizador != null and organizador.nombre != null and #strings.length(organizador.nombre) >= 2} ? ${#strings.toUpperCase(#strings.substring(organizador.nombre, 0, 2))} : 'OR'">OR</div>
+            <div class="user-info">
+                <strong th:text="${organizador != null ? organizador.nombre : 'Organizador'}">Nombre Organizador</strong>
+                <span th:text="${organizador != null ? organizador.correo : ''}">correo@mail.com</span>
+            </div>
+            <label for="profile-menu-toggle" class="close-menu-btn"><i class="fas fa-times"></i></label>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="active"><a th:href="@{/organizador/panel}"><i class="fas fa-chart-pie"></i> Panel Organizador</a></li>
+                <li><a th:href="@{/organizador/evento/nuevo}"><i class="fas fa-calendar-alt"></i> Crear Eventos</a></li>
+                <li><a href="#"><i class="fas fa-chart-line"></i> Ventas y Aforos</a></li>
+            </ul>
+        </nav>
+    </aside>
 
 </body>
 </html>
+
+

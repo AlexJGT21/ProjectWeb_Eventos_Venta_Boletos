@@ -1,7 +1,7 @@
 package com.example.Proyecto_Eventos_Venta_Boletos.controller;
 
+import com.example.Proyecto_Eventos_Venta_Boletos.EstadosENUM.BoletoEstadoENUM;
 import com.example.Proyecto_Eventos_Venta_Boletos.EstadosENUM.EstadoEventoENUM;
-import com.example.Proyecto_Eventos_Venta_Boletos.model.Asistente;
 import com.example.Proyecto_Eventos_Venta_Boletos.model.Boleto;
 import com.example.Proyecto_Eventos_Venta_Boletos.model.Evento;
 import jakarta.servlet.http.HttpSession;
@@ -10,9 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -39,40 +37,22 @@ public class EventoController {
         return "misBoletos";
     }
 
-    /*
-    Para mostrar el panel del organizador con estadísticas y tabla de inventario
-     1. Se crean entidades base vacías para evitar errores de null en Thymeleaf
-     2. Se inicializan variables estadísticas en cero (sin lógica ni cálculos)
-     3. Se crea una lista vacía para la tabla de inventario
-    */
-    @GetMapping("/panel-organizador")
-    public String mostrarPanelOrganizador(Model model) {
-        
-        // 1. Entidades base vacías para evitar errores de null en Thymeleaf
-        model.addAttribute("evento", new Evento());
-        model.addAttribute("asistente", new Asistente());
-        
-        // 2. Variables estadísticas inicializadas en cero (sin lógica ni cálculos)
-        model.addAttribute("ingresosTotales", 0.0);
-        model.addAttribute("boletosVendidos", 0);
-        model.addAttribute("capacidadTotal", 0);
-        model.addAttribute("boletosRestantes", 0);
-        model.addAttribute("porcentajeOcupacion", 0.0);
-        model.addAttribute("ticketPromedio", 0.0);
-        
-        // 3. Lista vacía para la tabla de inventario
-        model.addAttribute("inventario", new ArrayList<>());
+    // NOTA: El panel del organizador (con métricas y datos reales) y el formulario de
+    // creación de eventos ahora viven exclusivamente en OrganizadorController, bajo
+    // /organizador/panel y /organizador/evento/nuevo, respaldados por OrganizadorService
+    // y la base de datos. Las rutas duplicadas que existían aquí (/panel-organizador,
+    // /formEvento, /guardar-evento) se eliminaron porque mostraban siempre datos vacíos
+    // o ficticios y chocaban con las rutas reales del organizador.
 
-        return "panelOrganizador";
+    // Las rutas anteriores redirigen a las nuevas para no romper enlaces ni marcadores
+    @GetMapping("/panel-organizador")
+    public String redirigirPanelOrganizador() {
+        return "redirect:/organizador/panel";
     }
 
-    /*
-    Para mostrar el formulario de creación de eventos
-    */
     @GetMapping("/formEvento")
-    public String mostrarFormularioEvento(Model model) {
-        model.addAttribute("evento", new Evento());
-        return "formEvento";
+    public String redirigirFormEvento() {
+        return "redirect:/organizador/evento/nuevo";
     }
 
     @GetMapping({"/", "/index", "/eventos"})
@@ -133,7 +113,7 @@ public class EventoController {
 
         // Buscamos el evento seleccionado por su ID
         Evento eventoSeleccionado = eventos.stream()
-                .filter(e -> e.getId().equals(eventoId))
+                .filter(e -> String.valueOf(e.getId()).equals(eventoId))
                 .findFirst()
                 .orElse(eventos.get(0));
 
@@ -146,81 +126,54 @@ public class EventoController {
     private List<Evento> obtenerListaEventos() {
         List<Evento> lista = new ArrayList<>();
 
+        // NOTA: Catálogo público de demostración, todavía no migrado a EventoRepository.
+        // Los eventos reales creados por organizadores desde /organizador/evento/nuevo
+        // sí se guardan en la base de datos (ver OrganizadorController/OrganizadorService).
+
         // Evento 1
-       // List<Boleto> boletos1 = List.of(
-         //       new Boleto(1, "General", 150.0f, "DISPONIBLE"),
-   //             new Boleto(2, "VIP", 300.0f, "DISPONIBLE")
-     //   );
-     //   lista.add(new Evento("1", "Noche Indie: Neon Waves Fest",
-      //          "La cumbre del synthwave y dream-pop latinoamericano con 6 bandas en vivo.",
-       //         "Indie", LocalDateTime.now().plusDays(5), null, 500,
-      //          "Luces & Sonido SONORA", EstadoEventoENUM.ACTIVO, "Desierto Bar", boletos1));
-///
-//        // Evento 2
- //       List<Boleto> boletos2 = List.of(
-   //             new Boleto(3, "General", 300.0f, "DISPONIBLE"),
-     //           new Boleto(4, "VIP", 600.0f, "DISPONIBLE")
-//        );
-////        lista.add(new Evento("2", "Techno Underground: Dark Beats",
-  //              "Una noche inmersiva con DJs internacionales y un sistema de audio envolvente de 360°.",
-    //            "Electrónica", LocalDateTime.now().plusDays(12), null, 300,
-      //          "Sound System MX", EstadoEventoENUM.ACTIVO, "Arena Metropolitana", boletos2));
+        List<Boleto> boletos1 = List.of(
+                Boleto.builder().id(1L).tipoNombre("General").precio(150.0).estado(BoletoEstadoENUM.DISPONIBLE).cantidad(400).cantidadVendida(120).build(),
+                Boleto.builder().id(2L).tipoNombre("VIP").precio(300.0).estado(BoletoEstadoENUM.DISPONIBLE).cantidad(100).cantidadVendida(30).build()
+        );
+        lista.add(Evento.builder().id(1L).nombre("Noche Indie: Neon Waves Fest")
+                .descripcion("La cumbre del synthwave y dream-pop latinoamericano con 6 bandas en vivo.")
+                .categoria("Indie").fechaHoraEvento(LocalDateTime.now().plusDays(5))
+                .lugar("Desierto Bar").capacidad(500)
+                .estadoEvento(EstadoEventoENUM.ACTIVO).boletos(boletos1).build());
+
+        // Evento 2
+        List<Boleto> boletos2 = List.of(
+                Boleto.builder().id(3L).tipoNombre("General").precio(300.0).estado(BoletoEstadoENUM.DISPONIBLE).cantidad(250).cantidadVendida(80).build(),
+                Boleto.builder().id(4L).tipoNombre("VIP").precio(600.0).estado(BoletoEstadoENUM.DISPONIBLE).cantidad(50).cantidadVendida(10).build()
+        );
+        lista.add(Evento.builder().id(2L).nombre("Techno Underground: Dark Beats")
+                .descripcion("Una noche inmersiva con DJs internacionales y un sistema de audio envolvente de 360°.")
+                .categoria("Electrónica").fechaHoraEvento(LocalDateTime.now().plusDays(12))
+                .lugar("Arena Metropolitana").capacidad(300)
+                .estadoEvento(EstadoEventoENUM.ACTIVO).boletos(boletos2).build());
 
         // Evento 3
-//        List<Boleto> boletos3 = List.of(
-  //              new Boleto(5, "General", 220.0f, "AGOTADO"),
-    //            new Boleto(6, "VIP", 450.0f, "AGOTADO")
-      //  );
-//        lista.add(new Evento("3", "Noche Acústica & Jazz Latino",
-  //              "Un recorrido íntimo por los clásicos del bolero y jazz moderno al aire libre.",
-    //            "Rock", LocalDateTime.now().plusDays(25), null, 200,
-      //          "Culturas del Norte", EstadoEventoENUM.AGOTADO, "Teatro de la Ciudad", boletos3));
+        List<Boleto> boletos3 = List.of(
+                Boleto.builder().id(5L).tipoNombre("General").precio(220.0).estado(BoletoEstadoENUM.AGOTADO).cantidad(150).cantidadVendida(150).build(),
+                Boleto.builder().id(6L).tipoNombre("VIP").precio(450.0).estado(BoletoEstadoENUM.AGOTADO).cantidad(50).cantidadVendida(50).build()
+        );
+        lista.add(Evento.builder().id(3L).nombre("Noche Acústica & Jazz Latino")
+                .descripcion("Un recorrido íntimo por los clásicos del bolero y jazz moderno al aire libre.")
+                .categoria("Rock").fechaHoraEvento(LocalDateTime.now().plusDays(25))
+                .lugar("Teatro de la Ciudad").capacidad(200)
+                .estadoEvento(EstadoEventoENUM.AGOTADO).boletos(boletos3).build());
 
         // Evento 4
-//        List<Boleto> boletos4 = List.of(
-  //              new Boleto(7, "General", 100.0f, "DISPONIBLE")
-    //    );
-      //  lista.add(new Evento("4", "Torneo de Fútbol Local",
-        //        "Gran final del torneo municipal de verano.",
-          //      "Urbano", LocalDateTime.now().plusDays(30), null, 1000,
-            //    "Deportes Sonora", EstadoEventoENUM.ACTIVO, "Estadio Municipal", boletos4));
+        List<Boleto> boletos4 = List.of(
+                Boleto.builder().id(7L).tipoNombre("General").precio(100.0).estado(BoletoEstadoENUM.DISPONIBLE).cantidad(1000).cantidadVendida(300).build()
+        );
+        lista.add(Evento.builder().id(4L).nombre("Torneo de Fútbol Local")
+                .descripcion("Gran final del torneo municipal de verano.")
+                .categoria("Urbano").fechaHoraEvento(LocalDateTime.now().plusDays(30))
+                .lugar("Estadio Municipal").capacidad(1000)
+                .estadoEvento(EstadoEventoENUM.ACTIVO).boletos(boletos4).build());
 
         return lista;
-    }
-
-    /*
-    Método para guardar un nuevo evento con su imagen y croquis
-    */
-    @PostMapping("/guardar-evento")
-    public String guardarEvento(Evento evento, 
-                                @RequestParam("imagenFile") MultipartFile imagenFile,
-                                @RequestParam(value = "croquisFile", required = false) MultipartFile croquisFile) {
-        try {
-            // Convertir la imagen principal a byte[] para la entidad Evento
-            if (!imagenFile.isEmpty()) {
-                evento.setImagenEvento(imagenFile.getBytes());
-            }
-
-            // Aquí se puede procesar el croquis si se asigna a un objeto Recinto
-            if (croquisFile != null && !croquisFile.isEmpty()) {
-                byte[] croquisBytes = croquisFile.getBytes();
-                // recinto.setCroquis(croquisBytes);
-            }
-
-            // Como aún no hay base de datos esto es para checar si funciona
-            System.out.println("¡Evento recibido exitosamente!");
-            System.out.println("Nombre: " + evento.getNombre());
-            System.out.println("Categoría: " + evento.getCategoria());
-            System.out.println("Fecha y Hora: " + evento.getFechaHoraEvento());
-            System.out.println("Capacidad: " + evento.getCapacidad());
-            System.out.println("Estado: " + evento.getEstadoEvento());
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // Redirige a la misma página de momento
-        return "redirect:/formEvento"; 
     }
 
     // Paso 1: Recibir selección de mapa de asientos -> Ir al Formulario de Pago
@@ -237,7 +190,7 @@ public class EventoController {
             HttpSession session) {
 
         Evento evento = obtenerListaEventos().stream()
-                .filter(e -> e.getId().equals(eventoId))
+                .filter(e -> String.valueOf(e.getId()).equals(eventoId))
                 .findFirst()
                 .orElse(null);
 
@@ -283,7 +236,7 @@ public class EventoController {
         Double totalFinal = (Double) session.getAttribute("totalFinal");
 
         Evento evento = obtenerListaEventos().stream()
-                .filter(e -> e.getId().equals(eventoId != null ? eventoId : "1"))
+                .filter(e -> String.valueOf(e.getId()).equals(eventoId != null ? eventoId : "1"))
                 .findFirst()
                 .orElse(obtenerListaEventos().get(0));
 
@@ -316,31 +269,8 @@ public class EventoController {
         return "confirmacionPago";
     }
 
-    private List<Evento> obtenerListaEvento() {
-        List<Evento> lista = new ArrayList<>();
-
-        //List<Boleto> boletos1 = List.of(
-          //      new Boleto(1, "General", 150.0f, "DISPONIBLE"),
-            //    new Boleto(2, "VIP", 300.0f, "DISPONIBLE")
-//        );
-  //      lista.add(new Evento("1", "INDIE / POST-PUNK: Midnight Echoes Tour",
-    //            "La cumbre del synthwave y dream-pop latinoamericano con 6 bandas en vivo.",
-      //          "Indie", LocalDateTime.now().plusDays(5), null, 500,
-        //        "Luces & Sonido SONORA", EstadoEventoENUM.ACTIVO, "Estadio GNP / Foro Sol", boletos1));
-
-//        List<Boleto> boletos2 = List.of(
-  //              new Boleto(3, "General", 300.0f, "DISPONIBLE"),
-    //            new Boleto(4, "VIP", 600.0f, "DISPONIBLE")
-      //  );
-//        lista.add(new Evento("2", "Techno Underground: Dark Beats",
-  //              "Una noche inmersiva con DJs internacionales y un sistema de audio envolvente de 360°.",
-    //            "Electrónica", LocalDateTime.now().plusDays(12), null, 300,
-      //          "Sound System MX", EstadoEventoENUM.ACTIVO, "Arena Metropolitana", boletos2));
-
-        return lista;
-    }
-
-
-
 }
+
+
+
 

@@ -20,9 +20,18 @@ public class Boleto {
     private Long id;
 
     //LADO PROPIEDAD
+    // Nullable: en venta general (sin mapa de asientos) un Boleto representa un TIPO/LOTE,
+    // no una butaca concreta. El asiento se asigna solo cuando el evento usa mapa numerado.
     @OneToOne
-    @JoinColumn(name = "asiento_id", nullable = false)
+    @JoinColumn(name = "asiento_id", nullable = true)
     private Asiento asiento;
+
+    // Nombre comercial del tipo de boleto (Ej. "General", "VIP"). Nulo para boletos individuales con asiento.
+    @Column(name = "tipoNombre", length = 60)
+    private String tipoNombre;
+
+    @Column(name = "descripcion", length = 150)
+    private String descripcion;
 
     @Column(name = "precio")
     private Double precio;
@@ -30,8 +39,13 @@ public class Boleto {
     @Enumerated(EnumType.STRING)
     private BoletoEstadoENUM estado;
 
+    // Aforo total disponible para este tipo/lote de boleto
     @Column(name = "cantidad")
     private Integer cantidad;
+
+    // Cuántos boletos de este tipo ya se han vendido (se actualiza con cada compra real)
+    @Column(name = "cantidadVendida")
+    private Integer cantidadVendida;
 
     //LADO PROPIEDAD
     @ManyToOne
@@ -57,4 +71,7 @@ public class Boleto {
     }
 
 }
+
+
+
 

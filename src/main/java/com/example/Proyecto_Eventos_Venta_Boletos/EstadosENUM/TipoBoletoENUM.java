@@ -11,3 +11,6 @@ public enum TipoBoletoENUM {
     ZONA_FAN_PIE,
     ZONA_FAN_SILLAS
 }
+
+
+

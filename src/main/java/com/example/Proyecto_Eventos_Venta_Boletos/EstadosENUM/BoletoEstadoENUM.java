@@ -8,3 +8,6 @@ public enum BoletoEstadoENUM {
     CANCELADO
 }
 
+
+
+

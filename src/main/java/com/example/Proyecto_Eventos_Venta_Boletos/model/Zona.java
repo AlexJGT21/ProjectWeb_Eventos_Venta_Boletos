@@ -9,12 +9,12 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Entity
-@Table(name = "zona")
+@Table(name = "zonas")
 public class Zona {
 
     @Id
@@ -48,4 +48,7 @@ public class Zona {
     }
 
 }
+
+
+
 

@@ -11,3 +11,6 @@ public enum TipoAsientoENUM {
     ZONA_FAN_PIE,
     ZONA_FAN_SILLAS
 }
+
+
+

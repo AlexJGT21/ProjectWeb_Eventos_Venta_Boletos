@@ -10,3 +10,5 @@ public interface OrganizadorRepository extends JpaRepository<Organizador, Long> 
     // Te servirá más adelante cuando implementes Spring Security real
     Optional<Organizador> findByCorreo(String correo);
 }
+
+

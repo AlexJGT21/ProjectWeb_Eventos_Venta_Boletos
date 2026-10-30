@@ -13,6 +13,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Data
@@ -39,11 +40,16 @@ public class Evento {
     @Column(name = "categoria", nullable = false, length = 50)
     private String categoria;
 
+    // Nombre libre del recinto/lugar del evento (versión simple mientras no se integra Recinto/Zona)
+    @Column(name = "lugar", length = 150)
+    private String lugar;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     @Column(name = "fechaHoraEvento", nullable = false)
     private LocalDateTime fechaHoraEvento;
 
     @Lob
-    @Column(name = "imagenEvento", columnDefinition = "BLOB")
+    @Column(name = "imagenEvento", columnDefinition = "LONGBLOB")
     private byte[] imagenEvento;
 
     @Column(name = "capacidad", nullable = false)
@@ -99,3 +105,5 @@ public class Evento {
         return fechaHoraEvento.format(formatter).toUpperCase();
     }
 }
+
+
