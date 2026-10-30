@@ -210,24 +210,8 @@
         </div>
     </main>
 
-    <!-- Menú Lateral Dinámico inyectando entidad Asistente -->
-    <aside class="perfil-sidebar">
-        <div class="user-profile">
-            <div class="avatar" th:text="${#strings.substring(asistente.nombre, 0, 2).toUpperCase()}">AS</div>
-            <div class="user-info">
-                <strong th:text="${asistente.nombre}">Nombre Asistente</strong>
-                <span th:text="${asistente.correo}">correo@mail.com</span>
-            </div>
-            <label for="profile-menu-toggle" class="close-menu-btn"><i class="fas fa-times"></i></label>
-        </div>
-        <nav class="sidebar-nav">
-            <ul>
-                <li class="active"><a href="#"><i class="fas fa-chart-pie"></i> Panel Organizador</a></li>
-                <li><a th:href="@{/crear-evento}"><i class="fas fa-calendar-alt"></i> Crear Eventos</a></li>
-                <li><a href="#"><i class="fas fa-chart-line"></i> Ventas y Aforos</a></li>
-            </ul>
-        </nav>
-    </aside>
+    <!-- Menú Lateral -->
+    <aside th:replace="~{fragmentos/header :: perfil-sidebar}"></aside>
 
 </body>
 </html>
