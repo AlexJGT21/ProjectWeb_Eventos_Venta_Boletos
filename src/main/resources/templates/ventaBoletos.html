@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konticket - Venta de Boletos</title>
+    <!-- CSS del Header y Sidebar -->
+    <link rel="stylesheet" th:href="@{/css/header.css}" href="/css/header.css">
+    <!-- CSS propio de esta vista -->
+    <link rel="stylesheet" th:href="@{/css/venta-boletos.css}" href="/css/venta-boletos.css">
+</head>
+<body>
+
+    <!-- Checkbox oculto que controla el estado del menú -->
+    <input type="checkbox" id="profile-menu-toggle" class="menu-toggle-checkbox">
+
+    <!-- 1. Carga del Header Principal desde el fragmento -->
+    <header th:replace="~{fragmentos/header :: main-header}"></header>
+
+    <!-- Overlay oscuro para cerrar el menú al hacer clic fuera -->
+    <label for="profile-menu-toggle" class="sidebar-overlay"></label>
+
+    <!-- 2. Carga del Menú Lateral (Perfil) desde el fragmento -->
+    <aside th:replace="~{fragmentos/header :: perfil-sidebar}"></aside>
+
+    <!-- Contenido Principal -->
+    <main class="ticket-sales-container">
+
+        <!-- Banner de Información del Evento -->
+        <section class="event-banner">
+            <div class="event-main-info">
+                <div class="event-badges">
+                    <span class="badge-pill badge-pink">POCOS BOLETOS DISPONIBLES</span>
+                    <span class="badge-pill badge-green-outline">VERIFICACIÓN OFICIAL KONTICKET</span>
+                    <span class="badge-pill badge-gray">VENTA GENERAL FASE 2</span>
+                </div>
+                <h1 class="event-title">INDIE / POST-PUNK: Midnight Echoes Tour</h1>
+                <div class="event-meta">
+                    <span>📅 Sábado 26 de Septiembre, 2026 • 20:30 hrs</span>
+                    <span>📍 Estadio GNP / Foro Sol, Ciudad de México</span>
+                    <span>🚪 Acceso Puerta 6 y 7</span>
+                </div>
+            </div>
+            <div class="timer-card">
+                <span class="timer-label">TIEMPO PARA COMPLETAR</span>
+                <span class="timer-clock">00:00 min</span>
+            </div>
+        </section>
+
+        <!-- Grid de Venta y Asientos -->
+        <div class="sales-content-grid">
+
+            <!-- Columna Izquierda: Mapa de Asientos y Detalles -->
+            <div class="left-column">
+
+                <!-- Mapa Interactivo -->
+                <div class="sales-card">
+                    <div class="map-header">
+                        <h2>Mapa Interactivo de Asientos</h2>
+                        <p>Selecciona tu sección y haz clic sobre los asientos disponibles para apartarlos.</p>
+                    </div>
+
+                    <!-- Filtros de Sección -->
+                    <div class="filter-pills">
+                        <button type="button" class="filter-btn active">• Sección A – VIP + $1,450 MXN</button>
+                        <button type="button" class="filter-btn">Sección B – Platino + $1,150 MXN</button>
+                        <button type="button" class="filter-btn">Sección C – Preferente + $950 MXN</button>
+                        <button type="button" class="filter-btn">Gradas Lateral +</button>
+                    </div>
+
+                    <!-- Esquema del Escenario -->
+                    <div class="stage-container">
+                        <div class="stage-banner">♦ ESCENARIO PRINCIPAL / MAIN STAGE ♦</div>
+                        <div class="stage-grid">
+                            <div class="zone-block">
+                                <span class="zone-title">ZONA B</span>
+                                <span class="zone-sub">Lat. Poniente</span>
+                                <div class="zone-price">$1,150</div>
+                            </div>
+                            <div class="zone-block highlight">
+                                <span class="badge-pill badge-foco">• EN FOCO</span>
+                                <span class="zone-title">ZONA A • VIP PLATINO</span>
+                                <span class="zone-sub-light">Frente a Escenario</span>
+                                <div class="zone-price text-white">$1,450 MXN</div>
+                                <span class="zone-avail">38 libres</span>
+                            </div>
+                            <div class="zone-block">
+                                <span class="zone-title">ZONA B</span>
+                                <span class="zone-sub">Lat. Oriente</span>
+                                <div class="zone-price">$1,150</div>
+                            </div>
+                        </div>
+                        <div class="zone-wide">
+                            <div class="zone-wide-info">
+                                <span class="zone-wide-title">ZONA C • PREFERENTE CENTRAL</span>
+                                <span class="zone-wide-sub">Vista directa y sonido surround</span>
+                            </div>
+                            <div class="zone-wide-action">
+                                <span>120 asientos</span>
+                                <span class="btn-price-tag">$950 MXN</span>
+                            </div>
+                        </div>
+                        <div class="zone-bottom-split">
+                            <div class="zone-split-item">
+                                <span>CANCHA GENERAL (DE PIE)</span>
+                                <span class="price-green">$890 MXN</span>
+                            </div>
+                            <div class="zone-split-item">
+                                <span>GRADAS NORTE & SUR</span>
+                                <span class="price-gray">$650 MXN</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Barra de Zona Seleccionada -->
+                    <div class="selected-zone-bar">
+                        <div class="zone-info-content">
+                            <div class="zone-icon">A</div>
+                            <div class="zone-details">
+                                <div class="zone-header-meta">
+                                    <span class="zone-label-pink">ZONA SELECCIONADA</span>
+                                    <span class="zone-label-sub">Fila A a Fila J</span>
+                                    <span class="badge-pill badge-green-outline">38 asientos libres de 120</span>
+                                </div>
+                                <div class="zone-main-title">Sección A – VIP Platino Frontal</div>
+                            </div>
+                        </div>
+                        <div class="zone-price-content">
+                            <span class="price-base-label">PRECIO BASE</span>
+                            <div class="price-base-amount">$1,450 MXN</div>
+                        </div>
+                    </div>
+
+                    <!-- Leyenda de Asientos -->
+                    <div class="seat-legend">
+                        <div class="legend-items-group">
+                            <div class="legend-item"><span class="dot dot-gray"></span> Disponible (Gris)</div>
+                            <div class="legend-item"><span class="dot dot-blue"></span> Ocupado (Azul)</div>
+                            <div class="legend-item"><span class="dot dot-pink"></span> Selecciones (Rojo)</div>
+                        </div>
+                        <div class="legend-hint">💬 Haz clic para agregar o quitar asientos</div>
+                    </div>
+
+                    <!-- Matriz de Asientos -->
+                    <div class="seats-matrix-container">
+                        <!-- Fila A -->
+                        <div class="seat-row">
+                            <span class="row-label">A</span>
+                            <div class="seat-group"><span class="seat occupied">1</span><span class="seat occupied">2</span><span class="seat available">3</span><span class="seat available">4</span></div>
+                            <div class="seat-group"><span class="seat occupied">5</span><span class="seat occupied">6</span><span class="seat occupied">7</span><span class="seat occupied">8</span></div>
+                            <div class="seat-group"><span class="seat available">9</span><span class="seat occupied">10</span><span class="seat available">11</span><span class="seat occupied">12</span></div>
+                            <div class="seat-group"><span class="seat available">13</span><span class="seat available">14</span><span class="seat available">15</span><span class="seat occupied">16</span></div>
+                            <span class="row-label">A</span>
+                        </div>
+
+                        <!-- Fila B -->
+                        <div class="seat-row">
+                            <span class="row-label row-label-pink">B</span>
+                            <div class="seat-group"><span class="seat occupied">1</span><span class="seat occupied">2</span><span class="seat available">3</span><span class="seat available">4</span></div>
+                            <div class="seat-group"><span class="seat available">5</span><span class="seat available">6</span><span class="seat selected">7</span><span class="seat selected">8</span></div>
+                            <div class="seat-group"><span class="seat occupied">9</span><span class="seat occupied">10</span><span class="seat available">11</span><span class="seat available">12</span></div>
+                            <div class="seat-group"><span class="seat occupied">13</span><span class="seat occupied">14</span><span class="seat available">15</span><span class="seat available">16</span></div>
+                            <span class="row-label row-label-pink">B</span>
+                        </div>
+
+                        <!-- Fila C -->
+                        <div class="seat-row">
+                            <span class="row-label">C</span>
+                            <div class="seat-group"><span class="seat available">1</span><span class="seat available">2</span><span class="seat occupied">3</span><span class="seat occupied">4</span></div>
+                            <div class="seat-group"><span class="seat available">5</span><span class="seat available">6</span><span class="seat occupied">7</span><span class="seat occupied">8</span></div>
+                            <div class="seat-group"><span class="seat available">9</span><span class="seat available">10</span><span class="seat available">11</span><span class="seat occupied">12</span></div>
+                            <div class="seat-group"><span class="seat occupied">13</span><span class="seat available">14</span><span class="seat available">15</span><span class="seat available">16</span></div>
+                            <span class="row-label">C</span>
+                        </div>
+
+                        <!-- Fila D -->
+                        <div class="seat-row">
+                            <span class="row-label">D</span>
+                            <div class="seat-group"><span class="seat occupied">1</span><span class="seat occupied">2</span><span class="seat occupied">3</span><span class="seat occupied">4</span></div>
+                            <div class="seat-group"><span class="seat available">5</span><span class="seat available">6</span><span class="seat available">7</span><span class="seat available">8</span></div>
+                            <div class="seat-group"><span class="seat available">9</span><span class="seat occupied">10</span><span class="seat available">11</span><span class="seat occupied">12</span></div>
+                            <div class="seat-group"><span class="seat available">13</span><span class="seat available">14</span><span class="seat available">15</span><span class="seat available">16</span></div>
+                            <span class="row-label">D</span>
+                        </div>
+
+                        <!-- Fila E -->
+                        <div class="seat-row">
+                            <span class="row-label">E</span>
+                            <div class="seat-group"><span class="seat available">1</span><span class="seat available">2</span><span class="seat available">3</span><span class="seat occupied">4</span></div>
+                            <div class="seat-group"><span class="seat available">5</span><span class="seat occupied">6</span><span class="seat available">7</span><span class="seat available">8</span></div>
+                            <div class="seat-group"><span class="seat occupied">9</span><span class="seat available">10</span><span class="seat occupied">11</span><span class="seat available">12</span></div>
+                            <div class="seat-group"><span class="seat available">13</span><span class="seat available">14</span><span class="seat occupied">15</span><span class="seat occupied">16</span></div>
+                            <span class="row-label">E</span>
+                        </div>
+
+                        <!-- Fila F -->
+                        <div class="seat-row">
+                            <span class="row-label">F</span>
+                            <div class="seat-group"><span class="seat available">1</span><span class="seat available">2</span><span class="seat available">3</span><span class="seat available">4</span></div>
+                            <div class="seat-group"><span class="seat occupied">5</span><span class="seat occupied">6</span><span class="seat available">7</span><span class="seat available">8</span></div>
+                            <div class="seat-group"><span class="seat available">9</span><span class="seat available">10</span><span class="seat occupied">11</span><span class="seat occupied">12</span></div>
+                            <div class="seat-group"><span class="seat available">13</span><span class="seat available">14</span><span class="seat available">15</span><span class="seat occupied">16</span></div>
+                            <span class="row-label">F</span>
+                        </div>
+
+                        <!-- Fila G -->
+                        <div class="seat-row">
+                            <span class="row-label">G</span>
+                            <div class="seat-group"><span class="seat occupied">1</span><span class="seat occupied">2</span><span class="seat available">3</span><span class="seat available">4</span></div>
+                            <div class="seat-group"><span class="seat available">5</span><span class="seat available">6</span><span class="seat occupied">7</span><span class="seat occupied">8</span></div>
+                            <div class="seat-group"><span class="seat available">9</span><span class="seat available">10</span><span class="seat occupied">11</span><span class="seat occupied">12</span></div>
+                            <div class="seat-group"><span class="seat available">13</span><span class="seat available">14</span><span class="seat occupied">15</span><span class="seat occupied">16</span></div>
+                            <span class="row-label">G</span>
+                        </div>
+
+                        <!-- Fila H -->
+                        <div class="seat-row">
+                            <span class="row-label">H</span>
+                            <div class="seat-group"><span class="seat available">1</span><span class="seat available">2</span><span class="seat occupied">3</span><span class="seat occupied">4</span></div>
+                            <div class="seat-group"><span class="seat available">5</span><span class="seat available">6</span><span class="seat available">7</span><span class="seat available">8</span></div>
+                            <div class="seat-group"><span class="seat occupied">9</span><span class="seat occupied">10</span><span class="seat available">11</span><span class="seat available">12</span></div>
+                            <div class="seat-group"><span class="seat available">13</span><span class="seat available">14</span><span class="seat occupied">15</span><span class="seat occupied">16</span></div>
+                            <span class="row-label">H</span>
+                        </div>
+
+                        <!-- Fila J -->
+                        <div class="seat-row">
+                            <span class="row-label">J</span>
+                            <div class="seat-group"><span class="seat available">1</span><span class="seat available">2</span><span class="seat available">3</span><span class="seat occupied">4</span></div>
+                            <div class="seat-group"><span class="seat available">5</span><span class="seat available">6</span><span class="seat available">7</span><span class="seat available">8</span></div>
+                            <div class="seat-group"><span class="seat occupied">9</span><span class="seat occupied">10</span><span class="seat available">11</span><span class="seat available">12</span></div>
+                            <div class="seat-group"><span class="seat available">13</span><span class="seat available">14</span><span class="seat occupied">15</span><span class="seat occupied">16</span></div>
+                            <span class="row-label">J</span>
+                        </div>
+                    </div>
+
+                    <!-- Resumen del Pie de Asientos -->
+                    <div class="selected-summary-bar">
+                        <div class="selected-tags-group">
+                            <span class="summary-label">Asientos seleccionados:</span>
+                            <span class="tag-pink">2 boletos</span>
+                            <button type="button" class="tag-outline">Fila B – Asiento 7 ✕</button>
+                            <button type="button" class="tag-outline">Fila B – Asiento 8 ✕</button>
+                        </div>
+                        <div class="reservation-status">🔒 Boletos reservados por 10:00 min</div>
+                    </div>
+
+                </div>
+
+                <!-- Tarjetas Secundarias -->
+                <div class="sales-card">
+                    <div class="mini-cards-header">
+                        <span class="mini-cards-title">📍 Ubicación del Estadio & Zonas</span>
+                        <span class="mini-cards-capacity">Capacidad restante: 18%</span>
+                    </div>
+                    <div class="mini-cards-grid">
+                        <div class="mini-card active">
+                            <div class="mini-card-title">SECCIÓN A (ACTUAL)</div>
+                            <div class="mini-card-price">$1,450 MXN</div>
+                            <div class="mini-card-sub">Zona VIP Centro</div>
+                        </div>
+                        <div class="mini-card">
+                            <div class="mini-card-title">SECCIÓN B</div>
+                            <div class="mini-card-price text-dark">$1,150 MXN</div>
+                            <div class="mini-card-sub">Lateral Platino</div>
+                        </div>
+                        <div class="mini-card">
+                            <div class="mini-card-title">GRADAS NORTE</div>
+                            <div class="mini-card-price text-dark">$650 MXN</div>
+                            <div class="mini-card-sub">Gradería Alta</div>
+                        </div>
+                        <div class="mini-card">
+                            <div class="mini-card-title">GENERAL A</div>
+                            <div class="mini-card-price text-dark">$890 MXN</div>
+                            <div class="mini-card-sub text-green">Cancha de Pie</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Columna Derecha: Sidebar de Compra -->
+            <div class="right-column">
+                <form th:action="@{/form-compra}" method="POST" id="seat-selection-form" class="purchase-sidebar-card">
+
+                    <!-- CAMPOS OCULTOS QUE GUARDAN Y ENVIAN LOS DATOS -->
+                    <input type="hidden" name="eventoId" id="input-evento-id" th:value="${evento != null ? evento.id : '1'}">
+                    <input type="hidden" name="seccion" id="input-seccion" value="Sección A (Zona Platino)">
+                    <input type="hidden" name="fila" id="input-fila" value="Fila B">
+                    <input type="hidden" name="asientos" id="input-asientos" value="07,08">
+                    <input type="hidden" name="cantidad" id="input-cantidad" value="2">
+                    <input type="hidden" name="precioBase" id="input-precio-base" value="2900.00">
+                    <input type="hidden" name="totalFinal" id="input-total-final" value="3767.68">
+
+                    <div class="sidebar-title">
+                        <span>Detalles del Asiento & Compra</span>
+                        <span class="ticket-icon">🎟️️</span>
+                    </div>
+
+                    <div class="stage-view-preview">
+                        <div class="stage-view-overlay">
+                            <div class="preview-tag">VISTA SIMULADA AL ESCENARIO</div>
+                            <div class="preview-subtext">Visibilidad: 100% Despejada Directa</div>
+                        </div>
+                    </div>
+
+                    <table class="purchase-details-list">
+                        <tbody>
+                        <tr>
+                            <td>Ubicación</td>
+                            <td>Estadio GNP • <span id="display-seccion">Sección A (Zona Platino)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Fila Activa</td>
+                            <td class="text-pink" id="display-fila">Fila B</td>
+                        </tr>
+                        <tr>
+                            <td>Números de Asientos</td>
+                            <td id="display-asientos">Asiento 07, Asiento 08</td>
+                        </tr>
+                        <tr>
+                            <td>Tipo de Entrada</td>
+                            <td class="text-green">Boleto Digital QR Dinámico</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="quantity-selector-row">
+                        <span>Cantidad de Boletos:</span>
+                        <div class="qty-controls">
+                            <button type="button" class="qty-btn" id="btn-qty-minus">-</button>
+                            <span class="qty-count" id="display-cantidad">2</span>
+                            <button type="button" class="qty-btn" id="btn-qty-plus">+</button>
+                        </div>
+                    </div>
+
+                    <div class="price-breakdown-list">
+                        <div class="breakdown-row">
+                            <span>Precio Base (<span id="display-qty-sub">2</span> boletos x $1,450)</span>
+                            <span id="display-subtotal">$2,900 MXN</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span>Cargos por Servicio Konticket (12%) ℹ️</span>
+                            <span id="display-cargos">$348 MXN</span>
+                        </div>
+                        <div class="breakdown-row">
+                            <span>IVA (16%)</span>
+                            <span id="display-iva">$519.68 MXN</span>
+                        </div>
+                        <div class="breakdown-row highlight-free">
+                            <span>Procesamiento Seguro y Emisión</span>
+                            <span>GRATIS</span>
+                        </div>
+                    </div>
+
+                    <div class="total-checkout-box">
+                        <div class="total-label">TOTAL FINAL</div>
+                        <div class="total-price-amount" id="display-total">$3,767.68 MXN</div> <!--AQUÍ-->
+                    </div>
+
+                    <!-- BOTÓN DE ENVÍO TIPO SUBMIT -->
+                    <button type="submit" class="btn-primary-checkout">
+                        CONTINUAR COMPRA (<span id="btn-qty-text">2</span> BOLETOS) ➔
+                    </button>
+
+                    <button type="button" class="btn-secondary-action">
+                        🔖 Guardar para después
+                    </button>
+
+                    <div class="guarantee-box">
+                        <strong>🛡 GARANTÍA 100% OFICIAL KONTICKET</strong>
+                        <p>Entradas Digitales Anti-Fraude con Códigos QR dinámicos, encriptación viva y transferencia segura al instante. Boletos nominales intransferibles no autorizados.</p>
+                    </div>
+
+                    <div class="payment-methods-footer">
+                        <span>Pagos aceptados:</span>
+                        <span>TARJETA DÉBITO Y CRÉDITO</span>
+                        <span>MERCADO PAGO</span>
+                        <span>SPEI</span>
+                        <span>OXXO Pay</span>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="sales-footer">
+        <div><strong>Konticket</strong> • © 2026 Konticket Live Entertainment Technologies. Todos los derechos reservados.</div>
+        <div class="sales-footer-links">
+            <a href="#">Términos de Servicio</a>
+            <a href="#">Privacidad</a>
+            <a href="#">Soporte y Ayuda</a>
+        </div>
+    </footer>
+
+</body>
+</html>
+
+

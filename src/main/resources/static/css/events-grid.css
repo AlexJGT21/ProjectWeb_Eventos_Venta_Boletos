@@ -1,0 +1,500 @@
+:root {
+    --color-primary: #0A1547;
+    --color-accent: #E6005C;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-heading: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.events-main-section {
+    max-width: 1200px;
+    margin: 32px auto 60px auto;
+    padding: 0 16px;
+    font-family: var(--font-body);
+}
+
+.filters-container {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 20px;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+    margin-bottom: 32px;
+}
+
+.filters-top-row,
+.filters-bottom-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.genre-filters,
+.time-filters,
+.availability-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.filter-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #475569;
+    margin-right: 4px;
+}
+
+/* Ocultar los inputs de tipo Radio */
+.filter-radio-hidden {
+    display: none !important;
+}
+
+
+/* Botones de Género */
+.genre-btn {
+    background: #F1F5F9;
+    border: 1px solid transparent;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.genre-btn:hover {
+    background: #E2E8F0;
+}
+
+.filter-radio-hidden:checked + .genre-btn,
+.genre-btn.active {
+    background: var(--color-primary, #0A1547);
+    color: #FFFFFF;
+}
+
+/* Botones de Tiempo */
+.time-btn {
+    background: transparent;
+    border: none;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748B;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.time-btn:hover {
+    background: #F8FAFC;
+    color: #0F172A;
+}
+
+.filter-radio-hidden:checked + .time-btn,
+.time-btn.active {
+    background: var(--color-primary, #0A1547);
+    color: #FFFFFF;
+}
+
+/* Fila Inferior - Filtro de Precio */
+.price-filter {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.filter-sublabel {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #64748B;
+}
+
+.price-value {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--color-primary, #0A1547);
+}
+
+.price-range-slider {
+    accent-color: var(--color-primary, #0A1547);
+    cursor: pointer;
+    width: 140px;
+}
+
+/* Fila Inferior - Disponibilidad */
+.filter-label-inline {
+    font-size: 12px;
+    color: #64748B;
+    font-weight: 600;
+}
+
+.avail-btn {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.avail-btn:hover {
+    background: #F1F5F9;
+}
+
+.filter-radio-hidden:checked + .avail-btn,
+.avail-btn.active {
+    background: #E2E8F0;
+    border-color: #CBD5E1;
+    font-weight: 700;
+}
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.status-dot.green { background-color: #10B981; }
+.status-dot.red { background-color: #E6005C; }
+
+/* Botón "Filtrar" */
+.btn-submit-filter {
+    background: var(--color-primary, #0A1547);
+    color: #FFFFFF;
+    border: none;
+    padding: 7px 18px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn-submit-filter:hover {
+    background: #1E293B;
+}
+
+/* Botón "Limpiar" */
+.btn-clear {
+    background: transparent;
+    border: none;
+    font-size: 12px;
+    color: #64748B;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 4px;
+    text-decoration: none;
+    padding: 6px 10px;
+}
+
+.btn-clear:hover {
+    color: #0F172A;
+}
+
+.section-header {
+    margin-bottom: 24px;
+}
+
+.update-badge {
+    display: inline-block;
+    background: #EEF2FF;
+    color: #4F46E5;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 12px;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.section-title {
+    font-family: var(--font-heading, sans-serif);
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--color-primary, #0A1547);
+    margin: 0 0 4px 0;
+}
+
+.section-subtitle {
+    font-size: 14px;
+    color: #64748B;
+    margin: 0;
+}
+
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+/* Tarjeta Individual */
+.event-card-item {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.event-card-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.event-card-item.highlighted {
+    border: 2px solid var(--color-accent, #E6005C);
+    box-shadow: 0 0 16px rgba(230, 0, 92, 0.15);
+}
+
+/* Imagen y Badges sobre la foto */
+.card-thumb {
+    position: relative;
+    width: 100%;
+    height: 160px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #090A1A 0%, #1E293B 100%);
+}
+
+.card-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.badge-status {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+}
+
+.badge-pink {
+    background-color: #E6005C;
+    color: #FFFFFF;
+}
+
+.badge-green {
+    background-color: #FFFFFF;
+    color: #059669;
+}
+
+.badge-disabled {
+    background-color: #334155;
+    color: #94A3B8;
+}
+
+.badge-date {
+    position: absolute;
+    bottom: 10px;
+    left: 12px;
+    background: var(--color-primary, #0A1547);
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 8px;
+}
+
+/* Cuerpo de la Tarjeta */
+.card-details {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-grow: 1;
+    justify-content: space-between;
+}
+
+.card-category-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.card-category {
+    color: var(--color-accent, #E6005C);
+}
+
+.card-organizer {
+    color: #94A3B8;
+}
+
+.card-event-title {
+    font-family: var(--font-display, sans-serif);
+    font-size: 18px;
+    font-weight: 800;
+    color: #0F172A;
+    margin: 0;
+    line-height: 1.25;
+}
+
+.card-venue {
+    font-size: 12px;
+    color: #64748B;
+    margin: 0;
+}
+
+/* Barras de Capacidad / Progreso */
+.card-capacity {
+    margin-top: 6px;
+    background: #F8FAFC;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.capacity-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #64748B;
+    margin-bottom: 6px;
+}
+
+.text-pink {
+    color: #E6005C;
+}
+
+.progress-bar-bg {
+    width: 100%;
+    height: 6px;
+    background: #E2E8F0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 10px;
+}
+
+.fill-pink { background-color: #E6005C; }
+.fill-navy { background-color: var(--color-primary, #0A1547); }
+
+/* Pie de Tarjeta */
+.card-footer-action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+    border-top: 1px solid #F1F5F9;
+    margin-top: 8px;
+}
+
+.price-box small {
+    display: block;
+    font-size: 10px;
+    color: #94A3B8;
+}
+
+.price-tag {
+    font-family: var(--font-heading, sans-serif);
+    font-size: 20px;
+    font-weight: 800;
+    color: #0F172A;
+}
+
+.price-tag small {
+    display: inline;
+    font-size: 11px;
+    color: #64748B;
+}
+
+/* Botones de Acción de Tarjetas */
+.btn-action {
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    transition: opacity 0.2s ease;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-dark {
+    background-color: var(--color-primary, #0A1547);
+    color: #FFFFFF;
+}
+
+.btn-light-blue {
+    background-color: #EEF2FF;
+    color: #4F46E5;
+}
+
+.btn-soft-purple {
+    background-color: #FEE2E2;
+    color: #E6005C;
+}
+
+.btn-disabled {
+    background-color: #F1F5F9;
+    color: #94A3B8;
+    border: 1px solid #E2E8F0;
+    cursor: not-allowed;
+}
+
+.btn-action:hover:not(.btn-disabled) {
+    opacity: 0.85;
+}
+
+/* Configuración del botón Guardar basado en label/checkbox */
+.btn-save {
+    cursor: pointer;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.save-checkbox {
+    display: none;
+}
+
+.save-checkbox:checked + svg {
+    fill: currentColor;
+}
+
+@media (max-width: 1024px) {
+    .events-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .events-grid {
+        grid-template-columns: 1fr;
+    }
+    .filters-top-row, .filters-bottom-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+

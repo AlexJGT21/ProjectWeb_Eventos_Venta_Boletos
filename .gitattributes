@@ -1,2 +1,13 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Normaliza saltos de línea para que Windows y Linux no generen diffs falsos
+* text=auto eol=lf
+/mvnw text eol=lf
+*.cmd text eol=crlf
+
+# Binarios
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.svg text
+*.ttf binary
+*.otf binary
+*.jar binary

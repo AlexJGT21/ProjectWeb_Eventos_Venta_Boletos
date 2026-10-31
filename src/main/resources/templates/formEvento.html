@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konticket - Crear Evento</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/formEvento.css}" href="/css/formEvento.css">
+</head>
+<body>
+
+    <input type="checkbox" id="profile-menu-toggle" style="display: none;">
+
+    <main class="main-content">
+        
+        <header th:replace="~{fragmentos/header :: main-header}"></header>
+
+        <nav class="stepper-nav">
+            <a href="javascript:void(0)" id="nav-paso1" class="activo" onclick="cambiarPaso(1)">
+                <span class="num">1</span> <div class="step-text"><small>PASO 1</small><br><strong>Información Básica</strong></div>
+            </a>
+            <a href="javascript:void(0)" id="nav-paso2" onclick="cambiarPaso(2)">
+                <span class="num">2</span> <div class="step-text"><small>PASO 2</small><br><strong>Fecha y Recinto</strong></div>
+            </a>
+            <a href="javascript:void(0)" id="nav-paso3" onclick="cambiarPaso(3)">
+                <span class="num">3</span> <div class="step-text"><small>PASO 3</small><br><strong>Boletos y Aforo</strong></div>
+            </a>
+            <a href="javascript:void(0)" id="nav-paso4" onclick="cambiarPaso(4)">
+                <span class="num">4</span> <div class="step-text"><small>REVISIÓN FINAL</small><br><strong>Configuración</strong></div>
+            </a>
+        </nav>
+
+        <div class="form-container">
+            <form th:action="@{/organizador/evento/guardar}" th:object="${evento}" method="POST" enctype="multipart/form-data">
+
+                <!-- PASO 1: INFO BÁSICA -->
+                <div id="paso1" class="step-section activo">
+                    <h2 class="section-title">Paso 1: Información Básica</h2>
+                    <div class="grid-layout">
+                        <div class="main-col">
+                            <div class="card">
+                                <h3><i class="fas fa-info-circle"></i> Detalles Generales del Evento</h3>
+                                <div class="form-group">
+                                    <label>Nombre oficial del evento *</label>
+                                    <input type="text" th:field="*{nombre}" placeholder="Ej. Festival Distorsión" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Descripción o Slogan del evento</label>
+                                    <input type="text" th:field="*{descripcion}" placeholder="12 horas continuas de techno...">
+                                </div>
+                                <div class="grid-2">
+                                    <div class="form-group">
+                                        <label>Categoría principal *</label>
+                                        <select th:field="*{categoria}">
+                                            <option value="Música en Vivo / Festivales">Música en Vivo / Festivales</option>
+                                            <option value="Arte y Teatro">Arte y Teatro</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Productora u organizador</label>
+                                        <!-- Informativo: el organizador se asigna automáticamente a partir de la sesión,
+                                             no es un campo editable del Evento (evita romper el binding con la entidad real). -->
+                                        <input type="text" th:value="${organizadorActual != null ? organizadorActual.nombre : ''}" disabled>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <h3><i class="fas fa-image"></i> Arte y Material Multimedia</h3>
+                                <div class="upload-area">
+                                    <div class="upload-box banner-box">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <p>Banner Principal Hero (Horizontal 16:9) *</p>
+                                        <input type="file" name="imagenFile" accept="image/*">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="side-col">
+                            <div class="card preview-card">
+                                <h3>Vista Previa App Konticket</h3>
+                                <div class="preview-mockup">
+                                    <div class="mockup-img"></div>
+                                    <h4>[Nombre de tu Evento]</h4>
+                                    <span class="mockup-tag">[Categoría]</span>
+                                    <div class="mockup-btn">Ver Boletos</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-navigation">
+                        <div></div>
+                        <button type="button" class="btn-submit" onclick="cambiarPaso(2)">Siguiente Paso <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- PASO 2: FECHA Y RECINTO -->
+                <div id="paso2" class="step-section">
+                    <h2 class="section-title">Paso 2: Fecha y Recinto</h2>
+                    <div class="grid-layout">
+                        <div class="main-col">
+                            <div class="card">
+                                <h3><i class="far fa-calendar-alt"></i> Modalidad y Calendario</h3>
+                                <div class="grid-2">
+                                    <div class="form-group">
+                                        <label>Fecha y Hora del Evento *</label>
+                                        <input type="datetime-local" th:field="*{fechaHoraEvento}" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <h3><i class="fas fa-map-marker-alt"></i> Ubicación y Recinto Oficial</h3>
+                                <div class="form-group">
+                                    <label>Lugar del Evento *</label>
+                                    <div class="input-with-icon">
+                                        <i class="fas fa-search"></i>
+                                        <input type="text" th:field="*{lugar}" placeholder="Ej. Foro Pegaso, Toluca - CDMX">
+                                    </div>
+                                </div>
+                                <div class="grid-2">
+                                    <div class="form-group">
+                                        <label>Capacidad Comercial Planeada</label>
+                                        <input type="number" th:field="*{capacidad}" placeholder="Ej. 8500">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="side-col">
+                            <div class="card">
+                                <h3>Croquis del Recinto</h3>
+                                <div class="upload-box map-box">
+                                    <i class="fas fa-map"></i>
+                                    <p>Sube el mapa de zonas (Opcional)</p>
+                                    <input type="file" name="croquisFile" accept="image/*">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-navigation">
+                        <button type="button" class="btn-secondary" onclick="cambiarPaso(1)"><i class="fas fa-arrow-left"></i> Volver</button>
+                        <button type="button" class="btn-submit" onclick="cambiarPaso(3)">Siguiente Paso <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- PASO 3: BOLETOS Y AFORO -->
+                <div id="paso3" class="step-section">
+                    <div class="grid-layout">
+                        <div class="main-col">
+                            
+                            <!-- SECCIÓN 1: FASES DE VENTA -->
+                            <div class="mb-4">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                                    <div>
+                                        <h3 style="font-size: 18px; margin-bottom: 4px; color: var(--text-dark);">Lotes y Fases de Venta</h3>
+                                        <p style="font-size: 12px; color: var(--text-light);">Configura las ventanas de tiempo e incrementos de precio automatizados.</p>
+                                    </div>
+                                    <span style="background: #fdf2f6; color: var(--primary-color); padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: bold;">3 Fases Programadas</span>
+                                </div>
+
+                                <div class="fases-scroll-container" id="listaFasesVisual">
+                                    <!-- Fase 1 (Ejemplo) -->
+                                    <div class="fase-card activa">
+                                        <div class="fase-header">
+                                            <span class="text-pink fw-bold text-xs">Fase 1: Early Bird</span>
+                                            <span class="dot bg-pink"></span>
+                                        </div>
+                                        <div class="fase-body mt-2">
+                                            <strong>$650 MXN base</strong>
+                                            <p class="text-xs text-light-gray mt-1">Hasta Ago 15 o agotar 2,000 uds</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Formulario Oculto para Agregar Fase -->
+                                <div id="formNuevaFase" style="display: none; background: #fafafa; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; margin-top: 15px;">
+                                    <div class="grid-2">
+                                        <div class="form-group"><label>Nombre de la Fase</label><input type="text" id="tempNombreFase" placeholder="Ej. Fase 2: Venta General"></div>
+                                        <div class="form-group"><label>Precio Base (MXN)</label><input type="number" id="tempPrecioFase" placeholder="Ej. 850"></div>
+                                        <div class="form-group"><label>Fecha Límite</label><input type="date" id="tempFechaFase"></div>
+                                        <div class="form-group"><label>Límite de Unidades</label><input type="number" id="tempAforoFase" placeholder="Ej. 3500"></div>
+                                    </div>
+                                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                                        <button type="button" class="btn-outline" onclick="toggleFormFase()" style="padding: 8px 15px;">Cancelar</button>
+                                        <button type="button" class="btn-submit" onclick="agregarFaseVisual()" style="padding: 8px 15px; width: auto;">Guardar Fase</button>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn-text mt-2" onclick="toggleFormFase()" style="color: var(--primary-color); background: none; border: none; font-weight: 600; cursor: pointer; font-size: 13px;">+ Añadir nueva fase de venta</button>
+
+                                <!-- Toggle Automático -->
+                                <div class="toggle-box mt-3">
+                                    <div style="display: flex; gap: 15px; align-items: center;">
+                                        <div class="icon-circle text-pink"><i class="fas fa-sync-alt"></i></div>
+                                        <div>
+                                            <strong style="font-size: 13px;">Habilitar venta escalonada automática al agotarse fase anterior</strong>
+                                            <p style="font-size: 11px; color: var(--text-light); margin-top: 2px;">Al acabarse el inventario de Fase 1, la plataforma activará Fase 2 sin interrupción en la pasarela.</p>
+                                        </div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" checked>
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- SECCIÓN 2: ASIGNACIÓN DE ESPACIOS -->
+                            <div class="card mb-4" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px;">
+                                <div>
+                                    <strong style="font-size: 14px;">Modalidad de Asignación de Espacios</strong>
+                                    <p style="font-size: 11px; color: var(--text-light);">Define el método de ingreso y acomodo para los asistentes.</p>
+                                </div>
+                                <div class="segmented-control">
+                                    <button type="button" class="active"><i class="fas fa-users"></i> Entrada General</button>
+                                    <button type="button"><i class="fas fa-chair"></i> Mapa Numerado</button>
+                                </div>
+                            </div>
+
+                            <!-- SECCIÓN 3: TIPOS DE BOLETOS -->
+                            <div>
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                                    <div>
+                                        <h3 style="font-size: 18px; margin-bottom: 4px; color: var(--text-dark);">Tipos de Boletos Configurados</h3>
+                                        <p style="font-size: 12px; color: var(--text-light);">Personaliza beneficios, límites de compra por usuario y comisiones de pasarela.</p>
+                                    </div>
+                                    <!-- Enlace eliminado a petición -->
+                                </div>
+
+                                <!-- Resumen en vivo: se guarda tal cual junto con el evento al publicar -->
+                                <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:12px 20px; margin-bottom:15px; background:#fafafa;">
+                                    <div><strong style="font-size:13px;">Aforo total asignado:</strong> <span id="totalAforo">0</span> boletos</div>
+                                    <div><strong style="font-size:13px;">Proyección de ingresos:</strong> <span id="totalProyeccion">$0 MXN</span></div>
+                                </div>
+
+                                <div id="listaBoletosVisual">
+                                    <!-- Los boletos se insertarán aquí -->
+                                </div>
+
+                                <!-- Formulario Oculto para Agregar Boleto -->
+                                <div id="formNuevoBoleto" style="display: none; background: #fff; border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                                    <h4 class="mb-3">Nuevo Tipo de Boleto</h4>
+                                    <div class="grid-2">
+                                        <div class="form-group"><label>Nombre del Boleto</label><input type="text" id="tempTicketName" placeholder="Ej. Boleto General A"></div>
+                                        <div class="form-group"><label>Precio Base Promotor (MXN)</label><input type="number" id="tempTicketPrice" placeholder="Ej. 550"></div>
+                                        <div class="form-group"><label>Aforo Asignado</label><input type="number" id="tempTicketQty" placeholder="Ej. 4000"></div>
+                                        <div class="form-group"><label>Límite por persona</label><input type="number" id="tempTicketLimit" placeholder="Ej. 4" value="4"></div>
+                                    </div>
+                                    <div class="form-group"><label>Descripción / Beneficios</label><input type="text" id="tempTicketDesc" placeholder="Ej. Acceso a explanada principal..."></div>
+                                    <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px;">
+                                        <button type="button" class="btn-outline" onclick="toggleFormBoleto()" style="padding: 10px 20px;">Cancelar</button>
+                                        <!-- AQUÍ ESTÁ LA MAGIA: onclick="agregarBoletoVisual()" -->
+                                        <button type="button" class="btn-submit" onclick="agregarBoletoVisual()" style="padding: 10px 20px; width: auto;">Guardar Boleto</button>
+                                    </div>
+                                </div>
+
+                                <!-- Botón Dashed -->
+                                <button type="button" class="btn-dashed-add" onclick="toggleFormBoleto()">
+                                    <i class="fas fa-plus"></i> + Agregar Nueva Categoría o Nivel de Boleto
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-navigation">
+                        <button type="button" class="btn-secondary" onclick="cambiarPaso(2)"><i class="fas fa-arrow-left"></i> Volver</button>
+                        <button type="button" class="btn-submit" onclick="cambiarPaso(4)">Siguiente Paso <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- PASO 4: CONFIGURACIÓN -->
+                <div id="paso4" class="step-section">
+                    <h2 class="section-title">Paso 4: Configuración, Pagos y Salida</h2>
+                    <div class="grid-layout">
+                        <div class="main-col">
+                            <div class="card">
+                                <h3><i class="fas fa-credit-card"></i> Estado de Publicación</h3>
+                                <div class="form-group" style="margin-top: 15px;">
+                                    <label>Estado Inicial del Evento *</label>
+                                    <select th:field="*{estadoEvento}">
+                                        <option value="DISPONIBLE">Público / Disponible para venta</option>
+                                        <option value="AGOTADO">Oculto / Agotado</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="side-col">
+                            <div class="card publish-card">
+                                <h3>Resumen Final</h3>
+                                <p style="font-size: 13px; color: var(--text-light); margin-bottom: 20px;">
+                                    Al publicar, el evento será creado en la base de datos de Konticket.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-navigation">
+                        <button type="button" class="btn-secondary" onclick="cambiarPaso(3)"><i class="fas fa-arrow-left"></i> Volver</button>
+                        <button type="submit" class="btn-submit"><i class="fas fa-rocket"></i> PUBLICAR EVENTO EN VIVO</button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </main>
+
+    <!-- MENÚ LATERAL DESPLEGABLE CON DATOS GENÉRICOS -->
+    <aside class="perfil-sidebar">
+        <div class="user-profile">
+            <div class="avatar">US</div>
+            <div class="user-info">
+                <strong>Nombre Usuario</strong>
+                <span>Organizador</span>
+            </div>
+            <label for="profile-menu-toggle" class="close-menu-btn" aria-label="Cerrar menú">
+                <i class="fas fa-times"></i>
+            </label>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#"><i class="fas fa-home"></i> Panel Organizador</a></li>
+                <li class="active"><a href="#"><i class="fas fa-calendar-alt"></i> Eventos</a></li>
+                <li><a href="#"><i class="fas fa-chart-line"></i> Ventas y Aforos</a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> Ajustes</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <script>
+        let pasoActualGlobal = 1;
+        let totalAcumulado = 0;
+        let aforoAcumulado = 0;
+
+        // Validación y Stepper
+        function cambiarPaso(numeroPasoFuturo) {
+            if (numeroPasoFuturo > pasoActualGlobal) {
+                const seccionActual = document.getElementById('paso' + pasoActualGlobal);
+                const camposRequeridos = seccionActual.querySelectorAll('input[required], select[required]');
+                let todoLleno = true;
+                
+                camposRequeridos.forEach(campo => {
+                    if (!campo.checkValidity()) {
+                        campo.reportValidity();
+                        todoLleno = false;
+                    }
+                });
+
+                if (!todoLleno) return; 
+                document.getElementById('nav-paso' + pasoActualGlobal).classList.add('completado');
+            }
+
+            if (numeroPasoFuturo < pasoActualGlobal) {
+                for(let i = numeroPasoFuturo; i <= 4; i++) {
+                    document.getElementById('nav-paso' + i).classList.remove('completado');
+                }
+            }
+
+            document.querySelectorAll('.step-section').forEach(p => p.classList.remove('activo'));
+            document.querySelectorAll('.stepper-nav a').forEach(l => l.classList.remove('activo'));
+
+            document.getElementById('paso' + numeroPasoFuturo).classList.add('activo');
+            document.getElementById('nav-paso' + numeroPasoFuturo).classList.add('activo');
+            pasoActualGlobal = numeroPasoFuturo;
+            document.querySelector('.main-content').scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Formularios Desplegables
+        function toggleFormFase() {
+            const form = document.getElementById('formNuevaFase');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function toggleFormBoleto() {
+            const form = document.getElementById('formNuevoBoleto');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Agregar Fases Dinámicas
+        function agregarFaseVisual() {
+            const nombre = document.getElementById('tempNombreFase').value;
+            const precio = document.getElementById('tempPrecioFase').value;
+            const fecha = document.getElementById('tempFechaFase').value;
+            
+            if(!nombre || !precio) { alert("Llenar nombre y precio de fase."); return; }
+            
+            const fechaFormat = fecha ? new Date(fecha).toLocaleDateString('es-MX', {month:'short', day:'numeric'}) : 'Sin fecha';
+            
+            document.getElementById('listaFasesVisual').innerHTML += `
+                <div class="fase-card">
+                    <div class="fase-header">
+                        <span class="text-dark fw-bold text-xs">${nombre}</span>
+                        <span class="badge-soft" style="color:var(--text-light); background:#eee;">Programada</span>
+                    </div>
+                    <div class="fase-body mt-2">
+                        <strong>$${precio} MXN base</strong>
+                        <p class="text-xs text-light-gray mt-1">Hasta ${fechaFormat}</p>
+                    </div>
+                </div>
+            `;
+            toggleFormFase();
+        }
+
+        // --- LÓGICA DE BOLETOS DETALLADOS ---
+        
+        // Función intermedia que lee el form y manda a renderizar
+        function agregarBoletoVisual() {
+            const inputNombre = document.getElementById('tempTicketName');
+            const inputPrecio = document.getElementById('tempTicketPrice');
+            const inputAforo = document.getElementById('tempTicketQty');
+            const inputLimite = document.getElementById('tempTicketLimit');
+            const inputDesc = document.getElementById('tempTicketDesc');
+
+            // Extraer los valores
+            const nombre = inputNombre.value.trim();
+            const precioBase = parseFloat(inputPrecio.value) || 0;
+            const aforo = parseInt(inputAforo.value) || 0;
+            const limite = inputLimite.value || '4';
+            const desc = inputDesc.value.trim() || 'Sin descripción';
+            
+            // Validación estricta
+            if(nombre === '' || precioBase <= 0) { 
+                alert("Por favor, llena el Nombre del boleto y pon un Precio Base válido."); 
+                return; 
+            }
+
+            // Llamamos a la función matemática y de diseño (que ya tienes en tu script)
+            renderizarBoleto(nombre, precioBase, aforo, limite, desc);
+            
+            // Ocultamos el formulario
+            toggleFormBoleto();
+            
+            // Limpiamos las cajas de texto para el siguiente boleto
+            inputNombre.value = '';
+            inputPrecio.value = '';
+            inputAforo.value = '';
+            inputDesc.value = '';
+        }
+
+        // Función principal de renderizado HTML
+        function renderizarBoleto(nombre, precioBase, aforo, limite, desc) {
+            const comision = precioBase * 0.12; 
+            const precioAsistente = precioBase + comision;
+            
+            // Actualizar proyecciones globales
+            totalAcumulado += (precioBase * aforo);
+            aforoAcumulado += aforo;
+            actualizarProyeccion();
+
+            // Estilos dinámicos
+            const isVIP = precioBase >= 1000;
+            let cardClass = isVIP ? 'ticket-card-detailed alta-demanda' : 'ticket-card-detailed';
+            let badgeHTML = isVIP ? `<div class="alta-demanda-badge">ALTA DEMANDA SUGERIDA</div>` : '';
+            let iconHTML = isVIP ? `<i class="fas fa-star"></i>` : `#`;
+            let colorPrecio = isVIP ? 'color: var(--primary-color);' : 'color: var(--text-dark);';
+
+            // Escapar comillas para que no rompan las funciones onClick
+            const safeNombre = nombre.replace(/'/g, "\\'");
+            const safeDesc = desc.replace(/'/g, "\\'");
+
+            // Escapado para atributos HTML (comillas dobles) de los inputs ocultos que sí se envían al servidor
+            const attrNombre = nombre.replace(/"/g, '&quot;');
+            const attrDesc = desc.replace(/"/g, '&quot;');
+
+            const html = `
+                <div class="${cardClass}">
+                    <!-- Campos reales que se envían al backend al publicar el evento (Paso 4) -->
+                    <input type="hidden" name="tipoNombre" value="${attrNombre}">
+                    <input type="hidden" name="tipoPrecio" value="${precioBase}">
+                    <input type="hidden" name="tipoAforo" value="${aforo}">
+                    <input type="hidden" name="tipoDescripcion" value="${attrDesc}">
+                    ${badgeHTML}
+                    <div class="ticket-header">
+                        <div class="ticket-title-area">
+                            <div class="ticket-icon">${iconHTML}</div>
+                            <div>
+                                <strong style="font-size:14px;">${nombre}</strong> <span class="badge-soft" style="background:#fdf2f6; color:var(--primary-color);">Activo</span>
+                                <p style="font-size:11px; color:var(--text-light); margin-top:3px;">${desc}</p>
+                            </div>
+                        </div>
+                        <div class="ticket-price-area">
+                            <span style="font-size:9px; color:var(--text-light); font-weight:bold;">PRECIO AL ASISTENTE</span>
+                            <div style="font-size:18px; font-weight:bold; ${colorPrecio}">$${precioAsistente.toLocaleString('en-US', {minimumFractionDigits: 0})} <small style="font-size:11px; color:var(--text-light);">MXN</small></div>
+                        </div>
+                    </div>
+
+                    <div class="ticket-stats-grid">
+                        <div class="stat-col"><span>Precio Base Promotor</span><strong>$${precioBase.toLocaleString('en-US')} MXN</strong></div>
+                        <div class="stat-col"><span>Comisión Konticket (12%)</span><strong>+$${comision.toLocaleString('en-US')} MXN</strong></div>
+                        <div class="stat-col"><span>Aforo Asignado</span><strong>${aforo.toLocaleString('en-US')} boletos</strong></div>
+                        <div class="stat-col"><span>Límite por Compra</span><strong>${limite} boletos / persona</strong></div>
+                    </div>
+
+                    <div class="ticket-footer">
+                        <div><i class="fas ${isVIP ? 'fa-shield-alt text-pink' : 'fa-lock'}"></i> <span style="${isVIP ? 'color:var(--primary-color); font-weight:bold;' : ''}">${isVIP ? 'Incluye control antifraude reforzado por QR dinámico' : 'Venta habilitada inmediatamente tras publicación'}</span></div>
+                        <div class="ticket-actions">
+                            <i class="fas fa-pen" title="Editar" onclick="editarBoleto(this, '${safeNombre}', ${precioBase}, ${aforo}, '${limite}', '${safeDesc}')"></i> 
+                            <i class="fas fa-copy" title="Duplicar" onclick="copiarBoleto('${safeNombre}', ${precioBase}, ${aforo}, '${limite}', '${safeDesc}')"></i> 
+                            <i class="fas fa-trash" title="Eliminar" onclick="eliminarBoleto(this, ${precioBase}, ${aforo})"></i>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('listaBoletosVisual').insertAdjacentHTML('beforeend', html);
+        }
+
+        // Acciones de las tarjetas
+        function eliminarBoleto(elemento, precioBase, aforo) {
+            if(confirm("¿Estás seguro de eliminar este tipo de boleto?")) {
+                totalAcumulado -= (precioBase * aforo);
+                aforoAcumulado -= aforo;
+                actualizarProyeccion();
+                elemento.closest('.ticket-card-detailed').remove();
+            }
+        }
+
+        function copiarBoleto(nombre, precioBase, aforo, limite, desc) {
+            renderizarBoleto(nombre + ' (Copia)', precioBase, aforo, limite, desc);
+        }
+
+        function editarBoleto(elemento, nombre, precioBase, aforo, limite, desc) {
+            document.getElementById('tempTicketName').value = nombre;
+            document.getElementById('tempTicketPrice').value = precioBase;
+            document.getElementById('tempTicketQty').value = aforo;
+            document.getElementById('tempTicketLimit').value = limite;
+            document.getElementById('tempTicketDesc').value = desc;
+            
+            document.getElementById('formNuevoBoleto').style.display = 'block';
+            
+            // Quita la tarjeta actual de los totales visuales
+            totalAcumulado -= (precioBase * aforo);
+            aforoAcumulado -= aforo;
+            actualizarProyeccion();
+            
+            // Borra la tarjeta porque se está editando
+            elemento.closest('.ticket-card-detailed').remove();
+            document.getElementById('formNuevoBoleto').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function actualizarProyeccion() {
+            document.getElementById('totalProyeccion').textContent = '$' + totalAcumulado.toLocaleString('en-US') + ' MXN';
+            document.getElementById('totalAforo').textContent = aforoAcumulado.toLocaleString('en-US');
+        }
+    </script>
+</body>
+</html>
+
+
