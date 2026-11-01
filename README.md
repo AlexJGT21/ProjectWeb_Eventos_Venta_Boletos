@@ -41,7 +41,10 @@ La base `konticket_db` y sus tablas se crean automáticamente al iniciar la apli
 mvnw.cmd spring-boot:run
 ```
 
-La aplicación queda disponible en http://localhost:8080
+La aplicación queda disponible en http://localhost:8080 
+Ademas de crearse un organizador por defecto con los datos
+correo : organizador@konticket.mx
+contraseña : Konticket123
 
 ## Pantallas principales
 
