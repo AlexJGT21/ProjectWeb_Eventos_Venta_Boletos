@@ -57,16 +57,38 @@ public class Boleto {
     @JoinColumn(name = "compra_id")
     private Compra compra;
 
+    // Solo en boletos vendidos: zona del mapa (ej. LATERAL_AZUL) y asiento (ej. D8; nulo en zonas de pie)
+    @Column(name = "zonaCodigo", length = 30)
+    private String zonaCodigo;
+
+    @Column(name = "codigoAsiento", length = 10)
+    private String codigoAsiento;
+
+    // Un Boleto sin compra es un TIPO de boleto (el que configura el organizador);
+    // con compra es un boleto vendido a un asistente.
+    public boolean isTipo() {
+        return compra == null;
+    }
+
+    public int getRestantes() {
+        int total = cantidad != null ? cantidad : 0;
+        int vendidos = cantidadVendida != null ? cantidadVendida : 0;
+        return Math.max(total - vendidos, 0);
+    }
+
     @Override
     public String toString() {
+        // Sin evento ni compra completos para no entrar en un ciclo Boleto -> Compra -> Boleto
         return "Boleto{" +
                 "id=" + id +
-                ", asiento=" + asiento +
+                ", tipoNombre='" + tipoNombre + '\'' +
                 ", precio=" + precio +
                 ", estado=" + estado +
                 ", cantidad=" + cantidad +
-                ", evento=" + evento +
-                ", compra=" + compra +
+                ", zonaCodigo='" + zonaCodigo + '\'' +
+                ", codigoAsiento='" + codigoAsiento + '\'' +
+                ", eventoId=" + (evento != null ? evento.getId() : null) +
+                ", compraId=" + (compra != null ? compra.getId() : null) +
                 '}';
     }
 

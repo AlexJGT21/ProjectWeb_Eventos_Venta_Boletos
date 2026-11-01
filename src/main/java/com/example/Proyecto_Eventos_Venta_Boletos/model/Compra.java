@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-import java.util.Arrays;
 import java.util.List;
 
 @Entity
@@ -44,16 +43,23 @@ public class Compra {
     @Column(name = "codigoQR", columnDefinition = "BLOB")
     private byte[] codigoQR;
 
+    @Column(name = "codigoPedido", length = 30, unique = true)
+    private String codigoPedido;
+
+    @Column(name = "metodoPago", length = 60)
+    private String metodoPago;
+
     @Override
     public String toString() {
+        // Sin la lista de boletos ni el QR para no entrar en un ciclo Compra -> Boleto -> Compra
         return "Compra{" +
                 "id=" + id +
-                ", asistente=" + asistente +
-                ", boletos=" + boletos +
+                ", codigoPedido='" + codigoPedido + '\'' +
+                ", asistenteId=" + (asistente != null ? asistente.getId() : null) +
                 ", fechaHora=" + fechaHora +
                 ", totalVendidos=" + totalVendidos +
                 ", montoTotal=" + montoTotal +
-                ", codigoQR=" + Arrays.toString(codigoQR) +
+                ", metodoPago='" + metodoPago + '\'' +
                 '}';
     }
 }

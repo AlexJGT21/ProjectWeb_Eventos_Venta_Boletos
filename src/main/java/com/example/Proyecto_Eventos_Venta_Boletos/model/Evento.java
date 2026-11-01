@@ -52,11 +52,20 @@ public class Evento {
     @Column(name = "imagenEvento", columnDefinition = "LONGBLOB")
     private byte[] imagenEvento;
 
+    // Croquis opcional subido en el Paso 2 (imagen de referencia para eventos de entrada general)
+    @Lob
+    @Column(name = "croquis", columnDefinition = "LONGBLOB")
+    private byte[] croquis;
+
     @Column(name = "capacidad", nullable = false)
     private Integer capacidad;
 
     @Enumerated(EnumType.STRING)
     private EstadoEventoENUM estadoEvento;
+
+    // Modalidad de asignación de espacios elegida en el Paso 3: GENERAL o NUMERADO
+    @Column(name = "modalidadAsientos", length = 20)
+    private String modalidadAsientos;
 
     //LADO INVERSO
     @OneToMany(mappedBy = "evento",  cascade = CascadeType.ALL)
@@ -67,10 +76,15 @@ public class Evento {
     @JoinColumn(name = "organizador_id", nullable = false)
     private Organizador organizador;
 
+    // Tipos de boleto configurados por el organizador (sin los boletos ya vendidos)
+    public List<Boleto> getTiposBoleto() {
+        if (boletos == null) return List.of();
+        return boletos.stream().filter(Boleto::isTipo).toList();
+    }
+
     // Retorna el precio mínimo ("Desde $X MXN")
     public Double getPrecioMinimo() {
-        if (boletos == null || boletos.isEmpty()) return 0.0;
-        return boletos.stream()
+        return getTiposBoleto().stream()
                 .filter(b -> b.getPrecio() != null)
                 .mapToDouble(b -> b.getPrecio().doubleValue())
                 .min()
@@ -79,24 +93,59 @@ public class Evento {
 
     // Retorna el precio máximo
     public Double getPrecioMaximo() {
-        if (boletos == null || boletos.isEmpty()) return 0.0;
-        return boletos.stream()
+        return getTiposBoleto().stream()
                 .filter(b -> b.getPrecio() != null)
                 .mapToDouble(b -> b.getPrecio().doubleValue())
                 .max()
                 .orElse(0.0);
     }
 
-    // Cuenta cuántos boletos activos/disponibles quedan
+    // Boletos que todavía se pueden vender (lo que queda en cada tipo disponible)
     public Integer getBoletosDisponibles() {
-        if (boletos == null) return 0;
-        return (int) boletos.stream()
+        return getTiposBoleto().stream()
                 .filter(b -> b.getEstado() == BoletoEstadoENUM.DISPONIBLE)
-                .count();
+                .mapToInt(Boleto::getRestantes)
+                .sum();
+    }
+
+    // Total de boletos que el organizador puso a la venta (sumando todos los tipos)
+    public Integer getAforoTipos() {
+        return getTiposBoleto().stream()
+                .mapToInt(b -> b.getCantidad() != null ? b.getCantidad() : 0)
+                .sum();
     }
 
     public boolean isDisponible() {
-        return getBoletosDisponibles() > 0 && estadoEvento != EstadoEventoENUM.AGOTADO;
+        return getBoletosDisponibles() > 0
+                && estadoEvento != EstadoEventoENUM.AGOTADO
+                && estadoEvento != EstadoEventoENUM.CANCELADO
+                && estadoEvento != EstadoEventoENUM.PAUSADO
+                && (fechaHoraEvento == null || fechaHoraEvento.isAfter(LocalDateTime.now()));
+    }
+
+    // "SÁBADO 26 DE SEPTIEMBRE, 2026" (carrusel del catálogo)
+    public String getFechaCompleta() {
+        if (fechaHoraEvento == null) return "";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE dd 'de' MMMM, yyyy", Locale.forLanguageTag("es-MX"));
+        return fechaHoraEvento.format(formatter).toUpperCase(Locale.forLanguageTag("es-MX"));
+    }
+
+    // "20:30"
+    public String getHora() {
+        if (fechaHoraEvento == null) return "";
+        return fechaHoraEvento.format(DateTimeFormatter.ofPattern("HH:mm"));
+    }
+
+    // "26 SEP 2026"
+    public String getFechaCorta() {
+        if (fechaHoraEvento == null) return "";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.forLanguageTag("es-MX"));
+        return fechaHoraEvento.format(formatter).replace(".", "").toUpperCase(Locale.forLanguageTag("es-MX"));
+    }
+
+    // true si algún tipo de boleto ya tiene ventas (limita lo que se puede modificar del evento)
+    public boolean isConVentas() {
+        return getTiposBoleto().stream().anyMatch(b -> b.getCantidadVendida() != null && b.getCantidadVendida() > 0);
     }
 
     public String getFecha() {

@@ -47,7 +47,7 @@
 
             <div class="timer-alert-box">
                 <span class="timer-clock-icon">⏱</span>
-                <span class="timer-text">TIEMPO RESTANTE: <strong>00:00 min</strong> • Fila B reservada temporalmente</span>
+                <span class="timer-text" th:text="${resumen.conAsientos} ? 'Asientos ' + ${resumen.asientosTexto} + ' • se confirman al completar el pago' : ${resumen.cantidad} + ' boleto(s) ' + ${resumen.zonaNombre} + ' • se confirman al completar el pago'">Tus boletos se confirman al completar el pago</span>
             </div>
         </section>
 
@@ -55,7 +55,7 @@
 
         <!-- Columna Izquierda: Formularios de Datos y Métodos de Pago -->
         <div class="left-column">
-            <form th:action="@{/procesar-pago}" method="POST" class="checkout-form">
+            <form th:action="@{/procesar-pago}" method="POST" class="checkout-form" id="checkout-form">
 
                 <!-- Sección 1: Datos del Titular -->
                 <div class="sales-card form-section">
@@ -100,7 +100,7 @@
 
                         <div class="form-group half-width">
                             <label for="confirmEmail">Confirmar Correo Electrónico *</label>
-                            <input type="email" id="confirmEmail" name="confirmEmail" placeholder="EmyLar@gmail.com" required>
+                            <input type="email" id="confirmEmail" placeholder="EmyLar@gmail.com" required>
                         </div>
 
                         <div class="form-group full-width checkbox-group">
@@ -128,7 +128,7 @@
                         <!-- Método: Tarjeta de Crédito/Débito (Seleccionado) -->
                         <div class="payment-method-card active">
                             <label class="payment-radio-header">
-                                <input type="radio" name="paymentMethod" value="card" checked>
+                                <input type="radio" name="paymentMethod" value="Tarjeta de Crédito / Débito" checked>
                                 <span class="radio-custom"></span>
                                 <div class="payment-method-info">
                                     <span class="method-title">Tarjetas Nacionales (Débito y Crédito)</span>
@@ -150,19 +150,20 @@
                                             <span class="encrypted-tag">🔒 Conexión Cifrada</span>
                                         </div>
                                         <div class="input-with-icon">
-                                            <input type="text" id="cardNumber" name="cardNumber" value="4915 2280 8192 4810" required>
+                                            <!-- Sin "name": los datos de la tarjeta no se envían ni se guardan (no hay pasarela de pago real) -->
+                                            <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" inputmode="numeric" autocomplete="cc-number" pattern="[0-9 ]{13,23}" maxlength="23" required>
                                             <span class="input-icon">💳</span>
                                         </div>
                                     </div>
 
                                     <div class="form-group full-width">
                                         <label for="cardName">Nombre Impreso en la Tarjeta</label>
-                                        <input type="text" id="cardName" name="cardName" value="VALERIA S MENDOZA" required>
+                                        <input type="text" id="cardName" placeholder="COMO APARECE EN LA TARJETA" autocomplete="cc-name" required>
                                     </div>
 
                                     <div class="form-group half-width">
                                         <label for="cardExp">Fecha de Vencimiento</label>
-                                        <input type="text" id="cardExp" name="cardExp" value="09/28" placeholder="MM/AA" required>
+                                        <input type="text" id="cardExp" placeholder="MM/AA" autocomplete="cc-exp" pattern="(0[1-9]|1[0-2])/[0-9]{2}" maxlength="5" required>
                                     </div>
 
                                     <div class="form-group half-width">
@@ -170,13 +171,13 @@
                                             <label for="cardCvv">Código de Seguridad (CVV)</label>
                                             <a href="#" class="help-link">¿Qué es?</a>
                                         </div>
-                                        <input type="password" id="cardCvv" name="cardCvv" value="842" maxlength="4" required>
+                                        <input type="password" id="cardCvv" autocomplete="cc-csc" inputmode="numeric" pattern="[0-9]{3,4}" maxlength="4" required>
                                     </div>
 
                                     <div class="form-group full-width">
                                         <label for="installments">Plan de Pago y Mensualidades</label>
-                                        <select id="installments" name="installments">
-                                            <option value="1">1 solo pago - $3,248.00 MXN</option>
+                                        <select id="installments">
+                                            <option value="1" th:text="'1 solo pago - $' + ${#numbers.formatDecimal(resumen.total, 1, 'COMMA', 2, 'POINT')} + ' MXN'">1 solo pago</option>
                                         </select>
                                     </div>
                                 </div>
@@ -228,7 +229,7 @@
                 <!-- Botón Principal de Pago -->
                 <div class="checkout-action-area">
                     <button type="submit" class="btn-primary-checkout full-btn">
-                        PAGAR $3,767.68 MXN Y OBTENER BOLETOS → <!--AQUÍ-->
+                        <span th:text="'PAGAR $' + ${#numbers.formatDecimal(resumen.total, 1, 'COMMA', 2, 'POINT')} + ' MXN Y OBTENER BOLETOS →'">PAGAR Y OBTENER BOLETOS →</span>
                     </button>
                     <p class="terms-disclaimer">
                         Al hacer clic aceptas los <a href="#">Términos y Condiciones</a> y la <a href="#">Política de Privacidad</a> de Konticket.
@@ -246,8 +247,8 @@
                 <div class="event-summary-banner">
                     <div class="banner-overlay"></div>
                     <div class="banner-content">
-                        <span class="tour-tag">TOUR MÉXICO 2026</span>
-                        <h3 class="event-title-summary">INDIE / POST-PUNK: Midnight Echoes Tour</h3>
+                        <span class="tour-tag" th:text="${#strings.toUpperCase(evento.categoria)}">CATEGORÍA</span>
+                        <h3 class="event-title-summary" th:text="${evento.nombre}">Evento</h3>
                     </div>
                 </div>
 
@@ -255,15 +256,15 @@
                 <div class="summary-event-details">
                     <div class="detail-item">
                         <span class="icon">📅</span>
-                        <span>Sábado 26 de Septiembre, 2026 • 20:30 hrs</span>
+                        <span th:text="${evento.fechaCompleta} + ' • ' + ${evento.hora} + ' hrs'">Fecha</span>
                     </div>
                     <div class="detail-item">
                         <span class="icon">📍</span>
-                        <span>Estadio GNP / Foro Sol, CDMX (Acceso Puerta 6 y 7)</span>
+                        <span th:text="${evento.lugar}">Lugar</span>
                     </div>
                     <div class="detail-item">
                         <span class="icon">🎟️</span>
-                        <span><strong>Sección A • VIP Platino Frontal</strong></span>
+                        <span><strong th:text="${resumen.zonaNombre}">Zona</strong></span>
                     </div>
                 </div>
 
@@ -271,22 +272,24 @@
 
                 <!-- Asientos Asignados -->
                 <div class="assigned-seats-section">
-                    <span class="seats-title">Tus Asientos Asignados:</span>
+                    <span class="seats-title" th:text="${resumen.conAsientos} ? 'Tus Asientos Asignados:' : 'Tus Boletos:'">Tus Asientos Asignados:</span>
 
-                    <div class="seat-badge-row">
+                    <!-- Un renglón por asiento (zonas numeradas) -->
+                    <div class="seat-badge-row" th:each="a : ${resumen.asientos}">
                         <div class="seat-pill-tag">
-                            <span class="seat-code">B7</span>
-                            <span>Fila B • Asiento 07</span>
+                            <span class="seat-code" th:text="${a}">B7</span>
+                            <span th:text="'Fila ' + ${a.substring(0, 1)} + ' • Asiento ' + ${a.substring(1)}">Fila B • Asiento 07</span>
                         </div>
-                        <span class="seat-price">$1,450.00 MXN</span>
+                        <span class="seat-price" th:text="'$' + ${#numbers.formatDecimal(resumen.precioUnitario, 1, 'COMMA', 2, 'POINT')} + ' MXN'">$0.00 MXN</span>
                     </div>
 
-                    <div class="seat-badge-row">
+                    <!-- Zonas de pie / entrada general: un solo renglón con la cantidad -->
+                    <div class="seat-badge-row" th:unless="${resumen.conAsientos}">
                         <div class="seat-pill-tag">
-                            <span class="seat-code">B8</span>
-                            <span>Fila B • Asiento 08</span>
+                            <span class="seat-code" th:text="${resumen.cantidad} + 'x'">2x</span>
+                            <span th:text="${resumen.zonaNombre} + ' • Sin asiento asignado'">Admisión general</span>
                         </div>
-                        <span class="seat-price">$1,450.00 MXN</span>
+                        <span class="seat-price" th:text="'$' + ${#numbers.formatDecimal(resumen.precioUnitario, 1, 'COMMA', 2, 'POINT')} + ' MXN c/u'">$0.00 MXN</span>
                     </div>
                 </div>
 
@@ -295,16 +298,16 @@
                 <!-- Desglose de Precios -->
                 <div class="price-breakdown-list">
                     <div class="breakdown-row">
-                        <span>Subtotal (2 boletos)</span>
-                        <span>$2,900.00 MXN</span>
+                        <span th:text="'Subtotal (' + ${resumen.cantidad} + (${resumen.cantidad == 1} ? ' boleto)' : ' boletos)')">Subtotal</span>
+                        <span th:text="'$' + ${#numbers.formatDecimal(resumen.subtotal, 1, 'COMMA', 2, 'POINT')} + ' MXN'">$0.00 MXN</span>
                     </div>
                     <div class="breakdown-row">
                         <span>Cargos por Servicio Konticket (12%) ℹ️</span>
-                        <span>$348.00 MXN</span>
+                        <span th:text="'$' + ${#numbers.formatDecimal(resumen.cargoServicio, 1, 'COMMA', 2, 'POINT')} + ' MXN'">$0.00 MXN</span>
                     </div>
                     <div class="breakdown-row">
                         <span>IVA (16%) ℹ️</span>
-                        <span>$519.68 MXN</span>
+                        <span th:text="'$' + ${#numbers.formatDecimal(resumen.iva, 1, 'COMMA', 2, 'POINT')} + ' MXN'">$0.00 MXN</span>
                     </div>
                     <div class="breakdown-row highlight-free">
                         <span>Procesamiento Seguro y Emisión</span>
@@ -320,7 +323,7 @@
                         <span class="total-label">Total a Pagar</span>
                         <span class="total-sub">Impuestos e IVA incluidos</span>
                     </div>
-                    <div class="total-price-amount">$3,767.68 MXN</div>
+                    <div class="total-price-amount" th:text="'$' + ${#numbers.formatDecimal(resumen.total, 1, 'COMMA', 2, 'POINT')} + ' MXN'">$0.00 MXN</div>
                 </div>
 
                 <!-- Bloque de Garantía -->
@@ -347,6 +350,30 @@
             <a href="#">Soporte y Ayuda</a>
         </div>
     </footer>
+
+    <script>
+        // Los dos correos deben coincidir antes de enviar
+        document.getElementById('checkout-form').addEventListener('submit', function (e) {
+            const correo = document.getElementById('email').value.trim().toLowerCase();
+            const confirmacion = document.getElementById('confirmEmail');
+            if (correo !== confirmacion.value.trim().toLowerCase()) {
+                e.preventDefault();
+                confirmacion.setCustomValidity('Los correos no coinciden.');
+                confirmacion.reportValidity();
+            }
+        });
+        document.getElementById('confirmEmail').addEventListener('input', function () {
+            this.setCustomValidity('');
+        });
+        // Formato 0000 0000 0000 0000 y MM/AA mientras se escribe
+        document.getElementById('cardNumber').addEventListener('input', function () {
+            this.value = this.value.replace(/\D/g, '').slice(0, 19).replace(/(\d{4})(?=\d)/g, '$1 ');
+        });
+        document.getElementById('cardExp').addEventListener('input', function () {
+            const v = this.value.replace(/\D/g, '').slice(0, 4);
+            this.value = v.length > 2 ? v.slice(0, 2) + '/' + v.slice(2) : v;
+        });
+    </script>
 
 </body>
 </html>

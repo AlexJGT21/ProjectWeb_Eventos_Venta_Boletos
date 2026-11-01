@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class InventarioBoletoDTO {
 
+    private Long eventoId;          // para el botón "Editar" de la tabla
     private String tipoBoleto;
     private String descripcion;
     private String iconoCss;

@@ -78,35 +78,7 @@ body {
 .notificacion-seleccionada { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background: var(--primary-color); border-radius: 50%; }
 .cuenta-ticket { position: absolute; top: -2px; right: -2px; background: var(--primary-color); color: white; font-size: 10px; font-weight: bold; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 
-/* MENÚ LATERAL DERECHO DESPLEGABLE */
-.perfil-sidebar {
-    position: fixed;
-    top: 0;
-    right: -100%; 
-    width: 100%; 
-    max-width: 320px; 
-    height: 100vh;
-    background: var(--sidebar-bg);
-    box-shadow: -5px 0 25px rgba(0,0,0,0.1);
-    z-index: 1001; 
-    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-}
-
-#profile-menu-toggle:checked ~ .perfil-sidebar { right: 0; }
-
-.user-profile { display: flex; align-items: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
-.avatar { width: 40px; height: 40px; background: #1e1e2d; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-weight: bold; }
-.user-info strong { display: block; font-size: 14px; }
-.user-info span { font-size: 12px; color: var(--text-light); }
-.close-menu-btn { margin-left: auto; cursor: pointer; color: var(--text-light); font-size: 24px; padding: 5px; }
-
-.sidebar-nav ul { list-style: none; }
-.sidebar-nav li a { display: flex; align-items: center; padding: 12px; text-decoration: none; color: var(--text-light); border-radius: 8px; margin-bottom: 5px; font-weight: 500; }
-.sidebar-nav li a i { margin-right: 10px; width: 20px; }
-.sidebar-nav li.active a { background-color: #fdf2f6; color: var(--primary-color); }
+/* MENÚ LATERAL: usa el del fragmento del header (estilos en menu-lateral.css) */
 
 /* STEPPER Y FORMULARIO WIZARD (MOBILE FIRST) */
 .stepper-nav { 
@@ -316,3 +288,42 @@ input:checked + .slider:before { transform: translateX(18px); }
 .btn-dashed-add:hover { border-color: var(--primary-color); color: var(--primary-color); background: #fdfafb; }
 
 
+
+/* VISTA PREVIA (PASO 1), MODALIDAD (PASO 3) Y RESUMEN FINAL (PASO 4) */
+.mockup-img { background-size: cover; background-position: center; }
+.preview-descripcion { font-size: 12px; color: var(--text-light); margin-top: 6px; }
+.preview-detalle { font-size: 12px; color: var(--text-dark); margin-bottom: 12px; }
+.aviso-modalidad { display: flex; gap: 10px; align-items: flex-start; background: #fdf2f6; color: var(--text-dark); border: 1px solid #f8c9d9; border-radius: 8px; padding: 12px 15px; font-size: 12px; margin: -10px 0 20px; }
+.aviso-modalidad i { color: var(--primary-color); margin-top: 2px; }
+.resumen-fila { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border-color); font-size: 13px; }
+.resumen-fila span { color: var(--text-light); }
+.resumen-fila strong { text-align: right; word-break: break-word; }
+.resumen-boletos { list-style: none; margin-top: 10px; font-size: 12px; color: var(--text-dark); }
+.resumen-boletos li { padding: 4px 0; }
+.resumen-aviso { font-size: 12px; color: var(--primary-color); margin-top: 8px; }
+
+/* --- Edición de eventos y zonas del mapa numerado --- */
+.form-container > form > .aviso-modalidad { margin: 0 0 16px; }
+.aviso-error { background: #fff1f2; border-color: #fecdd3; color: #9f1239; }
+.aviso-error i { color: #e11d48; }
+
+.croquis-actual { margin-top: 12px; text-align: center; }
+.croquis-actual img { max-width: 100%; max-height: 160px; border-radius: 8px; border: 1px solid var(--border-color); }
+.croquis-actual small { display: block; font-size: 11px; color: var(--text-light); margin-top: 4px; }
+.nota-croquis { font-size: 11px; color: var(--text-light); margin-top: 12px; line-height: 1.5; }
+
+.panel-mapa { margin-bottom: 20px; }
+.panel-mapa-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 14px; flex-wrap: wrap; }
+.table-zonas-wrapper { overflow-x: auto; }
+.tabla-zonas { width: 100%; border-collapse: collapse; font-size: 12px; }
+.tabla-zonas th { text-align: left; font-size: 10px; letter-spacing: 0.5px; color: var(--text-light); text-transform: uppercase; padding: 8px; border-bottom: 1px solid var(--border-color); }
+.tabla-zonas td { padding: 10px 8px; border-bottom: 1px solid var(--border-color); vertical-align: middle; }
+.tabla-zonas small { display: block; font-size: 11px; color: var(--text-light); margin-top: 2px; }
+.tabla-zonas .zona-vendidos { color: #3730a3; font-weight: 600; }
+.tabla-zonas input[type="number"], .tabla-zonas input[type="text"] { width: 100%; min-width: 90px; padding: 7px 9px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 12px; }
+.tabla-zonas input:disabled { background: #f6f7f9; color: #b5b7c4; }
+.tabla-zonas input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--primary-color); cursor: pointer; }
+.fila-zona { opacity: 0.6; transition: opacity 0.2s ease; }
+.fila-zona.activa { opacity: 1; }
+.zona-nombre { display: flex; align-items: center; gap: 6px; }
+.color-zona { display: inline-block; width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }

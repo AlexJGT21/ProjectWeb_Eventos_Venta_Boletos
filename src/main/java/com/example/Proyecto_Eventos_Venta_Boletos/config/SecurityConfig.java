@@ -19,23 +19,27 @@ public class SecurityConfig {
     }
 
     // REQUISITO: Configuración mediante SecurityFilterChain
+    // El inicio de sesión se valida contra la tabla organizadores (ver OrganizadorDetailsService)
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/admin/login").permitAll() // Exponiendo /admin/login como ruta pública
+                        .requestMatchers("/organizador/**").hasRole("ORGANIZADOR") // Panel y eventos: solo organizadores
                         .requestMatchers("/admin/**").authenticated() // Protegiendo /admin/** para que requiera sesión
-                        .anyRequest().permitAll() // Permite las rutas públicas fuera del panel de administración
+                        .anyRequest().permitAll() // Permite las rutas públicas (catálogo, venta, login, registro)
                 )
                 .formLogin(form -> form
-                        .loginPage("/admin/login") // Le indica a Spring Security cuál es la vista de login
-                        .loginProcessingUrl("/admin/login") // La ruta a la que el formulario hará POST
-                        .defaultSuccessUrl("/admin", true) // A dónde redirigir tras un login exitoso
+                        .loginPage("/user-login") // Vista de login (login-user.html)
+                        .loginProcessingUrl("/login") // La ruta a la que el formulario hace POST
+                        .usernameParameter("email") // Nombres de los campos del formulario
+                        .passwordParameter("password")
+                        .defaultSuccessUrl("/organizador/panel") // Si venía de una página protegida, regresa a ella
+                        .failureUrl("/user-login?error")
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/admin/logout")
-                        .logoutSuccessUrl("/admin/login?logout") // Redirección al login tras salir
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/index") // Redirección al catálogo tras salir
                         .invalidateHttpSession(true) // Cierre de sesión con invalidación de la sesión HTTP
                         .permitAll()
                 );
@@ -45,5 +49,3 @@ public class SecurityConfig {
         return http.build();
     }
 }
-
-

@@ -3,13 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Konticket - Crear Evento</title>
+    <title th:text="${modoEdicion} ? 'Konticket - Editar Evento' : 'Konticket - Crear Evento'">Konticket - Crear Evento</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/formEvento.css}" href="/css/formEvento.css">
+    <link rel="stylesheet" th:href="@{/css/menu-lateral.css}" href="/css/menu-lateral.css">
 </head>
 <body>
 
-    <input type="checkbox" id="profile-menu-toggle" style="display: none;">
+    <!-- Checkbox oculto que controla el menú lateral del fragmento -->
+    <input type="checkbox" id="profile-menu-toggle" class="menu-toggle-checkbox">
+
+    <!-- Overlay oscuro para cerrar el menú al hacer clic fuera -->
+    <label for="profile-menu-toggle" class="sidebar-overlay"></label>
 
     <main class="main-content">
         
@@ -31,7 +36,21 @@
         </nav>
 
         <div class="form-container">
-            <form th:action="@{/organizador/evento/guardar}" th:object="${evento}" method="POST" enctype="multipart/form-data">
+            <form th:action="@{/organizador/evento/guardar}" th:object="${evento}" method="POST" enctype="multipart/form-data" id="formEvento">
+                <!-- Vacío al crear; con el id del evento al editar -->
+                <input type="hidden" th:field="*{id}">
+                <!-- Campos de los tipos de boleto que se arman al publicar (modalidad Mapa Numerado) -->
+                <div id="camposZonas"></div>
+
+                <div class="aviso-modalidad aviso-error" th:if="${errorMessage}">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span th:text="${errorMessage}">Error</span>
+                </div>
+                <div class="aviso-modalidad" th:if="${modoEdicion}">
+                    <i class="fas fa-pen"></i>
+                    <span th:if="${evento.conVentas}">Estás editando un evento que <strong>ya tiene boletos vendidos</strong>: puedes cambiar datos, precios y aforo, pero no la modalidad de asientos ni quitar o renombrar boletos que ya se vendieron.</span>
+                    <span th:unless="${evento.conVentas}">Estás editando este evento. Los cambios se guardan al presionar <strong>Guardar cambios</strong> en el último paso.</span>
+                </div>
 
                 <!-- PASO 1: INFO BÁSICA -->
                 <div id="paso1" class="step-section activo">
@@ -71,7 +90,11 @@
                                     <div class="upload-box banner-box">
                                         <i class="fas fa-cloud-upload-alt"></i>
                                         <p>Banner Principal Hero (Horizontal 16:9) *</p>
-                                        <input type="file" name="imagenFile" accept="image/*">
+                                        <input type="file" name="imagenFile" id="imagenFile" accept="image/*">
+                                        <p id="nombreImagen" style="font-size: 12px; color: var(--text-light); margin-top: 6px;"
+                                           th:text="${modoEdicion and evento.imagenEvento != null} ? 'Deja vacío para conservar el banner actual' : ''"></p>
+                                        <span id="imagenActual" hidden th:if="${modoEdicion and evento.imagenEvento != null}"
+                                              th:data-url="@{/eventos/{id}/imagen(id=${evento.id})}"></span>
                                     </div>
                                 </div>
                             </div>
@@ -80,10 +103,13 @@
                         <div class="side-col">
                             <div class="card preview-card">
                                 <h3>Vista Previa App Konticket</h3>
+                                <!-- Se actualiza en vivo con lo que se escribe en el formulario -->
                                 <div class="preview-mockup">
-                                    <div class="mockup-img"></div>
-                                    <h4>[Nombre de tu Evento]</h4>
-                                    <span class="mockup-tag">[Categoría]</span>
+                                    <div class="mockup-img" id="previewImagen"></div>
+                                    <h4 id="previewNombre">[Nombre de tu Evento]</h4>
+                                    <p id="previewDescripcion" class="preview-descripcion"></p>
+                                    <span class="mockup-tag" id="previewCategoria">[Categoría]</span>
+                                    <p id="previewDetalle" class="preview-detalle"></p>
                                     <div class="mockup-btn">Ver Boletos</div>
                                 </div>
                             </div>
@@ -135,8 +161,18 @@
                                 <div class="upload-box map-box">
                                     <i class="fas fa-map"></i>
                                     <p>Sube el mapa de zonas (Opcional)</p>
-                                    <input type="file" name="croquisFile" accept="image/*">
+                                    <input type="file" name="croquisFile" id="croquisFile" accept="image/*">
+                                    <p id="nombreCroquis" style="font-size: 12px; color: var(--text-light); margin-top: 6px;"></p>
                                 </div>
+                                <div class="croquis-actual" th:if="${modoEdicion and evento.croquis != null}">
+                                    <img th:src="@{/eventos/{id}/croquis(id=${evento.id})}" alt="Croquis actual">
+                                    <small>Croquis actual (sube otro para reemplazarlo)</small>
+                                </div>
+                                <p class="nota-croquis">
+                                    Para eventos de <strong>Entrada General</strong> el croquis se muestra al comprador como referencia.
+                                    Si en el Paso 3 eliges <strong>Mapa Numerado</strong>, se usa el mapa interactivo del recinto,
+                                    donde cada zona ya tiene sus filas y asientos definidos.
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -213,14 +249,75 @@
                                     <strong style="font-size: 14px;">Modalidad de Asignación de Espacios</strong>
                                     <p style="font-size: 11px; color: var(--text-light);">Define el método de ingreso y acomodo para los asistentes.</p>
                                 </div>
-                                <div class="segmented-control">
-                                    <button type="button" class="active"><i class="fas fa-users"></i> Entrada General</button>
-                                    <button type="button"><i class="fas fa-chair"></i> Mapa Numerado</button>
+                                <div class="segmented-control" id="selectorModalidad">
+                                    <button type="button" data-modalidad="GENERAL" class="active" onclick="seleccionarModalidad('GENERAL')"><i class="fas fa-users"></i> Entrada General</button>
+                                    <button type="button" data-modalidad="NUMERADO" onclick="seleccionarModalidad('NUMERADO')"><i class="fas fa-chair"></i> Mapa Numerado</button>
+                                </div>
+                                <!-- Valor que se guarda con el evento -->
+                                <input type="hidden" th:field="*{modalidadAsientos}"
+                                       th:data-bloqueada="${modoEdicion and evento.conVentas}">
+                            </div>
+                            <div id="avisoModalidad" class="aviso-modalidad" style="display: none;">
+                                <i class="fas fa-info-circle"></i>
+                                <span>Con <strong>Mapa Numerado</strong> el comprador elige su zona en el mapa interactivo y después sus asientos. Los asientos de cada zona los define el recinto: tú solo eliges qué zonas vendes y a qué precio. Las zonas que no actives aparecen como no disponibles.</span>
+                            </div>
+
+                            <!-- SECCIÓN 3A: ZONAS DEL MAPA (solo Mapa Numerado) -->
+                            <div id="panelMapa" class="card panel-mapa" style="display: none;">
+                                <div class="panel-mapa-header">
+                                    <div>
+                                        <h3 style="font-size: 18px; margin-bottom: 4px;">Zonas del Recinto</h3>
+                                        <p style="font-size: 12px; color: var(--text-light);">Plantilla: <strong th:text="${nombrePlantilla}">Estadio</strong>. Activa las zonas que vas a vender y ponles precio.</p>
+                                    </div>
+                                    <div style="text-align: right; font-size: 12px;">
+                                        <div><strong>Aforo del mapa:</strong> <span id="aforoMapa">0</span> lugares</div>
+                                        <div><strong>Proyección:</strong> <span id="proyeccionMapa">$0 MXN</span></div>
+                                    </div>
+                                </div>
+                                <div class="table-zonas-wrapper">
+                                    <table class="tabla-zonas">
+                                        <thead>
+                                            <tr>
+                                                <th>Vender</th>
+                                                <th>Zona</th>
+                                                <th>Lugares</th>
+                                                <th>Precio base (MXN)</th>
+                                                <th>Descripción / Beneficios</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="z : ${zonasMapa}" class="fila-zona"
+                                                th:data-codigo="${z.codigo}" th:data-nombre="${z.nombre}"
+                                                th:data-asientos="${z.asientos}" th:data-numerada="${z.numerada}"
+                                                data-tipo-id="" data-vendidos="0">
+                                                <td><input type="checkbox" class="zona-vender" aria-label="Vender esta zona"></td>
+                                                <td>
+                                                    <div class="zona-nombre"><span class="color-zona" th:style="'background-color: ' + ${z.color}"></span><strong th:text="${z.nombre}">Zona</strong></div>
+                                                    <small th:text="${z.filas}">filas</small>
+                                                    <small class="zona-vendidos"></small>
+                                                </td>
+                                                <td>
+                                                    <span th:if="${z.numerada}" th:text="${z.asientos} + ' asientos'">96 asientos</span>
+                                                    <input th:unless="${z.numerada}" type="number" class="zona-aforo" min="0" placeholder="Ej. 500">
+                                                </td>
+                                                <td><input type="number" class="zona-precio" min="0" step="0.01" placeholder="Ej. 650"></td>
+                                                <td><input type="text" class="zona-desc" maxlength="255" th:placeholder="${z.descripcion}"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
 
-                            <!-- SECCIÓN 3: TIPOS DE BOLETOS -->
-                            <div>
+                            <!-- Tipos de boleto que ya existen (al editar) -->
+                            <div id="tiposExistentes" hidden>
+                                <div th:each="t : ${tiposExistentes}" class="tipo-existente"
+                                     th:data-id="${t.id}" th:data-nombre="${t.tipoNombre}" th:data-precio="${t.precio}"
+                                     th:data-aforo="${t.cantidad}" th:data-vendidos="${t.cantidadVendida}"
+                                     th:data-descripcion="${t.descripcion}"></div>
+                            </div>
+
+                            <!-- SECCIÓN 3B: TIPOS DE BOLETOS (Entrada General) -->
+                            <div id="seccionTiposGenerales">
                                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
                                     <div>
                                         <h3 style="font-size: 18px; margin-bottom: 4px; color: var(--text-dark);">Tipos de Boletos Configurados</h3>
@@ -278,10 +375,12 @@
                             <div class="card">
                                 <h3><i class="fas fa-credit-card"></i> Estado de Publicación</h3>
                                 <div class="form-group" style="margin-top: 15px;">
-                                    <label>Estado Inicial del Evento *</label>
+                                    <label th:text="${modoEdicion} ? 'Estado del Evento *' : 'Estado Inicial del Evento *'">Estado Inicial del Evento *</label>
                                     <select th:field="*{estadoEvento}">
                                         <option value="DISPONIBLE">Público / Disponible para venta</option>
-                                        <option value="AGOTADO">Oculto / Agotado</option>
+                                        <option value="PAUSADO">Pausado (oculto del catálogo)</option>
+                                        <option value="AGOTADO">Agotado (visible, sin venta)</option>
+                                        <option value="CANCELADO" th:if="${modoEdicion}">Cancelado</option>
                                     </select>
                                 </div>
                             </div>
@@ -290,16 +389,20 @@
                         <div class="side-col">
                             <div class="card publish-card">
                                 <h3>Resumen Final</h3>
-                                <p style="font-size: 13px; color: var(--text-light); margin-bottom: 20px;">
-                                    Al publicar, el evento será creado en la base de datos de Konticket.
+                                <p style="font-size: 13px; color: var(--text-light); margin-bottom: 15px;">
+                                    <span th:text="${modoEdicion} ? 'Al guardar, los cambios se aplican de inmediato en el catálogo y en la venta.' : 'Al publicar, el evento será creado en la base de datos de Konticket.'">Al publicar, el evento será creado en la base de datos de Konticket.</span>
                                 </p>
+                                <!-- Se llena con los datos capturados en los pasos 1 a 3 -->
+                                <div id="resumenFinal"></div>
+                                <div id="resumenAvisos"></div>
                             </div>
                         </div>
                     </div>
 
                     <div class="step-navigation">
                         <button type="button" class="btn-secondary" onclick="cambiarPaso(3)"><i class="fas fa-arrow-left"></i> Volver</button>
-                        <button type="submit" class="btn-submit"><i class="fas fa-rocket"></i> PUBLICAR EVENTO EN VIVO</button>
+                        <button type="submit" class="btn-submit" th:if="${!modoEdicion}"><i class="fas fa-rocket"></i> PUBLICAR EVENTO EN VIVO</button>
+                        <button type="submit" class="btn-submit" th:if="${modoEdicion}"><i class="fas fa-save"></i> GUARDAR CAMBIOS</button>
                     </div>
                 </div>
 
@@ -308,31 +411,24 @@
     </main>
 
     <!-- MENÚ LATERAL DESPLEGABLE CON DATOS GENÉRICOS -->
-    <aside class="perfil-sidebar">
-        <div class="user-profile">
-            <div class="avatar">US</div>
-            <div class="user-info">
-                <strong>Nombre Usuario</strong>
-                <span>Organizador</span>
-            </div>
-            <label for="profile-menu-toggle" class="close-menu-btn" aria-label="Cerrar menú">
-                <i class="fas fa-times"></i>
-            </label>
-        </div>
-        <nav class="sidebar-nav">
-            <ul>
-                <li><a href="#"><i class="fas fa-home"></i> Panel Organizador</a></li>
-                <li class="active"><a href="#"><i class="fas fa-calendar-alt"></i> Eventos</a></li>
-                <li><a href="#"><i class="fas fa-chart-line"></i> Ventas y Aforos</a></li>
-                <li><a href="#"><i class="fas fa-cog"></i> Ajustes</a></li>
-            </ul>
-        </nav>
-    </aside>
+    <!-- Menú lateral compartido (fragmentos/header.html) -->
+    <aside th:replace="~{fragmentos/header :: perfil-sidebar}"></aside>
 
+    <script th:inline="javascript">
+        const PASO_INICIAL = /*[[${pasoInicial}]]*/ 1;
+    </script>
     <script>
         let pasoActualGlobal = 1;
-        let totalAcumulado = 0;
-        let aforoAcumulado = 0;
+
+        // Muestra un paso sin validar (para abrir directamente un paso al editar)
+        function mostrarPaso(numero) {
+            document.querySelectorAll('.step-section').forEach(p => p.classList.remove('activo'));
+            document.querySelectorAll('.stepper-nav a').forEach(l => l.classList.remove('activo'));
+            document.getElementById('paso' + numero).classList.add('activo');
+            document.getElementById('nav-paso' + numero).classList.add('activo');
+            pasoActualGlobal = numero;
+            if (numero === 4) actualizarResumen();
+        }
 
         // Validación y Stepper
         function cambiarPaso(numeroPasoFuturo) {
@@ -340,7 +436,7 @@
                 const seccionActual = document.getElementById('paso' + pasoActualGlobal);
                 const camposRequeridos = seccionActual.querySelectorAll('input[required], select[required]');
                 let todoLleno = true;
-                
+
                 camposRequeridos.forEach(campo => {
                     if (!campo.checkValidity()) {
                         campo.reportValidity();
@@ -348,22 +444,17 @@
                     }
                 });
 
-                if (!todoLleno) return; 
+                if (!todoLleno) return;
                 document.getElementById('nav-paso' + pasoActualGlobal).classList.add('completado');
             }
 
             if (numeroPasoFuturo < pasoActualGlobal) {
-                for(let i = numeroPasoFuturo; i <= 4; i++) {
+                for (let i = numeroPasoFuturo; i <= 4; i++) {
                     document.getElementById('nav-paso' + i).classList.remove('completado');
                 }
             }
 
-            document.querySelectorAll('.step-section').forEach(p => p.classList.remove('activo'));
-            document.querySelectorAll('.stepper-nav a').forEach(l => l.classList.remove('activo'));
-
-            document.getElementById('paso' + numeroPasoFuturo).classList.add('activo');
-            document.getElementById('nav-paso' + numeroPasoFuturo).classList.add('activo');
-            pasoActualGlobal = numeroPasoFuturo;
+            mostrarPaso(numeroPasoFuturo);
             document.querySelector('.main-content').scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -375,7 +466,17 @@
 
         function toggleFormBoleto() {
             const form = document.getElementById('formNuevoBoleto');
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            const abrir = form.style.display === 'none';
+            form.style.display = abrir ? 'block' : 'none';
+            // Cancelar una edición: la tarjeta original vuelve a aparecer sin cambios
+            if (!abrir && tarjetaEnEdicion) {
+                restaurarTarjetaEnEdicion();
+            }
+            // Al cerrar se limpian las cajas para que el siguiente boleto empiece vacío
+            if (!abrir) {
+                ['tempTicketName', 'tempTicketPrice', 'tempTicketQty', 'tempTicketDesc'].forEach(id => document.getElementById(id).value = '');
+                document.getElementById('tempTicketLimit').value = '4';
+            }
         }
 
         // Agregar Fases Dinámicas
@@ -383,11 +484,11 @@
             const nombre = document.getElementById('tempNombreFase').value;
             const precio = document.getElementById('tempPrecioFase').value;
             const fecha = document.getElementById('tempFechaFase').value;
-            
-            if(!nombre || !precio) { alert("Llenar nombre y precio de fase."); return; }
-            
+
+            if (!nombre || !precio) { alert("Llenar nombre y precio de fase."); return; }
+
             const fechaFormat = fecha ? new Date(fecha).toLocaleDateString('es-MX', {month:'short', day:'numeric'}) : 'Sin fecha';
-            
+
             document.getElementById('listaFasesVisual').innerHTML += `
                 <div class="fase-card">
                     <div class="fase-header">
@@ -403,8 +504,18 @@
             toggleFormFase();
         }
 
-        // --- LÓGICA DE BOLETOS DETALLADOS ---
-        
+        // --- LÓGICA DE BOLETOS DETALLADOS (Entrada General) ---
+
+        // Tarjeta que se está editando: se oculta mientras se edita y se conserva su id
+        let tarjetaEnEdicion = null;
+
+        function restaurarTarjetaEnEdicion() {
+            tarjetaEnEdicion.style.display = '';
+            tarjetaEnEdicion.querySelectorAll('input').forEach(i => i.disabled = false);
+            tarjetaEnEdicion = null;
+            actualizarProyeccion();
+        }
+
         // Función intermedia que lee el form y manda a renderizar
         function agregarBoletoVisual() {
             const inputNombre = document.getElementById('tempTicketName');
@@ -419,19 +530,37 @@
             const aforo = parseInt(inputAforo.value) || 0;
             const limite = inputLimite.value || '4';
             const desc = inputDesc.value.trim() || 'Sin descripción';
-            
+
             // Validación estricta
-            if(nombre === '' || precioBase <= 0) { 
-                alert("Por favor, llena el Nombre del boleto y pon un Precio Base válido."); 
-                return; 
+            if (nombre === '' || precioBase <= 0) {
+                alert("Por favor, llena el Nombre del boleto y pon un Precio Base válido.");
+                return;
             }
 
-            // Llamamos a la función matemática y de diseño (que ya tienes en tu script)
-            renderizarBoleto(nombre, precioBase, aforo, limite, desc);
-            
+            // Si se está editando un boleto existente se conservan su id y sus ventas
+            let id = '', vendidos = 0;
+            if (tarjetaEnEdicion) {
+                id = tarjetaEnEdicion.dataset.id || '';
+                vendidos = parseInt(tarjetaEnEdicion.dataset.vendidos, 10) || 0;
+                if (aforo < vendidos) {
+                    alert('El aforo no puede ser menor a los ' + vendidos + ' boletos que ya se vendieron.');
+                    return;
+                }
+                if (vendidos > 0 && normalizar(nombre) !== normalizar(tarjetaEnEdicion.dataset.nombre)) {
+                    alert('No puedes cambiar el nombre de este boleto porque ya tiene ventas.');
+                    return;
+                }
+                const anterior = tarjetaEnEdicion;
+                tarjetaEnEdicion = null;
+                renderizarBoleto(nombre, precioBase, aforo, limite, desc, id, vendidos, anterior);
+                anterior.remove();
+            } else {
+                renderizarBoleto(nombre, precioBase, aforo, limite, desc);
+            }
+
             // Ocultamos el formulario
-            toggleFormBoleto();
-            
+            document.getElementById('formNuevoBoleto').style.display = 'none';
+
             // Limpiamos las cajas de texto para el siguiente boleto
             inputNombre.value = '';
             inputPrecio.value = '';
@@ -439,15 +568,14 @@
             inputDesc.value = '';
         }
 
+        function escaparHtml(texto) {
+            return String(texto).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
         // Función principal de renderizado HTML
-        function renderizarBoleto(nombre, precioBase, aforo, limite, desc) {
-            const comision = precioBase * 0.12; 
+        function renderizarBoleto(nombre, precioBase, aforo, limite, desc, id = '', vendidos = 0, antesDe = null) {
+            const comision = precioBase * 0.12;
             const precioAsistente = precioBase + comision;
-            
-            // Actualizar proyecciones globales
-            totalAcumulado += (precioBase * aforo);
-            aforoAcumulado += aforo;
-            actualizarProyeccion();
 
             // Estilos dinámicos
             const isVIP = precioBase >= 1000;
@@ -455,29 +583,26 @@
             let badgeHTML = isVIP ? `<div class="alta-demanda-badge">ALTA DEMANDA SUGERIDA</div>` : '';
             let iconHTML = isVIP ? `<i class="fas fa-star"></i>` : `#`;
             let colorPrecio = isVIP ? 'color: var(--primary-color);' : 'color: var(--text-dark);';
-
-            // Escapar comillas para que no rompan las funciones onClick
-            const safeNombre = nombre.replace(/'/g, "\\'");
-            const safeDesc = desc.replace(/'/g, "\\'");
-
-            // Escapado para atributos HTML (comillas dobles) de los inputs ocultos que sí se envían al servidor
-            const attrNombre = nombre.replace(/"/g, '&quot;');
-            const attrDesc = desc.replace(/"/g, '&quot;');
+            const ventasHTML = vendidos > 0
+                ? `<span class="badge-soft" style="background:#eef2ff; color:#3730a3;">${vendidos.toLocaleString('en-US')} vendidos</span>`
+                : '';
 
             const html = `
-                <div class="${cardClass}">
+                <div class="${cardClass}" data-id="${escaparHtml(id)}" data-vendidos="${vendidos}" data-nombre="${escaparHtml(nombre)}"
+                     data-precio="${precioBase}" data-aforo="${aforo}" data-limite="${escaparHtml(limite)}" data-desc="${escaparHtml(desc)}">
                     <!-- Campos reales que se envían al backend al publicar el evento (Paso 4) -->
-                    <input type="hidden" name="tipoNombre" value="${attrNombre}">
+                    <input type="hidden" name="tipoId" value="${escaparHtml(id)}">
+                    <input type="hidden" name="tipoNombre" value="${escaparHtml(nombre)}">
                     <input type="hidden" name="tipoPrecio" value="${precioBase}">
                     <input type="hidden" name="tipoAforo" value="${aforo}">
-                    <input type="hidden" name="tipoDescripcion" value="${attrDesc}">
+                    <input type="hidden" name="tipoDescripcion" value="${escaparHtml(desc)}">
                     ${badgeHTML}
                     <div class="ticket-header">
                         <div class="ticket-title-area">
                             <div class="ticket-icon">${iconHTML}</div>
                             <div>
-                                <strong style="font-size:14px;">${nombre}</strong> <span class="badge-soft" style="background:#fdf2f6; color:var(--primary-color);">Activo</span>
-                                <p style="font-size:11px; color:var(--text-light); margin-top:3px;">${desc}</p>
+                                <strong style="font-size:14px;">${escaparHtml(nombre)}</strong> <span class="badge-soft" style="background:#fdf2f6; color:var(--primary-color);">Activo</span> ${ventasHTML}
+                                <p style="font-size:11px; color:var(--text-light); margin-top:3px;">${escaparHtml(desc)}</p>
                             </div>
                         </div>
                         <div class="ticket-price-area">
@@ -490,60 +615,352 @@
                         <div class="stat-col"><span>Precio Base Promotor</span><strong>$${precioBase.toLocaleString('en-US')} MXN</strong></div>
                         <div class="stat-col"><span>Comisión Konticket (12%)</span><strong>+$${comision.toLocaleString('en-US')} MXN</strong></div>
                         <div class="stat-col"><span>Aforo Asignado</span><strong>${aforo.toLocaleString('en-US')} boletos</strong></div>
-                        <div class="stat-col"><span>Límite por Compra</span><strong>${limite} boletos / persona</strong></div>
+                        <div class="stat-col"><span>Límite por Compra</span><strong>${escaparHtml(limite)} boletos / persona</strong></div>
                     </div>
 
                     <div class="ticket-footer">
                         <div><i class="fas ${isVIP ? 'fa-shield-alt text-pink' : 'fa-lock'}"></i> <span style="${isVIP ? 'color:var(--primary-color); font-weight:bold;' : ''}">${isVIP ? 'Incluye control antifraude reforzado por QR dinámico' : 'Venta habilitada inmediatamente tras publicación'}</span></div>
                         <div class="ticket-actions">
-                            <i class="fas fa-pen" title="Editar" onclick="editarBoleto(this, '${safeNombre}', ${precioBase}, ${aforo}, '${limite}', '${safeDesc}')"></i> 
-                            <i class="fas fa-copy" title="Duplicar" onclick="copiarBoleto('${safeNombre}', ${precioBase}, ${aforo}, '${limite}', '${safeDesc}')"></i> 
-                            <i class="fas fa-trash" title="Eliminar" onclick="eliminarBoleto(this, ${precioBase}, ${aforo})"></i>
+                            <i class="fas fa-pen" title="Editar" onclick="editarBoleto(this)"></i>
+                            <i class="fas fa-copy" title="Duplicar" onclick="copiarBoleto(this)"></i>
+                            <i class="fas fa-trash" title="${vendidos > 0 ? 'No se puede eliminar: ya tiene ventas' : 'Eliminar'}" onclick="eliminarBoleto(this)"
+                               style="${vendidos > 0 ? 'opacity:0.35; cursor:not-allowed;' : ''}"></i>
                         </div>
                     </div>
                 </div>
             `;
-            
-            document.getElementById('listaBoletosVisual').insertAdjacentHTML('beforeend', html);
+
+            if (antesDe) {
+                antesDe.insertAdjacentHTML('beforebegin', html);
+            } else {
+                document.getElementById('listaBoletosVisual').insertAdjacentHTML('beforeend', html);
+            }
+            actualizarProyeccion();
         }
 
         // Acciones de las tarjetas
-        function eliminarBoleto(elemento, precioBase, aforo) {
-            if(confirm("¿Estás seguro de eliminar este tipo de boleto?")) {
-                totalAcumulado -= (precioBase * aforo);
-                aforoAcumulado -= aforo;
+        function eliminarBoleto(elemento) {
+            const tarjeta = elemento.closest('.ticket-card-detailed');
+            const vendidos = parseInt(tarjeta.dataset.vendidos, 10) || 0;
+            if (vendidos > 0) {
+                alert('Este boleto ya tiene ' + vendidos + ' ventas, no se puede eliminar. Puedes cambiar su precio o aforo.');
+                return;
+            }
+            if (confirm("¿Estás seguro de eliminar este tipo de boleto?")) {
+                tarjeta.remove();
                 actualizarProyeccion();
-                elemento.closest('.ticket-card-detailed').remove();
             }
         }
 
-        function copiarBoleto(nombre, precioBase, aforo, limite, desc) {
-            renderizarBoleto(nombre + ' (Copia)', precioBase, aforo, limite, desc);
+        function copiarBoleto(elemento) {
+            const d = elemento.closest('.ticket-card-detailed').dataset;
+            renderizarBoleto(d.nombre + ' (Copia)', parseFloat(d.precio) || 0, parseInt(d.aforo, 10) || 0, d.limite, d.desc);
         }
 
-        function editarBoleto(elemento, nombre, precioBase, aforo, limite, desc) {
-            document.getElementById('tempTicketName').value = nombre;
-            document.getElementById('tempTicketPrice').value = precioBase;
-            document.getElementById('tempTicketQty').value = aforo;
-            document.getElementById('tempTicketLimit').value = limite;
-            document.getElementById('tempTicketDesc').value = desc;
-            
-            document.getElementById('formNuevoBoleto').style.display = 'block';
-            
-            // Quita la tarjeta actual de los totales visuales
-            totalAcumulado -= (precioBase * aforo);
-            aforoAcumulado -= aforo;
+        function editarBoleto(elemento) {
+            if (tarjetaEnEdicion) restaurarTarjetaEnEdicion();
+            const tarjeta = elemento.closest('.ticket-card-detailed');
+            const d = tarjeta.dataset;
+            document.getElementById('tempTicketName').value = d.nombre;
+            document.getElementById('tempTicketPrice').value = d.precio;
+            document.getElementById('tempTicketQty').value = d.aforo;
+            document.getElementById('tempTicketLimit').value = d.limite;
+            document.getElementById('tempTicketDesc').value = d.desc === 'Sin descripción' ? '' : d.desc;
+
+            // La tarjeta se oculta (y no se envía) mientras se edita; "Cancelar" la restaura
+            tarjetaEnEdicion = tarjeta;
+            tarjeta.style.display = 'none';
+            tarjeta.querySelectorAll('input').forEach(i => i.disabled = true);
             actualizarProyeccion();
-            
-            // Borra la tarjeta porque se está editando
-            elemento.closest('.ticket-card-detailed').remove();
+
+            document.getElementById('formNuevoBoleto').style.display = 'block';
             document.getElementById('formNuevoBoleto').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
-        function actualizarProyeccion() {
-            document.getElementById('totalProyeccion').textContent = '$' + totalAcumulado.toLocaleString('en-US') + ' MXN';
-            document.getElementById('totalAforo').textContent = aforoAcumulado.toLocaleString('en-US');
+        // --- ZONAS DEL MAPA (Mapa Numerado) ---
+        function normalizar(texto) {
+            return String(texto || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
         }
+
+        function filasZona() {
+            return Array.from(document.querySelectorAll('.fila-zona'));
+        }
+
+        function aforoDeZona(fila) {
+            if (fila.dataset.numerada === 'true') return parseInt(fila.dataset.asientos, 10) || 0;
+            return parseInt(fila.querySelector('.zona-aforo').value, 10) || 0;
+        }
+
+        // Tipos de boleto que se van a guardar según la modalidad elegida
+        function tiposActivos() {
+            if (campoModalidad.value === 'NUMERADO') {
+                return filasZona().filter(f => f.querySelector('.zona-vender').checked).map(f => ({
+                    id: f.dataset.tipoId || '',
+                    nombre: f.dataset.nombre,
+                    precio: parseFloat(f.querySelector('.zona-precio').value) || 0,
+                    aforo: aforoDeZona(f),
+                    descripcion: f.querySelector('.zona-desc').value.trim(),
+                    vendidos: parseInt(f.dataset.vendidos, 10) || 0
+                }));
+            }
+            return Array.from(document.querySelectorAll('#listaBoletosVisual .ticket-card-detailed'))
+                .filter(t => t.style.display !== 'none')
+                .map(t => ({
+                    id: t.dataset.id || '',
+                    nombre: t.dataset.nombre,
+                    precio: parseFloat(t.dataset.precio) || 0,
+                    aforo: parseInt(t.dataset.aforo, 10) || 0,
+                    descripcion: t.dataset.desc,
+                    vendidos: parseInt(t.dataset.vendidos, 10) || 0
+                }));
+        }
+
+        function actualizarProyeccion() {
+            const tipos = tiposActivos();
+            const aforo = tipos.reduce((s, t) => s + t.aforo, 0);
+            const total = tipos.reduce((s, t) => s + t.precio * t.aforo, 0);
+            const textoTotal = '$' + total.toLocaleString('en-US') + ' MXN';
+            document.getElementById('totalProyeccion').textContent = textoTotal;
+            document.getElementById('totalAforo').textContent = aforo.toLocaleString('en-US');
+            document.getElementById('aforoMapa').textContent = aforo.toLocaleString('en-US');
+            document.getElementById('proyeccionMapa').textContent = textoTotal;
+        }
+
+        // --- VISTA PREVIA EN VIVO (PASO 1) ---
+        const campoNombre = document.getElementById('nombre');
+        const campoDescripcion = document.getElementById('descripcion');
+        const campoCategoria = document.getElementById('categoria');
+        const campoFecha = document.getElementById('fechaHoraEvento');
+        const campoLugar = document.getElementById('lugar');
+        const campoCapacidad = document.getElementById('capacidad');
+        const campoEstado = document.getElementById('estadoEvento');
+        const campoImagen = document.getElementById('imagenFile');
+        const campoCroquis = document.getElementById('croquisFile');
+        const campoModalidad = document.getElementById('modalidadAsientos');
+        const imagenActual = document.getElementById('imagenActual');
+        let urlImagenPrevia = null;
+
+        function formatearFecha(valor) {
+            if (!valor) return '';
+            const fecha = new Date(valor);
+            if (isNaN(fecha)) return '';
+            return fecha.toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })
+                + ' • ' + fecha.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function actualizarVistaPrevia() {
+            const nombre = campoNombre.value.trim();
+            const descripcion = campoDescripcion.value.trim();
+            document.getElementById('previewNombre').textContent = nombre || '[Nombre de tu Evento]';
+            document.getElementById('previewDescripcion').textContent = descripcion;
+            document.getElementById('previewCategoria').textContent = campoCategoria.value || '[Categoría]';
+
+            const detalle = [formatearFecha(campoFecha.value), campoLugar.value.trim()].filter(Boolean).join(' · ');
+            document.getElementById('previewDetalle').textContent = detalle;
+        }
+
+        // Al editar, la vista previa arranca con el banner guardado
+        if (imagenActual) {
+            document.getElementById('previewImagen').style.backgroundImage = 'url(' + imagenActual.dataset.url + ')';
+        }
+
+        campoImagen.addEventListener('change', () => {
+            const archivo = campoImagen.files[0];
+            const caja = document.getElementById('previewImagen');
+            if (urlImagenPrevia) URL.revokeObjectURL(urlImagenPrevia);
+            if (archivo) {
+                urlImagenPrevia = URL.createObjectURL(archivo);
+                caja.style.backgroundImage = 'url(' + urlImagenPrevia + ')';
+                document.getElementById('nombreImagen').textContent = archivo.name;
+            } else {
+                urlImagenPrevia = null;
+                caja.style.backgroundImage = imagenActual ? 'url(' + imagenActual.dataset.url + ')' : '';
+                document.getElementById('nombreImagen').textContent = imagenActual ? 'Deja vacío para conservar el banner actual' : '';
+            }
+        });
+
+        campoCroquis.addEventListener('change', () => {
+            document.getElementById('nombreCroquis').textContent = campoCroquis.files[0] ? campoCroquis.files[0].name : '';
+        });
+
+        [campoNombre, campoDescripcion, campoCategoria, campoFecha, campoLugar].forEach(campo => {
+            campo.addEventListener('input', actualizarVistaPrevia);
+            campo.addEventListener('change', actualizarVistaPrevia);
+        });
+        actualizarVistaPrevia();
+
+        // Activar/desactivar zonas recalcula aforo y proyección
+        filasZona().forEach(fila => {
+            const casilla = fila.querySelector('.zona-vender');
+            const actualizarFila = () => {
+                fila.classList.toggle('activa', casilla.checked);
+                fila.querySelectorAll('.zona-precio, .zona-desc, .zona-aforo').forEach(i => i.disabled = !casilla.checked);
+                actualizarProyeccion();
+            };
+            casilla.addEventListener('change', actualizarFila);
+            fila.querySelectorAll('input:not(.zona-vender)').forEach(i => i.addEventListener('input', actualizarProyeccion));
+            actualizarFila();
+        });
+
+        // --- MODALIDAD DE ASIGNACIÓN DE ESPACIOS (PASO 3) ---
+        const modalidadOriginal = campoModalidad.value === 'NUMERADO' ? 'NUMERADO' : 'GENERAL';
+        const modalidadBloqueada = campoModalidad.dataset.bloqueada === 'true';
+
+        function seleccionarModalidad(modalidad) {
+            if (modalidadBloqueada && modalidad !== modalidadOriginal) {
+                alert('No puedes cambiar la modalidad: este evento ya tiene boletos vendidos.');
+                return;
+            }
+            campoModalidad.value = modalidad;
+            document.querySelectorAll('#selectorModalidad button').forEach(boton => {
+                boton.classList.toggle('active', boton.dataset.modalidad === modalidad);
+            });
+            const numerado = modalidad === 'NUMERADO';
+            document.getElementById('avisoModalidad').style.display = numerado ? 'flex' : 'none';
+            document.getElementById('panelMapa').style.display = numerado ? 'block' : 'none';
+            document.getElementById('seccionTiposGenerales').style.display = numerado ? 'none' : 'block';
+            actualizarProyeccion();
+        }
+
+        // --- BOLETOS QUE YA EXISTEN (al editar) ---
+        document.querySelectorAll('.tipo-existente').forEach(el => {
+            const d = el.dataset;
+            const precio = parseFloat(d.precio) || 0;
+            const aforo = parseInt(d.aforo, 10) || 0;
+            const vendidos = parseInt(d.vendidos, 10) || 0;
+            const fila = modalidadOriginal === 'NUMERADO'
+                ? filasZona().find(f => normalizar(f.dataset.nombre) === normalizar(d.nombre) || normalizar(f.dataset.codigo) === normalizar(d.nombre))
+                : null;
+            if (fila) {
+                fila.dataset.tipoId = d.id;
+                fila.dataset.vendidos = vendidos;
+                const casilla = fila.querySelector('.zona-vender');
+                casilla.checked = true;
+                casilla.dispatchEvent(new Event('change'));
+                fila.querySelector('.zona-precio').value = precio;
+                fila.querySelector('.zona-desc').value = d.descripcion || '';
+                const campoAforo = fila.querySelector('.zona-aforo');
+                if (campoAforo) campoAforo.value = aforo;
+                if (vendidos > 0) {
+                    casilla.disabled = true; // con ventas no se puede dejar de vender
+                    fila.querySelector('.zona-vendidos').textContent = vendidos + ' vendidos';
+                }
+            } else {
+                renderizarBoleto(d.nombre, precio, aforo, '4', d.descripcion || 'Sin descripción', d.id, vendidos);
+            }
+        });
+
+        seleccionarModalidad(modalidadOriginal);
+
+        // --- ENVÍO: los tipos de boleto salen de la tabla de zonas o de las tarjetas ---
+        document.getElementById('formEvento').addEventListener('submit', e => {
+            const numerado = campoModalidad.value === 'NUMERADO';
+            const contenedor = document.getElementById('camposZonas');
+            contenedor.innerHTML = '';
+
+            // Las tarjetas de Entrada General solo se envían en esa modalidad
+            document.querySelectorAll('#listaBoletosVisual .ticket-card-detailed').forEach(t => {
+                const oculta = t.style.display === 'none';
+                t.querySelectorAll('input').forEach(i => i.disabled = numerado || oculta);
+            });
+
+            const tipos = tiposActivos();
+            const problemas = [];
+            if (!tipos.length) problemas.push(numerado ? 'Activa al menos una zona del mapa.' : 'Agrega al menos un tipo de boleto.');
+            tipos.forEach(t => {
+                if (t.precio <= 0) problemas.push('Pon un precio a «' + t.nombre + '».');
+                if (t.aforo <= 0) problemas.push('Indica cuántos lugares tiene «' + t.nombre + '».');
+                if (t.aforo < t.vendidos) problemas.push('«' + t.nombre + '» ya vendió ' + t.vendidos + ' boletos; su aforo no puede ser menor.');
+            });
+            if (problemas.length) {
+                e.preventDefault();
+                alert(problemas.join('\n'));
+                if (pasoActualGlobal !== 3) mostrarPaso(3);
+                return;
+            }
+
+            if (numerado) {
+                tipos.forEach(t => {
+                    [['tipoId', t.id], ['tipoNombre', t.nombre], ['tipoPrecio', t.precio],
+                     ['tipoAforo', t.aforo], ['tipoDescripcion', t.descripcion]].forEach(([nombre, valor]) => {
+                        const campo = document.createElement('input');
+                        campo.type = 'hidden';
+                        campo.name = nombre;
+                        campo.value = valor;
+                        contenedor.appendChild(campo);
+                    });
+                });
+            }
+        });
+
+        // --- RESUMEN FINAL (PASO 4) ---
+        function filaResumen(etiqueta, valor) {
+            const fila = document.createElement('div');
+            fila.className = 'resumen-fila';
+            const e = document.createElement('span');
+            e.textContent = etiqueta;
+            const v = document.createElement('strong');
+            v.textContent = valor;
+            fila.append(e, v);
+            return fila;
+        }
+
+        function actualizarResumen() {
+            const contenedor = document.getElementById('resumenFinal');
+            const avisos = document.getElementById('resumenAvisos');
+            contenedor.innerHTML = '';
+            avisos.innerHTML = '';
+
+            const tipos = tiposActivos();
+            const aforoTotal = tipos.reduce((s, t) => s + t.aforo, 0);
+            const proyeccion = tipos.reduce((s, t) => s + t.precio * t.aforo, 0);
+            const capacidad = parseInt(campoCapacidad.value, 10) || 0;
+            const estadoTexto = campoEstado.options[campoEstado.selectedIndex].text;
+            const banner = campoImagen.files[0] ? campoImagen.files[0].name : (imagenActual ? 'Banner actual' : 'Sin imagen');
+
+            contenedor.append(
+                filaResumen('Evento', campoNombre.value.trim() || '—'),
+                filaResumen('Categoría', campoCategoria.value || '—'),
+                filaResumen('Fecha', formatearFecha(campoFecha.value) || '—'),
+                filaResumen('Lugar', campoLugar.value.trim() || '—'),
+                filaResumen('Capacidad', capacidad ? capacidad.toLocaleString('es-MX') : '—'),
+                filaResumen('Modalidad', campoModalidad.value === 'NUMERADO' ? 'Mapa Numerado' : 'Entrada General'),
+                filaResumen('Banner', banner),
+                filaResumen(campoModalidad.value === 'NUMERADO' ? 'Zonas a la venta' : 'Tipos de boleto', String(tipos.length)),
+                filaResumen('Aforo asignado', aforoTotal.toLocaleString('es-MX') + (capacidad ? ' de ' + capacidad.toLocaleString('es-MX') : '')),
+                filaResumen('Proyección de ingresos', '$' + proyeccion.toLocaleString('es-MX') + ' MXN'),
+                filaResumen('Estado', estadoTexto)
+            );
+
+            if (tipos.length) {
+                const lista = document.createElement('ul');
+                lista.className = 'resumen-boletos';
+                tipos.forEach(t => {
+                    const item = document.createElement('li');
+                    item.textContent = t.nombre + ' — $' + t.precio.toLocaleString('es-MX') + ' MXN × ' + t.aforo.toLocaleString('es-MX');
+                    lista.appendChild(item);
+                });
+                contenedor.appendChild(lista);
+            }
+
+            const faltantes = [];
+            if (!campoNombre.value.trim()) faltantes.push('Falta el nombre del evento (Paso 1).');
+            if (!campoFecha.value) faltantes.push('Falta la fecha y hora (Paso 2).');
+            if (!campoLugar.value.trim()) faltantes.push('Falta el lugar del evento (Paso 2).');
+            if (!capacidad) faltantes.push('Falta la capacidad del recinto (Paso 2); se usará el aforo de los boletos.');
+            if (!tipos.length) faltantes.push(campoModalidad.value === 'NUMERADO' ? 'No has activado zonas del mapa (Paso 3).' : 'No has agregado tipos de boleto (Paso 3).');
+            if (capacidad && aforoTotal > capacidad) faltantes.push('El aforo de los boletos supera la capacidad del recinto.');
+
+            faltantes.forEach(texto => {
+                const aviso = document.createElement('p');
+                aviso.className = 'resumen-aviso';
+                aviso.textContent = '⚠ ' + texto;
+                avisos.appendChild(aviso);
+            });
+        }
+
+        // Al editar desde el panel se puede abrir directo en un paso (ej. ?paso=3)
+        if (PASO_INICIAL > 1) mostrarPaso(PASO_INICIAL);
     </script>
 </body>
 </html>

@@ -327,3 +327,34 @@
 }
 
 
+
+/* Banner real del evento detrás del contenido del carrusel */
+.event-card {
+    overflow: hidden;
+}
+
+.event-card-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    opacity: 0.45;
+}
+
+.event-card-overlay {
+    z-index: 1;
+}
+
+.event-description {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-footer {
+    flex-wrap: wrap;
+    gap: 16px;
+}

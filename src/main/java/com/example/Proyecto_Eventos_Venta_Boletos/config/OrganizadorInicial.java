@@ -3,19 +3,29 @@ package com.example.Proyecto_Eventos_Venta_Boletos.config;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Mientras no haya inicio de sesión, el panel del organizador trabaja con el organizador id = 1
- * (ver ORGANIZADOR_ID en OrganizadorController). Al arrancar se asegura de que exista;
- * INSERT IGNORE no modifica nada si ya está registrado.
+ * Asegura que exista un organizador de prueba para poder iniciar sesión:
+ *   correo: organizador@konticket.mx   contraseña: Konticket123
+ * INSERT IGNORE no modifica nada si ya está registrado; la contraseña solo se asigna
+ * si el registro no tiene una.
  */
 @Component
 public class OrganizadorInicial implements CommandLineRunner {
 
+    private static final String CONTRASENIA_INICIAL = "Konticket123";
+
     @PersistenceContext
     private EntityManager entityManager;
+
+    private final PasswordEncoder passwordEncoder;
+
+    public OrganizadorInicial(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     @Transactional
@@ -26,6 +36,12 @@ public class OrganizadorInicial implements CommandLineRunner {
                 .setParameter("nombre", "Organizador Konticket")
                 .setParameter("telefono", "0000000000")
                 .setParameter("correo", "organizador@konticket.mx")
+                .executeUpdate();
+
+        entityManager.createNativeQuery(
+                        "UPDATE organizadores SET contrasenia = :hash " +
+                        "WHERE id = 1 AND (contrasenia IS NULL OR contrasenia = '')")
+                .setParameter("hash", passwordEncoder.encode(CONTRASENIA_INICIAL))
                 .executeUpdate();
     }
 }

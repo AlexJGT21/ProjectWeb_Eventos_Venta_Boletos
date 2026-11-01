@@ -6,10 +6,15 @@
     <title>Konticket - Panel Organizador & Estadísticas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" th:href="@{/css/panelOrganizador.css}" href="/css/panelOrganizador.css">
+    <link rel="stylesheet" th:href="@{/css/menu-lateral.css}" href="/css/menu-lateral.css">
 </head>
 <body>
 
-    <input type="checkbox" id="profile-menu-toggle" style="display: none;">
+    <!-- Checkbox oculto que controla el menú lateral del fragmento -->
+    <input type="checkbox" id="profile-menu-toggle" class="menu-toggle-checkbox">
+
+    <!-- Overlay oscuro para cerrar el menú al hacer clic fuera -->
+    <label for="profile-menu-toggle" class="sidebar-overlay"></label>
 
     <main class="main-content">
         <header th:replace="~{fragmentos/header :: main-header}"></header>
@@ -23,32 +28,47 @@
                     <h1 th:text="'Panel de Gestión • ' + (${organizador != null} ? ${organizador.nombre} : '')">Panel de Gestión</h1>
                     <p class="text-light-gray text-sm">Supervisión financiera en tiempo real, inventario de aforo y logística de taquilla.</p>
                 </div>
-                <div class="filters-block">
+                <!-- Al cambiar cualquier filtro se recarga el panel con los datos de ese evento / periodo -->
+                <form class="filters-block" method="get" th:action="@{/organizador/panel}">
                     <div class="form-group-inline">
-                        <label>Evento Activo</label>
-                        <select>
-                            <option th:if="${eventos == null or #lists.isEmpty(eventos)}">Sin eventos registrados</option>
-                            <option th:each="ev : ${eventos}" th:value="${ev.id}" th:text="${ev.nombre}">Nombre Evento</option>
+                        <label for="filtroEvento">Evento Activo</label>
+                        <select id="filtroEvento" name="eventoId" onchange="this.form.submit()">
+                            <option value="" th:text="${#lists.isEmpty(eventos)} ? 'Sin eventos registrados' : 'Todos mis eventos'">Todos mis eventos</option>
+                            <option th:each="ev : ${eventos}" th:value="${ev.id}" th:text="${ev.nombre}"
+                                    th:selected="${eventoSeleccionadoId != null and eventoSeleccionadoId == ev.id}">Nombre Evento</option>
+                        </select>
+                        <!-- Edición del evento seleccionado -->
+                        <a class="link-editar-evento" th:if="${eventoSeleccionadoId != null}"
+                           th:href="@{/organizador/evento/{id}/editar(id=${eventoSeleccionadoId})}"><i class="fas fa-pen"></i> Editar este evento</a>
+                    </div>
+                    <div class="form-group-inline">
+                        <label for="filtroDias">Periodo</label>
+                        <select id="filtroDias" name="dias" onchange="this.form.submit()">
+                            <option value="7" th:selected="${diasSeleccionados == 7}">Últimos 7 días</option>
+                            <option value="30" th:selected="${diasSeleccionados == 30}">Últimos 30 días</option>
+                            <option value="90" th:selected="${diasSeleccionados == 90}">Últimos 90 días</option>
                         </select>
                     </div>
-                    <div class="form-group-inline">
-                        <label>Periodo</label>
-                        <select><option>Últimos 30 días</option></select>
-                    </div>
-                </div>
+                </form>
             </div>
+
+            <div class="aviso-panel" th:if="${param.eventoActualizado != null}"><i class="fas fa-check-circle"></i> Los cambios del evento se guardaron.</div>
+            <div class="aviso-panel" th:if="${param.eventoCreado != null}"><i class="fas fa-check-circle"></i> Evento creado y publicado.</div>
 
             <div class="staff-banner">
                 <div class="banner-info">
                     <div class="icon-box"><i class="fas fa-qrcode"></i></div>
                     <div>
-                        <h3 style="margin-bottom: 5px;">Puertas y Accesos de Staff <span class="badge-soft">Próximo evento</span></h3>
-                        <p class="text-sm" style="opacity: 0.8;">Sincroniza escáneres en línea o descarga credenciales maestras de validación.</p>
+                        <h3 style="margin-bottom: 5px;">Puertas y Accesos de Staff
+                            <span class="badge-soft" th:text="${diasProximoEvento == null} ? 'Sin eventos próximos' : (${diasProximoEvento == 0} ? 'Evento hoy' : ('Próximo evento en ' + ${diasProximoEvento} + ' días'))">Próximo evento</span>
+                        </h3>
+                        <p class="text-sm" style="opacity: 0.8;">Descarga el reporte de ventas e inventario del evento seleccionado.</p>
                     </div>
                 </div>
                 <div class="banner-actions">
-                    <button class="btn-pink-light"><i class="fas fa-expand"></i> ABRIR ESCÁNER QR</button>
-                    <button class="btn-purple-dark"><i class="fas fa-download"></i> REPORTE CSV / PDF</button>
+                    <button type="button" class="btn-pink-light" disabled title="Próximamente" style="opacity: 0.6; cursor: not-allowed;"><i class="fas fa-expand"></i> ESCÁNER QR (PRÓXIMAMENTE)</button>
+                    <a class="btn-purple-dark" style="text-decoration: none;"
+                       th:href="${eventoSeleccionadoId != null} ? @{/organizador/reporte.csv(eventoId=${eventoSeleccionadoId})} : @{/organizador/reporte.csv}"><i class="fas fa-download"></i> DESCARGAR REPORTE CSV</a>
                 </div>
             </div>
 
@@ -64,7 +84,7 @@
                         <span th:text="${'$' + #numbers.formatDecimal(ingresosTotales, 0, 'COMMA', 0, 'POINT')}">$0</span>
                         <small>MXN</small>
                     </h2>
-                    <p class="metric-trend text-green"><i class="fas fa-arrow-trend-up"></i> +18.4% <span class="text-light-gray">vs. mes anterior</span></p>
+                    <p class="metric-trend text-light-gray"><strong class="text-pink" th:text="${curva.totalPeriodo}">0</strong> boletos vendidos en los últimos <span th:text="${diasSeleccionados}">30</span> días</p>
                 </div>
                 
                 <div class="card metric-card">
@@ -82,7 +102,7 @@
                     </div>
                     <div class="metric-foot mt-2">
                         <span class="text-pink fw-bold text-xs" th:text="${#numbers.formatDecimal(porcentajeOcupacion, 1, 1)} + '% capacidad ocupada'">0% capacidad ocupada</span>
-                        <span class="text-light-gray text-xs" th:text="${boletosRestantes} + ' restantes'">0 restantes</span>
+                        <span class="text-light-gray text-xs" th:text="${#numbers.formatInteger(boletosRestantes, 0, 'COMMA')} + ' restantes'">0 restantes</span>
                     </div>
                 </div>
                 
@@ -92,7 +112,9 @@
                         <i class="fas fa-user-check text-gray"></i>
                     </div>
                     <h2 class="metric-value">0% <span class="text-light-gray text-sm" th:text="'(0 / ' + ${#numbers.formatInteger(boletosVendidos, 0, 'COMMA')} + ')'">(0 / 0)</span></h2>
-                    <p class="metric-trend text-light-gray mt-3"><span class="pulse-dot-yellow"></span> Apertura de puertas en 12 días</p>
+                    <p class="metric-trend text-light-gray mt-3"><span class="pulse-dot-yellow"></span>
+                        <span th:text="${diasProximoEvento == null} ? 'Sin eventos próximos' : (${diasProximoEvento == 0} ? 'Apertura de puertas hoy' : ('Apertura de puertas en ' + ${diasProximoEvento} + ' días'))">Apertura de puertas</span>
+                    </p>
                 </div>
                 
                 <div class="card metric-card">
@@ -104,35 +126,45 @@
                         <span th:text="${'$' + #numbers.formatDecimal(ticketPromedio, 0, 'COMMA', 0, 'POINT')}">$0</span>
                         <small>MXN</small>
                     </h2>
-                    <p class="metric-trend text-light-gray mt-2"><strong class="text-pink">VIP Lounge</strong> impulsa el valor promedio</p>
+                    <p class="metric-trend text-light-gray mt-2" th:if="${tipoTop != null}"><strong class="text-pink" th:text="${tipoTop.tipoBoleto}">Tipo</strong> es el que más ingresos genera</p>
+                    <p class="metric-trend text-light-gray mt-2" th:if="${tipoTop == null}">Aún no hay ventas registradas</p>
                 </div>
             </div>
 
-            <!-- Grid de Gráficas (Permanecen visuales por ahora) -->
+            <!-- Grid de Gráficas (calculadas con datos reales) -->
             <div class="charts-grid">
                 <div class="card chart-card">
                     <div class="chart-header">
                         <div>
-                            <span class="text-pink text-xs fw-bold">CURVA DE CONVERSIÓN</span>
+                            <span class="text-pink text-xs fw-bold" th:text="'ÚLTIMOS ' + ${curva.dias} + ' DÍAS • MÁXIMO ' + ${curva.maximoDiario} + ' BOLETOS EN UN DÍA'">CURVA DE CONVERSIÓN</span>
                             <h3>Ritmo de Venta de Boletos por Día</h3>
                         </div>
                     </div>
                     <div class="line-chart-wrapper">
                         <svg viewBox="0 0 800 250" preserveAspectRatio="none" class="svg-line-chart">
                             <defs><linearGradient id="grad-pink" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e91e63" stop-opacity="0.3"/><stop offset="100%" stop-color="#e91e63" stop-opacity="0"/></linearGradient></defs>
-                            <path d="M0,220 C100,210 200,200 300,180 C350,170 380,190 400,180 C450,150 480,50 500,40 C520,30 550,200 570,220 C600,240 650,40 680,60 C750,100 800,200 800,200 L800,250 L0,250 Z" fill="url(#grad-pink)" />
-                            <path d="M0,220 C100,210 200,200 300,180 C350,170 380,190 400,180 C450,150 480,50 500,40 C520,30 550,200 570,220 C600,240 650,40 680,60 C750,100 800,200 800,200" fill="none" stroke="#e91e63" stroke-width="4" stroke-linecap="round"/>
+                            <path th:attr="d=${curva.trazoArea}" d="M0,230 L800,230 L800,250 L0,250 Z" fill="url(#grad-pink)" />
+                            <path th:attr="d=${curva.trazoLinea}" d="M0,230 L800,230" fill="none" stroke="#e91e63" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </div>
+                    <div class="text-xs text-light-gray mt-1" style="display: flex; justify-content: space-between;">
+                        <span th:each="etiqueta : ${curva.etiquetas}" th:text="${etiqueta}">fecha</span>
+                    </div>
+                    <p th:if="${curva.totalPeriodo == 0}" class="text-sm text-light-gray mt-2" style="text-align: center;">
+                        Aún no hay ventas registradas en este periodo.
+                    </p>
                 </div>
 
                 <div class="card chart-card">
-                    <span class="text-pink text-xs fw-bold">ADQUISICIÓN</span>
-                    <h3>Canales de Venta</h3>
+                    <span class="text-pink text-xs fw-bold">AFORO</span>
+                    <h3>Ocupación del Recinto</h3>
                     <div class="donut-chart-container">
-                        <div class="donut-chart">
+                        <div class="donut-chart"
+                             th:style="'background: conic-gradient(var(--primary-color) 0% ' + ${porcentajeOcupacion} + '%, #ececf3 ' + ${porcentajeOcupacion} + '% 100%);'">
                             <div class="donut-inner">
-                                <span class="text-xs fw-bold text-light-gray">CANAL LÍDER</span><h2 style="margin: 0;">72%</h2><span class="text-xs fw-bold text-pink">Web Oficial</span>
+                                <span class="text-xs fw-bold text-light-gray">VENDIDO</span>
+                                <h2 style="margin: 0;" th:text="${#numbers.formatDecimal(porcentajeOcupacion, 1, 1)} + '%'">0%</h2>
+                                <span class="text-xs fw-bold text-pink" th:text="${#numbers.formatInteger(boletosRestantes, 0, 'COMMA')} + ' libres'">0 libres</span>
                             </div>
                         </div>
                     </div>
@@ -201,7 +233,14 @@
                                               th:text="'● ' + ${boleto.estado}">ESTADO</span>
                                     </td>
                                     <td class="table-actions">
-                                        <i class="fas fa-pen"></i> <i class="fas fa-download"></i>
+                                        <!-- Editar abre el formulario del evento directo en el paso de boletos -->
+                                        <a th:href="@{/organizador/evento/{id}/editar(id=${boleto.eventoId}, paso=3)}" title="Editar boletos del evento"><i class="fas fa-pen"></i></a>
+                                        <a th:href="@{/organizador/reporte.csv(eventoId=${boleto.eventoId})}" title="Descargar reporte de este evento"><i class="fas fa-download"></i></a>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(inventario)}">
+                                    <td colspan="7" class="text-sm text-light-gray" style="text-align: center; padding: 20px;">
+                                        Este evento todavía no tiene tipos de boleto registrados.
                                     </td>
                                 </tr>
                             </tbody>
@@ -214,23 +253,8 @@
     </main>
 
     <!-- Menú Lateral Dinámico inyectando entidad Organizador -->
-    <aside class="perfil-sidebar">
-        <div class="user-profile">
-            <div class="avatar" th:text="${organizador != null and organizador.nombre != null and #strings.length(organizador.nombre) >= 2} ? ${#strings.toUpperCase(#strings.substring(organizador.nombre, 0, 2))} : 'OR'">OR</div>
-            <div class="user-info">
-                <strong th:text="${organizador != null ? organizador.nombre : 'Organizador'}">Nombre Organizador</strong>
-                <span th:text="${organizador != null ? organizador.correo : ''}">correo@mail.com</span>
-            </div>
-            <label for="profile-menu-toggle" class="close-menu-btn"><i class="fas fa-times"></i></label>
-        </div>
-        <nav class="sidebar-nav">
-            <ul>
-                <li class="active"><a th:href="@{/organizador/panel}"><i class="fas fa-chart-pie"></i> Panel Organizador</a></li>
-                <li><a th:href="@{/organizador/evento/nuevo}"><i class="fas fa-calendar-alt"></i> Crear Eventos</a></li>
-                <li><a href="#"><i class="fas fa-chart-line"></i> Ventas y Aforos</a></li>
-            </ul>
-        </nav>
-    </aside>
+    <!-- Menú lateral compartido (fragmentos/header.html) -->
+    <aside th:replace="~{fragmentos/header :: perfil-sidebar}"></aside>
 
 </body>
 </html>

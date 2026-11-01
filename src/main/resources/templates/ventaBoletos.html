@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Konticket - Venta de Boletos</title>
+    <title th:text="${evento.nombre} + ' - Konticket'">Konticket - Venta de Boletos</title>
     <!-- CSS del Header y Sidebar -->
     <link rel="stylesheet" th:href="@{/css/header.css}" href="/css/header.css">
     <!-- CSS propio de esta vista -->
     <link rel="stylesheet" th:href="@{/css/venta-boletos.css}" href="/css/venta-boletos.css">
+    <link rel="stylesheet" th:href="@{/css/mapa-venta.css}" href="/css/mapa-venta.css">
 </head>
 <body>
 
@@ -23,6 +24,31 @@
     <!-- 2. Carga del Menú Lateral (Perfil) desde el fragmento -->
     <aside th:replace="~{fragmentos/header :: perfil-sidebar}"></aside>
 
+    <!-- Datos de cada zona / tipo de boleto para el script de selección (los calcula CompraService) -->
+    <div id="datosZonas" hidden
+         th:data-evento="${evento.id}"
+         th:data-zona-inicial="${zonaInicial}"
+         th:data-asientos-iniciales="${asientosIniciales}"
+         th:data-maximo="${maximoPorCompra}"
+         th:data-lugar="${evento.lugar}">
+        <div th:each="z : ${opciones}" class="dato-zona"
+             th:data-codigo="${z.codigo}"
+             th:data-nombre="${z.nombre}"
+             th:data-descripcion="${z.descripcion}"
+             th:data-color="${z.color}"
+             th:data-iniciales="${z.iniciales}"
+             th:data-tipo="${z.tipoId}"
+             th:data-precio="${z.precio}"
+             th:data-disponibles="${z.disponibles}"
+             th:data-en-venta="${z.enVenta}"
+             th:data-numerada="${z.numerada}"
+             th:data-filas="${z.filas}"
+             th:data-por-fila="${z.asientosPorFila}"
+             th:data-pasillos="${z.pasillos}"
+             th:data-ocupados="${z.ocupados}"
+             th:data-total="${z.totalAsientos}"></div>
+    </div>
+
     <!-- Contenido Principal -->
     <main class="ticket-sales-container">
 
@@ -30,20 +56,22 @@
         <section class="event-banner">
             <div class="event-main-info">
                 <div class="event-badges">
-                    <span class="badge-pill badge-pink">POCOS BOLETOS DISPONIBLES</span>
+                    <span class="badge-pill badge-pink" th:if="${!evento.disponible}">BOLETOS NO DISPONIBLES</span>
+                    <span class="badge-pill badge-pink"
+                          th:if="${evento.disponible and evento.aforoTipos > 0 and evento.boletosDisponibles * 5 < evento.aforoTipos}">POCOS BOLETOS DISPONIBLES</span>
                     <span class="badge-pill badge-green-outline">VERIFICACIÓN OFICIAL KONTICKET</span>
-                    <span class="badge-pill badge-gray">VENTA GENERAL FASE 2</span>
+                    <span class="badge-pill badge-gray" th:text="${#strings.toUpperCase(evento.categoria)}">CATEGORÍA</span>
                 </div>
-                <h1 class="event-title">INDIE / POST-PUNK: Midnight Echoes Tour</h1>
+                <h1 class="event-title" th:text="${evento.nombre}">Nombre del evento</h1>
                 <div class="event-meta">
-                    <span>📅 Sábado 26 de Septiembre, 2026 • 20:30 hrs</span>
-                    <span>📍 Estadio GNP / Foro Sol, Ciudad de México</span>
-                    <span>🚪 Acceso Puerta 6 y 7</span>
+                    <span th:text="'📅 ' + ${evento.fechaCompleta} + ' • ' + ${evento.hora} + ' hrs'">📅 Fecha</span>
+                    <span th:text="'📍 ' + ${evento.lugar}">📍 Lugar</span>
+                    <span th:if="${evento.organizador != null}" th:text="'🎤 Organiza: ' + ${evento.organizador.nombre}">🎤 Organizador</span>
                 </div>
             </div>
             <div class="timer-card">
-                <span class="timer-label">TIEMPO PARA COMPLETAR</span>
-                <span class="timer-clock">00:00 min</span>
+                <span class="timer-label">BOLETOS DESDE</span>
+                <span class="timer-clock" th:text="'$' + ${#numbers.formatDecimal(evento.precioMinimo, 1, 'COMMA', 0, 'POINT')} + ' MXN'">$0 MXN</span>
             </div>
         </section>
 
@@ -53,226 +81,218 @@
             <!-- Columna Izquierda: Mapa de Asientos y Detalles -->
             <div class="left-column">
 
-                <!-- Mapa Interactivo -->
-                <div class="sales-card">
+                <div class="sales-card" id="seleccion">
                     <div class="map-header">
-                        <h2>Mapa Interactivo de Asientos</h2>
-                        <p>Selecciona tu sección y haz clic sobre los asientos disponibles para apartarlos.</p>
+                        <h2 th:text="${usaMapa} ? 'Mapa Interactivo de Asientos' : 'Elige tus Boletos'">Mapa Interactivo de Asientos</h2>
+                        <p th:text="${usaMapa} ? 'Selecciona una zona del mapa y después elige tus asientos disponibles.' : 'Selecciona el tipo de boleto y la cantidad que necesitas.'">Selecciona una zona.</p>
                     </div>
 
-                    <!-- Filtros de Sección -->
-                    <div class="filter-pills">
-                        <button type="button" class="filter-btn active">• Sección A – VIP + $1,450 MXN</button>
-                        <button type="button" class="filter-btn">Sección B – Platino + $1,150 MXN</button>
-                        <button type="button" class="filter-btn">Sección C – Preferente + $950 MXN</button>
-                        <button type="button" class="filter-btn">Gradas Lateral +</button>
+                    <!-- Mensaje de error del servidor (ej. un asiento se vendió mientras elegías) -->
+                    <div class="aviso-venta" th:if="${errorMessage}" th:text="${errorMessage}">Error</div>
+                    <div class="aviso-venta" th:if="${#lists.isEmpty(opciones)}">Este evento todavía no tiene boletos a la venta.</div>
+
+                    <!-- Eventos sin mapa numerado: croquis que subió el organizador (si lo hay) -->
+                    <figure class="croquis-evento" th:if="${!usaMapa and evento.croquis != null}">
+                        <a th:href="@{/eventos/{id}/croquis(id=${evento.id})}" target="_blank" rel="noopener">
+                            <img th:src="@{/eventos/{id}/croquis(id=${evento.id})}" alt="Croquis del recinto">
+                        </a>
+                        <figcaption>Croquis del recinto (referencia). Haz clic para verlo completo.</figcaption>
+                    </figure>
+
+                    <!-- Filtros rápidos por zona -->
+                    <div class="filter-pills" th:if="${usaMapa}">
+                        <button type="button" th:each="z : ${opciones}" class="filter-btn"
+                                th:classappend="${!z.enVenta} ? 'no-disponible'"
+                                th:data-zona="${z.codigo}"
+                                th:text="${z.enVenta} ? ${z.nombre} + ' – $' + ${#numbers.formatDecimal(z.precio, 1, 'COMMA', 0, 'POINT')} + ' MXN' : ${z.nombre} + ' – No disponible'">Zona</button>
                     </div>
 
-                    <!-- Esquema del Escenario -->
-                    <div class="stage-container">
-                        <div class="stage-banner">♦ ESCENARIO PRINCIPAL / MAIN STAGE ♦</div>
-                        <div class="stage-grid">
-                            <div class="zone-block">
-                                <span class="zone-title">ZONA B</span>
-                                <span class="zone-sub">Lat. Poniente</span>
-                                <div class="zone-price">$1,150</div>
-                            </div>
-                            <div class="zone-block highlight">
-                                <span class="badge-pill badge-foco">• EN FOCO</span>
-                                <span class="zone-title">ZONA A • VIP PLATINO</span>
-                                <span class="zone-sub-light">Frente a Escenario</span>
-                                <div class="zone-price text-white">$1,450 MXN</div>
-                                <span class="zone-avail">38 libres</span>
-                            </div>
-                            <div class="zone-block">
-                                <span class="zone-title">ZONA B</span>
-                                <span class="zone-sub">Lat. Oriente</span>
-                                <div class="zone-price">$1,150</div>
-                            </div>
-                        </div>
-                        <div class="zone-wide">
-                            <div class="zone-wide-info">
-                                <span class="zone-wide-title">ZONA C • PREFERENTE CENTRAL</span>
-                                <span class="zone-wide-sub">Vista directa y sonido surround</span>
-                            </div>
-                            <div class="zone-wide-action">
-                                <span>120 asientos</span>
-                                <span class="btn-price-tag">$950 MXN</span>
-                            </div>
-                        </div>
-                        <div class="zone-bottom-split">
-                            <div class="zone-split-item">
-                                <span>CANCHA GENERAL (DE PIE)</span>
-                                <span class="price-green">$890 MXN</span>
-                            </div>
-                            <div class="zone-split-item">
-                                <span>GRADAS NORTE & SUR</span>
-                                <span class="price-gray">$650 MXN</span>
-                            </div>
-                        </div>
+                    <!-- Mapa del recinto: cada zona es un grupo con data-zona -->
+                    <div class="mapa-recinto-wrapper" th:if="${usaMapa}">
+                        <div class="tooltip-zona" id="tooltipZona"></div>
+                        <svg class="mapa-recinto" viewBox="0 0 900 520" role="img" aria-label="Mapa de zonas del recinto">
+                            <!-- Contorno y gradas sin venta -->
+                            <rect x="10" y="10" width="880" height="500" rx="150" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+                            <g fill="#D1D5DB">
+                                <path d="M150,40 L250,25 L250,88 L172,98 Z"/>
+                                <path d="M58,165 Q80,110 140,70 L168,110 Q128,140 116,178 Z"/>
+                                <rect x="40" y="198" width="72" height="124" rx="14"/>
+                                <path d="M58,355 Q80,410 140,450 L168,410 Q128,380 116,342 Z"/>
+                                <path d="M150,480 L250,495 L250,432 L172,422 Z"/>
+                                <rect x="226" y="100" width="20" height="22" rx="3"/>
+                                <rect x="250" y="100" width="20" height="22" rx="3"/>
+                                <rect x="226" y="398" width="20" height="22" rx="3"/>
+                                <rect x="250" y="398" width="20" height="22" rx="3"/>
+                            </g>
+
+                            <!-- Escenario -->
+                            <rect x="170" y="175" width="85" height="170" rx="10" fill="#111827"/>
+                            <text x="212" y="260" fill="#FFFFFF" font-size="15" text-anchor="middle" transform="rotate(-90 212 260)" dominant-baseline="middle">ESCENARIO</text>
+
+                            <!-- Zona Fan Sillas -->
+                            <g class="zona-mapa" data-zona="ZONA_FAN_SILLAS">
+                                <rect x="265" y="158" width="175" height="204" fill="#7C3AED"/>
+                                <text x="352" y="250" fill="#FFFFFF" font-size="17" text-anchor="middle">ZONA FAN</text>
+                                <text x="352" y="274" fill="#FFFFFF" font-size="17" text-anchor="middle">SILLAS</text>
+                            </g>
+
+                            <!-- Zona Fan Pie -->
+                            <g class="zona-mapa" data-zona="ZONA_FAN_PIE">
+                                <rect x="440" y="158" width="255" height="204" fill="#F5C542"/>
+                                <text x="567" y="266" fill="#FFFFFF" font-size="17" text-anchor="middle">ZONA FAN PIE</text>
+                            </g>
+
+                            <!-- Palco VIP (arriba y abajo) -->
+                            <g class="zona-mapa" data-zona="PALCO_VIP">
+                                <rect x="276" y="100" width="22" height="22" rx="3" fill="#F97316"/>
+                                <rect x="304" y="100" width="22" height="22" rx="3" fill="#F97316"/>
+                                <rect x="332" y="100" width="22" height="22" rx="3" fill="#F97316"/>
+                                <rect x="360" y="100" width="22" height="22" rx="3" fill="#F97316"/>
+                                <rect x="388" y="100" width="22" height="22" rx="3" fill="#F97316"/>
+                                <rect x="416" y="100" width="22" height="22" rx="3" fill="#F97316"/>
+                                <rect x="444" y="100" width="22" height="22" rx="3" fill="#F97316"/>
+                                <rect x="472" y="100" width="22" height="22" rx="3" fill="#F97316"/>
+                                <rect x="276" y="398" width="22" height="22" rx="3" fill="#F97316"/>
+                                <rect x="304" y="398" width="22" height="22" rx="3" fill="#F97316"/>
+                                <rect x="332" y="398" width="22" height="22" rx="3" fill="#F97316"/>
+                                <rect x="360" y="398" width="22" height="22" rx="3" fill="#F97316"/>
+                                <rect x="388" y="398" width="22" height="22" rx="3" fill="#F97316"/>
+                                <rect x="416" y="398" width="22" height="22" rx="3" fill="#F97316"/>
+                                <rect x="444" y="398" width="22" height="22" rx="3" fill="#F97316"/>
+                                <rect x="472" y="398" width="22" height="22" rx="3" fill="#F97316"/>
+                            </g>
+                            <text x="385" y="143" fill="#111827" font-size="12" text-anchor="middle">PALCO VIP</text>
+                            <text x="385" y="390" fill="#111827" font-size="12" text-anchor="middle">PALCO VIP</text>
+
+                            <!-- Palco Oro (arriba y abajo) -->
+                            <g class="zona-mapa" data-zona="PALCO_ORO">
+                                <rect x="508" y="100" width="22" height="22" rx="3" fill="#10B981"/>
+                                <rect x="536" y="100" width="22" height="22" rx="3" fill="#10B981"/>
+                                <rect x="564" y="100" width="22" height="22" rx="3" fill="#10B981"/>
+                                <rect x="592" y="100" width="22" height="22" rx="3" fill="#10B981"/>
+                                <rect x="620" y="100" width="22" height="22" rx="3" fill="#10B981"/>
+                                <path d="M648,100 L672,100 Q688,104 694,122 L648,122 Z" fill="#10B981"/>
+                                <rect x="508" y="398" width="22" height="22" rx="3" fill="#10B981"/>
+                                <rect x="536" y="398" width="22" height="22" rx="3" fill="#10B981"/>
+                                <rect x="564" y="398" width="22" height="22" rx="3" fill="#10B981"/>
+                                <rect x="592" y="398" width="22" height="22" rx="3" fill="#10B981"/>
+                                <rect x="620" y="398" width="22" height="22" rx="3" fill="#10B981"/>
+                                <path d="M648,420 L672,420 Q688,416 694,398 L648,398 Z" fill="#10B981"/>
+                            </g>
+                            <text x="590" y="143" fill="#111827" font-size="12" text-anchor="middle">PALCO ORO</text>
+                            <text x="590" y="390" fill="#111827" font-size="12" text-anchor="middle">PALCO ORO</text>
+
+                            <!-- Lateral Azul -->
+                            <g class="zona-mapa" data-zona="LATERAL_AZUL">
+                                <rect x="265" y="22" width="112" height="66" rx="6" fill="#60A5FA"/>
+                                <rect x="385" y="22" width="112" height="66" rx="6" fill="#60A5FA"/>
+                                <rect x="265" y="432" width="112" height="66" rx="6" fill="#60A5FA"/>
+                                <rect x="385" y="432" width="112" height="66" rx="6" fill="#60A5FA"/>
+                                <text x="321" y="52" fill="#FFFFFF" font-size="12" text-anchor="middle">LATERAL</text>
+                                <text x="321" y="68" fill="#FFFFFF" font-size="12" text-anchor="middle">AZUL</text>
+                                <text x="441" y="52" fill="#FFFFFF" font-size="12" text-anchor="middle">LATERAL</text>
+                                <text x="441" y="68" fill="#FFFFFF" font-size="12" text-anchor="middle">AZUL</text>
+                                <text x="321" y="462" fill="#FFFFFF" font-size="12" text-anchor="middle">LATERAL</text>
+                                <text x="321" y="478" fill="#FFFFFF" font-size="12" text-anchor="middle">AZUL</text>
+                                <text x="441" y="462" fill="#FFFFFF" font-size="12" text-anchor="middle">LATERAL</text>
+                                <text x="441" y="478" fill="#FFFFFF" font-size="12" text-anchor="middle">AZUL</text>
+                            </g>
+
+                            <!-- Lateral Café -->
+                            <g class="zona-mapa" data-zona="LATERAL_CAFE">
+                                <rect x="505" y="22" width="112" height="66" rx="6" fill="#5B3A29"/>
+                                <path d="M625,22 L712,22 Q730,24 742,40 L705,88 L625,88 Z" fill="#5B3A29"/>
+                                <rect x="505" y="432" width="112" height="66" rx="6" fill="#5B3A29"/>
+                                <path d="M625,498 L712,498 Q730,496 742,480 L705,432 L625,432 Z" fill="#5B3A29"/>
+                                <text x="561" y="52" fill="#FFFFFF" font-size="12" text-anchor="middle">LATERAL</text>
+                                <text x="561" y="68" fill="#FFFFFF" font-size="12" text-anchor="middle">CAFÉ</text>
+                                <text x="672" y="52" fill="#FFFFFF" font-size="12" text-anchor="middle">LATERAL</text>
+                                <text x="672" y="68" fill="#FFFFFF" font-size="12" text-anchor="middle">CAFÉ</text>
+                                <text x="561" y="462" fill="#FFFFFF" font-size="12" text-anchor="middle">LATERAL</text>
+                                <text x="561" y="478" fill="#FFFFFF" font-size="12" text-anchor="middle">CAFÉ</text>
+                                <text x="672" y="462" fill="#FFFFFF" font-size="12" text-anchor="middle">LATERAL</text>
+                                <text x="672" y="478" fill="#FFFFFF" font-size="12" text-anchor="middle">CAFÉ</text>
+                            </g>
+
+                            <!-- Preferente -->
+                            <g class="zona-mapa" data-zona="PREFERENTE">
+                                <path d="M712,100 L758,48 Q815,78 845,140 L780,160 Q760,124 712,100 Z" fill="#E11D74"/>
+                                <path d="M712,420 L758,472 Q815,442 845,380 L780,360 Q760,396 712,420 Z" fill="#E11D74"/>
+                                <text x="778" y="108" fill="#FFFFFF" font-size="11" text-anchor="middle" transform="rotate(45 778 108)">PREFERENTE</text>
+                                <text x="778" y="416" fill="#FFFFFF" font-size="11" text-anchor="middle" transform="rotate(-45 778 416)">PREFERENTE</text>
+                            </g>
+
+                            <!-- General -->
+                            <g class="zona-mapa" data-zona="GENERAL">
+                                <rect x="772" y="166" width="74" height="92" rx="10" fill="#2563EB"/>
+                                <rect x="772" y="262" width="74" height="92" rx="10" fill="#2563EB"/>
+                                <text x="809" y="212" fill="#FFFFFF" font-size="12" text-anchor="middle" transform="rotate(90 809 212)" dominant-baseline="middle">GENERAL</text>
+                                <text x="809" y="308" fill="#FFFFFF" font-size="12" text-anchor="middle" transform="rotate(90 809 308)" dominant-baseline="middle">GENERAL</text>
+                            </g>
+                        </svg>
                     </div>
 
                     <!-- Barra de Zona Seleccionada -->
-                    <div class="selected-zone-bar">
+                    <div class="selected-zone-bar" id="barraZona" style="display: none;">
                         <div class="zone-info-content">
-                            <div class="zone-icon">A</div>
+                            <div class="zone-icon" id="zonaIniciales">LA</div>
                             <div class="zone-details">
                                 <div class="zone-header-meta">
                                     <span class="zone-label-pink">ZONA SELECCIONADA</span>
-                                    <span class="zone-label-sub">Fila A a Fila J</span>
-                                    <span class="badge-pill badge-green-outline">38 asientos libres de 120</span>
+                                    <span class="zone-label-sub" id="zonaFilas"></span>
+                                    <span class="badge-pill badge-green-outline" id="zonaDisponibles"></span>
                                 </div>
-                                <div class="zone-main-title">Sección A – VIP Platino Frontal</div>
+                                <div class="zone-main-title" id="zonaTitulo">Zona</div>
                             </div>
                         </div>
                         <div class="zone-price-content">
                             <span class="price-base-label">PRECIO BASE</span>
-                            <div class="price-base-amount">$1,450 MXN</div>
+                            <div class="price-base-amount" id="zonaPrecio">$0 MXN</div>
                         </div>
                     </div>
 
-                    <!-- Leyenda de Asientos -->
-                    <div class="seat-legend">
+                    <p class="zona-placeholder" id="zonaPlaceholder"
+                       th:text="${usaMapa} ? 'Haz clic en una zona del mapa para ver sus asientos disponibles.' : 'Elige un tipo de boleto en la lista de abajo.'">Haz clic en una zona.</p>
+
+                    <!-- Leyenda de Asientos (solo zonas numeradas) -->
+                    <div class="seat-legend" id="leyendaAsientos" style="display: none;">
                         <div class="legend-items-group">
                             <div class="legend-item"><span class="dot dot-gray"></span> Disponible (Gris)</div>
                             <div class="legend-item"><span class="dot dot-blue"></span> Ocupado (Azul)</div>
                             <div class="legend-item"><span class="dot dot-pink"></span> Selecciones (Rojo)</div>
                         </div>
-                        <div class="legend-hint">💬 Haz clic para agregar o quitar asientos</div>
+                        <div class="legend-hint" th:text="'💬 Haz clic para agregar o quitar asientos (máximo ' + ${maximoPorCompra} + ')'">💬 Haz clic para agregar o quitar asientos</div>
                     </div>
 
-                    <!-- Matriz de Asientos -->
-                    <div class="seats-matrix-container">
-                        <!-- Fila A -->
-                        <div class="seat-row">
-                            <span class="row-label">A</span>
-                            <div class="seat-group"><span class="seat occupied">1</span><span class="seat occupied">2</span><span class="seat available">3</span><span class="seat available">4</span></div>
-                            <div class="seat-group"><span class="seat occupied">5</span><span class="seat occupied">6</span><span class="seat occupied">7</span><span class="seat occupied">8</span></div>
-                            <div class="seat-group"><span class="seat available">9</span><span class="seat occupied">10</span><span class="seat available">11</span><span class="seat occupied">12</span></div>
-                            <div class="seat-group"><span class="seat available">13</span><span class="seat available">14</span><span class="seat available">15</span><span class="seat occupied">16</span></div>
-                            <span class="row-label">A</span>
-                        </div>
-
-                        <!-- Fila B -->
-                        <div class="seat-row">
-                            <span class="row-label row-label-pink">B</span>
-                            <div class="seat-group"><span class="seat occupied">1</span><span class="seat occupied">2</span><span class="seat available">3</span><span class="seat available">4</span></div>
-                            <div class="seat-group"><span class="seat available">5</span><span class="seat available">6</span><span class="seat selected">7</span><span class="seat selected">8</span></div>
-                            <div class="seat-group"><span class="seat occupied">9</span><span class="seat occupied">10</span><span class="seat available">11</span><span class="seat available">12</span></div>
-                            <div class="seat-group"><span class="seat occupied">13</span><span class="seat occupied">14</span><span class="seat available">15</span><span class="seat available">16</span></div>
-                            <span class="row-label row-label-pink">B</span>
-                        </div>
-
-                        <!-- Fila C -->
-                        <div class="seat-row">
-                            <span class="row-label">C</span>
-                            <div class="seat-group"><span class="seat available">1</span><span class="seat available">2</span><span class="seat occupied">3</span><span class="seat occupied">4</span></div>
-                            <div class="seat-group"><span class="seat available">5</span><span class="seat available">6</span><span class="seat occupied">7</span><span class="seat occupied">8</span></div>
-                            <div class="seat-group"><span class="seat available">9</span><span class="seat available">10</span><span class="seat available">11</span><span class="seat occupied">12</span></div>
-                            <div class="seat-group"><span class="seat occupied">13</span><span class="seat available">14</span><span class="seat available">15</span><span class="seat available">16</span></div>
-                            <span class="row-label">C</span>
-                        </div>
-
-                        <!-- Fila D -->
-                        <div class="seat-row">
-                            <span class="row-label">D</span>
-                            <div class="seat-group"><span class="seat occupied">1</span><span class="seat occupied">2</span><span class="seat occupied">3</span><span class="seat occupied">4</span></div>
-                            <div class="seat-group"><span class="seat available">5</span><span class="seat available">6</span><span class="seat available">7</span><span class="seat available">8</span></div>
-                            <div class="seat-group"><span class="seat available">9</span><span class="seat occupied">10</span><span class="seat available">11</span><span class="seat occupied">12</span></div>
-                            <div class="seat-group"><span class="seat available">13</span><span class="seat available">14</span><span class="seat available">15</span><span class="seat available">16</span></div>
-                            <span class="row-label">D</span>
-                        </div>
-
-                        <!-- Fila E -->
-                        <div class="seat-row">
-                            <span class="row-label">E</span>
-                            <div class="seat-group"><span class="seat available">1</span><span class="seat available">2</span><span class="seat available">3</span><span class="seat occupied">4</span></div>
-                            <div class="seat-group"><span class="seat available">5</span><span class="seat occupied">6</span><span class="seat available">7</span><span class="seat available">8</span></div>
-                            <div class="seat-group"><span class="seat occupied">9</span><span class="seat available">10</span><span class="seat occupied">11</span><span class="seat available">12</span></div>
-                            <div class="seat-group"><span class="seat available">13</span><span class="seat available">14</span><span class="seat occupied">15</span><span class="seat occupied">16</span></div>
-                            <span class="row-label">E</span>
-                        </div>
-
-                        <!-- Fila F -->
-                        <div class="seat-row">
-                            <span class="row-label">F</span>
-                            <div class="seat-group"><span class="seat available">1</span><span class="seat available">2</span><span class="seat available">3</span><span class="seat available">4</span></div>
-                            <div class="seat-group"><span class="seat occupied">5</span><span class="seat occupied">6</span><span class="seat available">7</span><span class="seat available">8</span></div>
-                            <div class="seat-group"><span class="seat available">9</span><span class="seat available">10</span><span class="seat occupied">11</span><span class="seat occupied">12</span></div>
-                            <div class="seat-group"><span class="seat available">13</span><span class="seat available">14</span><span class="seat available">15</span><span class="seat occupied">16</span></div>
-                            <span class="row-label">F</span>
-                        </div>
-
-                        <!-- Fila G -->
-                        <div class="seat-row">
-                            <span class="row-label">G</span>
-                            <div class="seat-group"><span class="seat occupied">1</span><span class="seat occupied">2</span><span class="seat available">3</span><span class="seat available">4</span></div>
-                            <div class="seat-group"><span class="seat available">5</span><span class="seat available">6</span><span class="seat occupied">7</span><span class="seat occupied">8</span></div>
-                            <div class="seat-group"><span class="seat available">9</span><span class="seat available">10</span><span class="seat occupied">11</span><span class="seat occupied">12</span></div>
-                            <div class="seat-group"><span class="seat available">13</span><span class="seat available">14</span><span class="seat occupied">15</span><span class="seat occupied">16</span></div>
-                            <span class="row-label">G</span>
-                        </div>
-
-                        <!-- Fila H -->
-                        <div class="seat-row">
-                            <span class="row-label">H</span>
-                            <div class="seat-group"><span class="seat available">1</span><span class="seat available">2</span><span class="seat occupied">3</span><span class="seat occupied">4</span></div>
-                            <div class="seat-group"><span class="seat available">5</span><span class="seat available">6</span><span class="seat available">7</span><span class="seat available">8</span></div>
-                            <div class="seat-group"><span class="seat occupied">9</span><span class="seat occupied">10</span><span class="seat available">11</span><span class="seat available">12</span></div>
-                            <div class="seat-group"><span class="seat available">13</span><span class="seat available">14</span><span class="seat occupied">15</span><span class="seat occupied">16</span></div>
-                            <span class="row-label">H</span>
-                        </div>
-
-                        <!-- Fila J -->
-                        <div class="seat-row">
-                            <span class="row-label">J</span>
-                            <div class="seat-group"><span class="seat available">1</span><span class="seat available">2</span><span class="seat available">3</span><span class="seat occupied">4</span></div>
-                            <div class="seat-group"><span class="seat available">5</span><span class="seat available">6</span><span class="seat available">7</span><span class="seat available">8</span></div>
-                            <div class="seat-group"><span class="seat occupied">9</span><span class="seat occupied">10</span><span class="seat available">11</span><span class="seat available">12</span></div>
-                            <div class="seat-group"><span class="seat available">13</span><span class="seat available">14</span><span class="seat occupied">15</span><span class="seat occupied">16</span></div>
-                            <span class="row-label">J</span>
-                        </div>
-                    </div>
+                    <!-- Matriz de Asientos (la arma el script según la zona) -->
+                    <div class="seats-matrix-container" id="matrizAsientos"></div>
 
                     <!-- Resumen del Pie de Asientos -->
                     <div class="selected-summary-bar">
-                        <div class="selected-tags-group">
-                            <span class="summary-label">Asientos seleccionados:</span>
-                            <span class="tag-pink">2 boletos</span>
-                            <button type="button" class="tag-outline">Fila B – Asiento 7 ✕</button>
-                            <button type="button" class="tag-outline">Fila B – Asiento 8 ✕</button>
+                        <div class="selected-tags-group" id="etiquetasAsientos">
+                            <span class="summary-label" id="etiquetaResumen">Asientos seleccionados:</span>
+                            <span class="tag-pink" id="contadorBoletos">0 boletos</span>
                         </div>
-                        <div class="reservation-status">🔒 Boletos reservados por 10:00 min</div>
+                        <div class="reservation-status">🔒 Tus asientos se confirman al completar el pago</div>
                     </div>
-
                 </div>
 
-                <!-- Tarjetas Secundarias -->
+                <!-- Zonas y precios (también sirven para elegir zona) -->
                 <div class="sales-card">
                     <div class="mini-cards-header">
-                        <span class="mini-cards-title">📍 Ubicación del Estadio & Zonas</span>
-                        <span class="mini-cards-capacity">Capacidad restante: 18%</span>
+                        <span class="mini-cards-title" th:text="${usaMapa} ? '📍 Ubicación del Recinto & Zonas' : '🎟️ Tipos de Boleto'">📍 Ubicación del Recinto & Zonas</span>
+                        <span class="mini-cards-capacity"
+                              th:text="'Boletos disponibles: ' + ${#numbers.formatInteger(evento.boletosDisponibles, 0, 'COMMA')}">Boletos disponibles</span>
                     </div>
                     <div class="mini-cards-grid">
-                        <div class="mini-card active">
-                            <div class="mini-card-title">SECCIÓN A (ACTUAL)</div>
-                            <div class="mini-card-price">$1,450 MXN</div>
-                            <div class="mini-card-sub">Zona VIP Centro</div>
-                        </div>
-                        <div class="mini-card">
-                            <div class="mini-card-title">SECCIÓN B</div>
-                            <div class="mini-card-price text-dark">$1,150 MXN</div>
-                            <div class="mini-card-sub">Lateral Platino</div>
-                        </div>
-                        <div class="mini-card">
-                            <div class="mini-card-title">GRADAS NORTE</div>
-                            <div class="mini-card-price text-dark">$650 MXN</div>
-                            <div class="mini-card-sub">Gradería Alta</div>
-                        </div>
-                        <div class="mini-card">
-                            <div class="mini-card-title">GENERAL A</div>
-                            <div class="mini-card-price text-dark">$890 MXN</div>
-                            <div class="mini-card-sub text-green">Cancha de Pie</div>
+                        <div th:each="z : ${opciones}" class="mini-card zona-opcion"
+                             th:classappend="${!z.enVenta} ? 'no-disponible'"
+                             th:data-zona="${z.codigo}">
+                            <div class="mini-card-title"><span class="color-zona" th:style="'background-color: ' + ${z.color}"></span><span th:text="${z.nombre}">Zona</span></div>
+                            <div class="mini-card-price"
+                                 th:text="${z.precio != null} ? '$' + ${#numbers.formatDecimal(z.precio, 1, 'COMMA', 0, 'POINT')} + ' MXN' : 'No disponible'">$0 MXN</div>
+                            <div class="mini-card-sub"
+                                 th:text="${z.enVenta} ? ${z.descripcion} : (${z.tipoId != null} ? 'Agotado' : 'No se vende en este evento')">Descripción</div>
                         </div>
                     </div>
                 </div>
@@ -283,24 +303,21 @@
             <div class="right-column">
                 <form th:action="@{/form-compra}" method="POST" id="seat-selection-form" class="purchase-sidebar-card">
 
-                    <!-- CAMPOS OCULTOS QUE GUARDAN Y ENVIAN LOS DATOS -->
-                    <input type="hidden" name="eventoId" id="input-evento-id" th:value="${evento != null ? evento.id : '1'}">
-                    <input type="hidden" name="seccion" id="input-seccion" value="Sección A (Zona Platino)">
-                    <input type="hidden" name="fila" id="input-fila" value="Fila B">
-                    <input type="hidden" name="asientos" id="input-asientos" value="07,08">
-                    <input type="hidden" name="cantidad" id="input-cantidad" value="2">
-                    <input type="hidden" name="precioBase" id="input-precio-base" value="2900.00">
-                    <input type="hidden" name="totalFinal" id="input-total-final" value="3767.68">
+                    <!-- Solo se envía QUÉ se compra; los precios los vuelve a calcular el servidor -->
+                    <input type="hidden" name="eventoId" th:value="${evento.id}">
+                    <input type="hidden" name="tipoId" id="input-tipo-id" value="">
+                    <input type="hidden" name="asientos" id="input-asientos" value="">
+                    <input type="hidden" name="cantidad" id="input-cantidad" value="0">
 
                     <div class="sidebar-title">
                         <span>Detalles del Asiento & Compra</span>
-                        <span class="ticket-icon">🎟️️</span>
+                        <span class="ticket-icon">🎟️</span>
                     </div>
 
                     <div class="stage-view-preview">
                         <div class="stage-view-overlay">
                             <div class="preview-tag">VISTA SIMULADA AL ESCENARIO</div>
-                            <div class="preview-subtext">Visibilidad: 100% Despejada Directa</div>
+                            <div class="preview-subtext" id="display-visibilidad">Elige una zona</div>
                         </div>
                     </div>
 
@@ -308,19 +325,19 @@
                         <tbody>
                         <tr>
                             <td>Ubicación</td>
-                            <td>Estadio GNP • <span id="display-seccion">Sección A (Zona Platino)</span></td>
+                            <td id="display-ubicacion" th:text="${evento.lugar}">Lugar</td>
                         </tr>
                         <tr>
                             <td>Fila Activa</td>
-                            <td class="text-pink" id="display-fila">Fila B</td>
+                            <td class="text-pink" id="display-fila">—</td>
                         </tr>
                         <tr>
                             <td>Números de Asientos</td>
-                            <td id="display-asientos">Asiento 07, Asiento 08</td>
+                            <td id="display-asientos">—</td>
                         </tr>
                         <tr>
                             <td>Tipo de Entrada</td>
-                            <td class="text-green">Boleto Digital QR Dinámico</td>
+                            <td class="text-green">Boleto Digital QR</td>
                         </tr>
                         </tbody>
                     </table>
@@ -328,24 +345,24 @@
                     <div class="quantity-selector-row">
                         <span>Cantidad de Boletos:</span>
                         <div class="qty-controls">
-                            <button type="button" class="qty-btn" id="btn-qty-minus">-</button>
-                            <span class="qty-count" id="display-cantidad">2</span>
-                            <button type="button" class="qty-btn" id="btn-qty-plus">+</button>
+                            <button type="button" class="qty-btn" id="btn-qty-minus" aria-label="Quitar boleto">-</button>
+                            <span class="qty-count" id="display-cantidad">0</span>
+                            <button type="button" class="qty-btn" id="btn-qty-plus" aria-label="Agregar boleto">+</button>
                         </div>
                     </div>
 
                     <div class="price-breakdown-list">
                         <div class="breakdown-row">
-                            <span>Precio Base (<span id="display-qty-sub">2</span> boletos x $1,450)</span>
-                            <span id="display-subtotal">$2,900 MXN</span>
+                            <span>Precio Base (<span id="display-qty-sub">0</span> boletos x <span id="display-precio">$0</span>)</span>
+                            <span id="display-subtotal">$0.00 MXN</span>
                         </div>
                         <div class="breakdown-row">
-                            <span>Cargos por Servicio Konticket (12%) ℹ️</span>
-                            <span id="display-cargos">$348 MXN</span>
+                            <span>Cargos por Servicio Konticket (12%)</span>
+                            <span id="display-cargos">$0.00 MXN</span>
                         </div>
                         <div class="breakdown-row">
                             <span>IVA (16%)</span>
-                            <span id="display-iva">$519.68 MXN</span>
+                            <span id="display-iva">$0.00 MXN</span>
                         </div>
                         <div class="breakdown-row highlight-free">
                             <span>Procesamiento Seguro y Emisión</span>
@@ -355,29 +372,21 @@
 
                     <div class="total-checkout-box">
                         <div class="total-label">TOTAL FINAL</div>
-                        <div class="total-price-amount" id="display-total">$3,767.68 MXN</div> <!--AQUÍ-->
+                        <div class="total-price-amount" id="display-total">$0.00 MXN</div>
                     </div>
 
-                    <!-- BOTÓN DE ENVÍO TIPO SUBMIT -->
-                    <button type="submit" class="btn-primary-checkout">
-                        CONTINUAR COMPRA (<span id="btn-qty-text">2</span> BOLETOS) ➔
-                    </button>
-
-                    <button type="button" class="btn-secondary-action">
-                        🔖 Guardar para después
+                    <button type="submit" class="btn-primary-checkout" id="btn-continuar" disabled>
+                        CONTINUAR COMPRA (<span id="btn-qty-text">0</span> BOLETOS) ➔
                     </button>
 
                     <div class="guarantee-box">
                         <strong>🛡 GARANTÍA 100% OFICIAL KONTICKET</strong>
-                        <p>Entradas Digitales Anti-Fraude con Códigos QR dinámicos, encriptación viva y transferencia segura al instante. Boletos nominales intransferibles no autorizados.</p>
+                        <p>Entradas digitales con código QR. Cada asiento solo puede venderse una vez.</p>
                     </div>
 
                     <div class="payment-methods-footer">
                         <span>Pagos aceptados:</span>
                         <span>TARJETA DÉBITO Y CRÉDITO</span>
-                        <span>MERCADO PAGO</span>
-                        <span>SPEI</span>
-                        <span>OXXO Pay</span>
                     </div>
 
                 </form>
@@ -397,7 +406,273 @@
         </div>
     </footer>
 
+    <script>
+        (function () {
+            // Mismas tasas que CompraService (el servidor recalcula todo al continuar)
+            const TASA_SERVICIO = 0.12;
+            const TASA_IVA = 0.16;
+
+            const datos = document.getElementById('datosZonas');
+            const eventoId = datos.dataset.evento;
+            const maximo = parseInt(datos.dataset.maximo, 10) || 8;
+            const lugar = datos.dataset.lugar || '';
+
+            // Lee las zonas que mandó el servidor
+            const zonas = {};
+            datos.querySelectorAll('.dato-zona').forEach(el => {
+                const d = el.dataset;
+                zonas[d.codigo] = {
+                    codigo: d.codigo,
+                    nombre: d.nombre,
+                    descripcion: d.descripcion || '',
+                    color: d.color,
+                    iniciales: d.iniciales,
+                    tipoId: d.tipo || '',
+                    precio: parseFloat(d.precio) || 0,
+                    disponibles: parseInt(d.disponibles, 10) || 0,
+                    enVenta: d.enVenta === 'true',
+                    numerada: d.numerada === 'true',
+                    filas: d.filas ? d.filas.split(',') : [],
+                    porFila: parseInt(d.porFila, 10) || 0,
+                    pasillos: d.pasillos ? d.pasillos.split(',').map(Number) : [],
+                    ocupados: new Set(d.ocupados ? d.ocupados.split(',') : []),
+                    total: parseInt(d.total, 10) || 0
+                };
+            });
+
+            let zonaActual = null;
+            let seleccion = [];   // asientos elegidos, ej. ["D8", "E8"]
+            let cantidad = 0;     // para zonas sin asientos
+
+            const fmt = n => '$' + n.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' MXN';
+            const fmtPrecio = n => '$' + n.toLocaleString('es-MX', { maximumFractionDigits: 2 }) + ' MXN';
+            const redondear = n => Math.round(n * 100) / 100;
+            const limite = () => zonaActual ? Math.min(maximo, zonaActual.disponibles) : 0;
+
+            function ordenarAsientos(lista) {
+                return lista.slice().sort((a, b) => a[0] === b[0] ? parseInt(a.slice(1)) - parseInt(b.slice(1)) : a.localeCompare(b));
+            }
+
+            // ---------- Zona ----------
+            function seleccionarZona(codigo, asientosIniciales) {
+                const zona = zonas[codigo];
+                if (!zona || !zona.enVenta) return;
+                zonaActual = zona;
+                seleccion = [];
+                cantidad = zona.numerada ? 0 : 1;
+
+                if (asientosIniciales && zona.numerada) {
+                    asientosIniciales.forEach(a => {
+                        const fila = a[0], num = parseInt(a.slice(1), 10);
+                        if (zona.filas.includes(fila) && num >= 1 && num <= zona.porFila
+                            && !zona.ocupados.has(a) && seleccion.length < limite()) {
+                            seleccion.push(a);
+                        }
+                    });
+                }
+
+                document.getElementById('barraZona').style.display = 'flex';
+                document.getElementById('zonaPlaceholder').style.display = 'none';
+                document.getElementById('zonaIniciales').textContent = zona.iniciales;
+                document.getElementById('zonaIniciales').style.backgroundColor = zona.color;
+                document.getElementById('zonaTitulo').textContent = zona.nombre + ' – ' + zona.descripcion;
+                document.getElementById('zonaFilas').textContent = zona.numerada
+                    ? 'Fila ' + zona.filas[0] + ' a Fila ' + zona.filas[zona.filas.length - 1] + ' · ' + zona.total + ' asientos'
+                    : 'Sin asiento asignado';
+                document.getElementById('zonaDisponibles').textContent = zona.disponibles.toLocaleString('es-MX') + ' disponibles';
+                document.getElementById('zonaPrecio').textContent = fmtPrecio(zona.precio);
+                document.getElementById('leyendaAsientos').style.display = zona.numerada ? 'flex' : 'none';
+                document.getElementById('display-visibilidad').textContent = 'Visibilidad: ' + zona.descripcion;
+
+                // Estado visual del mapa, pastillas y tarjetas
+                document.querySelectorAll('.zona-mapa').forEach(g => {
+                    g.classList.toggle('seleccionada', g.dataset.zona === codigo);
+                    g.classList.toggle('atenuada', g.dataset.zona !== codigo && !g.classList.contains('no-disponible'));
+                });
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.zona === codigo));
+                document.querySelectorAll('.zona-opcion').forEach(c => c.classList.toggle('active', c.dataset.zona === codigo));
+
+                dibujarAsientos();
+                actualizarResumen();
+            }
+
+            // ---------- Asientos ----------
+            function dibujarAsientos() {
+                const contenedor = document.getElementById('matrizAsientos');
+                contenedor.innerHTML = '';
+                if (!zonaActual || !zonaActual.numerada) return;
+
+                zonaActual.filas.forEach(fila => {
+                    const filaEl = document.createElement('div');
+                    filaEl.className = 'seat-row';
+                    const tieneSeleccion = seleccion.some(a => a[0] === fila);
+
+                    const etiqueta = () => {
+                        const s = document.createElement('span');
+                        s.className = 'row-label' + (tieneSeleccion ? ' row-label-pink' : '');
+                        s.textContent = fila;
+                        return s;
+                    };
+                    filaEl.appendChild(etiqueta());
+
+                    let grupo = document.createElement('div');
+                    grupo.className = 'seat-group';
+                    for (let n = 1; n <= zonaActual.porFila; n++) {
+                        const codigo = fila + n;
+                        const asiento = document.createElement('span');
+                        asiento.className = 'seat ' + (zonaActual.ocupados.has(codigo) ? 'occupied'
+                            : (seleccion.includes(codigo) ? 'selected' : 'available'));
+                        asiento.textContent = n;
+                        asiento.dataset.asiento = codigo;
+                        asiento.title = 'Fila ' + fila + ' · Asiento ' + n;
+                        grupo.appendChild(asiento);
+                        if (zonaActual.pasillos.includes(n) && n < zonaActual.porFila) {
+                            filaEl.appendChild(grupo);
+                            grupo = document.createElement('div');
+                            grupo.className = 'seat-group';
+                        }
+                    }
+                    filaEl.appendChild(grupo);
+                    filaEl.appendChild(etiqueta());
+                    contenedor.appendChild(filaEl);
+                });
+            }
+
+            document.getElementById('matrizAsientos').addEventListener('click', e => {
+                const asiento = e.target.closest('.seat');
+                if (!asiento || asiento.classList.contains('occupied')) return;
+                const codigo = asiento.dataset.asiento;
+                if (seleccion.includes(codigo)) {
+                    seleccion = seleccion.filter(a => a !== codigo);
+                } else if (seleccion.length < limite()) {
+                    seleccion.push(codigo);
+                } else {
+                    avisarLimite();
+                    return;
+                }
+                dibujarAsientos();
+                actualizarResumen();
+            });
+
+            // Resalta la indicación de la leyenda en lugar de abrir una alerta
+            let temporizadorAviso = null;
+            function avisarLimite() {
+                const hint = document.querySelector('.legend-hint');
+                if (!hint) return;
+                if (!hint.dataset.original) hint.dataset.original = hint.textContent;
+                hint.textContent = '⚠️ Llegaste al máximo de ' + limite() + ' asientos en esta compra';
+                hint.classList.add('aviso-limite');
+                clearTimeout(temporizadorAviso);
+                temporizadorAviso = setTimeout(() => {
+                    hint.textContent = hint.dataset.original;
+                    hint.classList.remove('aviso-limite');
+                }, 2500);
+            }
+
+            // ---------- Resumen y formulario ----------
+            function actualizarResumen() {
+                const numerada = zonaActual && zonaActual.numerada;
+                const n = zonaActual ? (numerada ? seleccion.length : cantidad) : 0;
+                const precio = zonaActual ? zonaActual.precio : 0;
+                const subtotal = redondear(precio * n);
+                const cargos = redondear(subtotal * TASA_SERVICIO);
+                const iva = redondear((subtotal + cargos) * TASA_IVA);
+                const ordenados = ordenarAsientos(seleccion);
+
+                // Etiquetas de asientos con botón para quitar
+                const etiquetas = document.getElementById('etiquetasAsientos');
+                etiquetas.querySelectorAll('.quitar-asiento').forEach(t => t.remove());
+                document.getElementById('etiquetaResumen').textContent = numerada || !zonaActual ? 'Asientos seleccionados:' : 'Boletos seleccionados:';
+                document.getElementById('contadorBoletos').textContent = n + (n === 1 ? ' boleto' : ' boletos');
+                ordenados.forEach(a => {
+                    const t = document.createElement('button');
+                    t.type = 'button';
+                    t.className = 'tag-outline quitar-asiento';
+                    t.textContent = 'Fila ' + a[0] + ' – Asiento ' + a.slice(1) + ' ✕';
+                    t.addEventListener('click', () => {
+                        seleccion = seleccion.filter(s => s !== a);
+                        dibujarAsientos();
+                        actualizarResumen();
+                    });
+                    etiquetas.appendChild(t);
+                });
+
+                document.getElementById('display-ubicacion').textContent = zonaActual ? lugar + ' • ' + zonaActual.nombre : lugar;
+                document.getElementById('display-fila').textContent = numerada && n
+                    ? 'Fila' + (new Set(ordenados.map(a => a[0])).size > 1 ? 's ' : ' ') + [...new Set(ordenados.map(a => a[0]))].join(', ')
+                    : (zonaActual && !numerada ? 'Admisión general' : '—');
+                document.getElementById('display-asientos').textContent = numerada && n ? 'Asientos ' + ordenados.join(', ')
+                    : (zonaActual && !numerada ? 'Sin asiento asignado' : '—');
+
+                document.getElementById('display-cantidad').textContent = n;
+                document.getElementById('display-qty-sub').textContent = n;
+                document.getElementById('btn-qty-text').textContent = n;
+                document.getElementById('display-precio').textContent = fmtPrecio(precio);
+                document.getElementById('display-subtotal').textContent = fmt(subtotal);
+                document.getElementById('display-cargos').textContent = fmt(cargos);
+                document.getElementById('display-iva').textContent = fmt(iva);
+                document.getElementById('display-total').textContent = fmt(redondear(subtotal + cargos + iva));
+
+                // En zonas con asientos la cantidad la marca el mapa
+                document.getElementById('btn-qty-minus').disabled = !zonaActual || numerada || cantidad <= 1;
+                document.getElementById('btn-qty-plus').disabled = !zonaActual || numerada || cantidad >= limite();
+
+                document.getElementById('input-tipo-id').value = zonaActual ? zonaActual.tipoId : '';
+                document.getElementById('input-asientos').value = numerada ? ordenados.join(',') : '';
+                document.getElementById('input-cantidad').value = n;
+                document.getElementById('btn-continuar').disabled = n === 0;
+
+                // La URL conserva la selección (se puede recargar o compartir)
+                if (zonaActual) {
+                    let url = '?id=' + eventoId + '&zona=' + zonaActual.codigo;
+                    if (numerada && n) url += '&asientos=' + ordenados.join(',');
+                    history.replaceState(null, '', url + '#seleccion');
+                }
+            }
+
+            document.getElementById('btn-qty-minus').addEventListener('click', () => {
+                if (cantidad > 1) { cantidad--; actualizarResumen(); }
+            });
+            document.getElementById('btn-qty-plus').addEventListener('click', () => {
+                if (cantidad < limite()) { cantidad++; actualizarResumen(); }
+            });
+
+            // ---------- Mapa: estado inicial, clics y tooltip ----------
+            const tooltip = document.getElementById('tooltipZona');
+            document.querySelectorAll('.zona-mapa').forEach(g => {
+                const zona = zonas[g.dataset.zona];
+                if (!zona || !zona.enVenta) g.classList.add('no-disponible');
+                g.addEventListener('click', () => seleccionarZona(g.dataset.zona));
+                if (tooltip) {
+                    g.addEventListener('mousemove', e => {
+                        const caja = tooltip.parentElement.getBoundingClientRect();
+                        tooltip.textContent = zona
+                            ? zona.nombre + (zona.enVenta ? ' · ' + fmtPrecio(zona.precio) : ' · No disponible')
+                            : 'No disponible';
+                        tooltip.style.left = (e.clientX - caja.left) + 'px';
+                        tooltip.style.top = (e.clientY - caja.top) + 'px';
+                        tooltip.style.display = 'block';
+                    });
+                    g.addEventListener('mouseleave', () => tooltip.style.display = 'none');
+                }
+            });
+            document.querySelectorAll('.filter-btn, .zona-opcion').forEach(el => {
+                el.addEventListener('click', () => seleccionarZona(el.dataset.zona));
+            });
+
+            // Restaura la selección de la URL (?zona=...&asientos=...)
+            const zonaInicial = datos.dataset.zonaInicial;
+            const asientosIniciales = datos.dataset.asientosIniciales;
+            if (zonaInicial && zonas[zonaInicial]) {
+                seleccionarZona(zonaInicial, asientosIniciales ? asientosIniciales.toUpperCase().split(',') : null);
+            } else {
+                // Sin mapa: preselecciona el primer tipo de boleto a la venta
+                const primera = Object.values(zonas).find(z => z.enVenta && !z.numerada && !document.querySelector('.zona-mapa'));
+                if (primera) seleccionarZona(primera.codigo);
+                else actualizarResumen();
+            }
+        })();
+    </script>
+
 </body>
 </html>
-
-

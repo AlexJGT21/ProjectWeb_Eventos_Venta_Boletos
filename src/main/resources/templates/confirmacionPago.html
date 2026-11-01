@@ -95,7 +95,7 @@
                             <span class="tour-subhead">TOUR MÉXICO 2026</span>
                             <h3 class="event-name" th:text="${evento != null ? evento.nombre : 'Nombre del Evento'}">INDIE / POST-PUNK: Midnight Echoes Tour</h3>
                             <p class="lineup-text" th:text="${evento != null ? evento.descripcion : 'Headliners & Invitados Especiales'}">Descripción</p>
-                            <p class="event-date-time" th:text="${evento != null ? '📅 ' + #temporals.format(evento.fechaHora, 'EEEE dd ' + 'de' + ' MMMM, yyyy • HH:mm ' + 'hrs', #locales.create('es', 'ES')) : 'Fecha'}">📅 Fecha</p>
+                            <p class="event-date-time" th:text="${evento != null} ? '📅 ' + ${evento.fechaCompleta} + ' • ' + ${evento.hora} + ' hrs' : 'Fecha'">📅 Fecha</p>
                         </div>
                     </div>
 
@@ -108,13 +108,13 @@
 
                         <div class="spec-item">
                             <span class="spec-label">🚪 Acceso y Puertas</span>
-                            <strong class="spec-value" th:text="${evento != null ? evento.encargado : 'Acceso Principal'}">Acceso Puerta 6 y 7</strong>
+                            <strong class="spec-value" th:text="${evento != null ? evento.lugar : 'Acceso Principal'}">Acceso Puerta 6 y 7</strong>
                             <span class="spec-sub">Apertura de puertas: 18:00 hrs</span>
                         </div>
 
                         <div class="spec-item full-width highlight-spec">
                             <span class="spec-label">🪑 Ubicación Asignada</span>
-                            <strong class="spec-value highlight-pink" th:text="'Fila ' + ${fila} + ' • ' + ${asientos}">Fila B • Asientos</strong>
+                            <strong class="spec-value highlight-pink" th:text="${fila == '—'} ? ${asientos} : ('Fila ' + ${fila} + ' • ' + ${asientos})">Fila B • Asientos</strong>
                             <span class="spec-sub" th:text="'Zona: ' + ${seccion}">Zona: Sección VIP</span>
                         </div>
 
@@ -166,11 +166,11 @@
                         <div class="ticket-meta-pills">
                             <div class="meta-pill">
                                 <span class="meta-label">FECHA</span>
-                                <strong class="meta-val" th:text="${evento != null ? #temporals.format(evento.fechaHora, 'dd MMM yyyy', #locales.create('es', 'ES')) : '2026'}">28 MAY 2026</strong>
+                                <strong class="meta-val" th:text="${evento != null ? evento.fechaCorta : '2026'}">28 MAY 2026</strong>
                             </div>
                             <div class="meta-pill">
                                 <span class="meta-label">HORA ACCESO</span>
-                                <strong class="meta-val" th:text="${evento != null ? #temporals.format(evento.fechaHora, 'HH:mm ' + 'HRS', #locales.create('es', 'ES')) : '20:00 HRS'}">20:00 HRS</strong>
+                                <strong class="meta-val" th:text="${evento != null ? evento.hora + ' HRS' : '20:00 HRS'}">20:00 HRS</strong>
                             </div>
                             <div class="meta-pill">
                                 <span class="meta-label">VENUE</span>

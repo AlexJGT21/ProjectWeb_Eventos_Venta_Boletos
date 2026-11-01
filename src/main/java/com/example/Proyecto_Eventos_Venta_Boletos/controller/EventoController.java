@@ -1,29 +1,50 @@
 package com.example.Proyecto_Eventos_Venta_Boletos.controller;
 
-import com.example.Proyecto_Eventos_Venta_Boletos.EstadosENUM.BoletoEstadoENUM;
 import com.example.Proyecto_Eventos_Venta_Boletos.EstadosENUM.EstadoEventoENUM;
-import com.example.Proyecto_Eventos_Venta_Boletos.model.Boleto;
+import com.example.Proyecto_Eventos_Venta_Boletos.dto.ResumenCompraDTO;
+import com.example.Proyecto_Eventos_Venta_Boletos.model.Compra;
 import com.example.Proyecto_Eventos_Venta_Boletos.model.Evento;
+import com.example.Proyecto_Eventos_Venta_Boletos.repository.EventoRepository;
+import com.example.Proyecto_Eventos_Venta_Boletos.service.CompraService;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.text.Normalizer;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
 public class EventoController {
 
+    // Estados que no se muestran en el catálogo público
+    private static final List<EstadoEventoENUM> ESTADOS_OCULTOS =
+            List.of(EstadoEventoENUM.CANCELADO, EstadoEventoENUM.PAUSADO);
+
+    private final EventoRepository eventoRepository;
+    private final CompraService compraService;
+
+    public EventoController(EventoRepository eventoRepository, CompraService compraService) {
+        this.eventoRepository = eventoRepository;
+        this.compraService = compraService;
+    }
+
     @GetMapping("/user-login")
-    public String login() {
+    public String login(@RequestParam(name = "error", required = false) String error, Model model) {
+        if (error != null) {
+            model.addAttribute("errorMessage", "Correo o contraseña incorrectos.");
+        }
         return "login-user";
     }
 
@@ -61,17 +82,22 @@ public class EventoController {
             @RequestParam(name = "tiempo", required = false, defaultValue = "Todos") String tiempo,
             @RequestParam(name = "precioMax", required = false, defaultValue = "1500") Double precioMax,
             @RequestParam(name = "disponibilidad", required = false, defaultValue = "Todos") String disponibilidad,
+            @RequestParam(name = "q", required = false) String q,
             Model model,
             HttpSession session) {
 
-        List<Evento> todosLosEventos = obtenerListaEventos();
+        // Eventos reales guardados por los organizadores (futuros y no cancelados/pausados)
+        List<Evento> todosLosEventos = eventoRepository
+                .findByFechaHoraEventoAfterAndEstadoEventoNotInOrderByFechaHoraEventoAsc(LocalDateTime.now(), ESTADOS_OCULTOS);
+        String busqueda = normalizar(q);
 
         // Filtrado dinámico mediante Java Streams según los parámetros recibidos por GET
         List<Evento> eventosFiltrados = todosLosEventos.stream()
                 // 1. Filtro por Categoría / Género
                 .filter(e -> categoria.equalsIgnoreCase("Todos") || e.getCategoria().equalsIgnoreCase(categoria))
                 // 2. Filtro por Precio Máximo (compara si el precio mínimo del evento está dentro del rango)
-                .filter(e -> e.getPrecioMinimo() <= precioMax)
+                // (el máximo del control deslizante, 1500, significa "sin límite")
+                .filter(e -> precioMax >= 1500 || e.getPrecioMinimo() <= precioMax)
                 // 3. Filtro por Disponibilidad
                 .filter(e -> {
                     if ("disponibles".equalsIgnoreCase(disponibilidad)) return e.isDisponible();
@@ -87,11 +113,24 @@ public class EventoController {
                     }
                     return true; // "Todos" o "FinDeSemana"
                 })
+                // 5. Búsqueda del header (nombre, descripción, categoría o lugar)
+                .filter(e -> busqueda.isEmpty()
+                        || contiene(e.getNombre(), busqueda)
+                        || contiene(e.getDescripcion(), busqueda)
+                        || contiene(e.getCategoria(), busqueda)
+                        || contiene(e.getLugar(), busqueda))
                 .collect(Collectors.toList());
 
         // Atributos pasados a la plantilla HTML
-        model.addAttribute("tituloPagina", "Catálogo de Eventos Locales");
+        model.addAttribute("tituloPagina", busqueda.isEmpty()
+                ? "Catálogo de Eventos Locales"
+                : "Resultados para \"" + q.trim() + "\"");
         model.addAttribute("eventos", eventosFiltrados);
+        // Carrusel: los 3 próximos eventos con boletos a la venta (o los 3 próximos si ninguno tiene)
+        List<Evento> conBoletos = todosLosEventos.stream().filter(Evento::isDisponible).limit(3).toList();
+        model.addAttribute("destacados", conBoletos.isEmpty()
+                ? todosLosEventos.stream().limit(3).toList()
+                : conBoletos);
 
         // Mantenimiento del estado de los filtros seleccionados en el HTML
         model.addAttribute("categoriaSeleccionada", categoria);
@@ -105,116 +144,116 @@ public class EventoController {
         return "index";
     }
 
+    // Minúsculas y sin acentos, para que "musica" encuentre "Música"
+    private static String normalizar(String texto) {
+        if (texto == null) return "";
+        String sinAcentos = Normalizer.normalize(texto.trim(), Normalizer.Form.NFD).replaceAll("\\p{M}", "");
+        return sinAcentos.toLowerCase(Locale.ROOT);
+    }
+
+    private static boolean contiene(String texto, String busqueda) {
+        return texto != null && normalizar(texto).contains(busqueda);
+    }
+
+    // Busca un evento real por su id (llega como texto desde los formularios)
+    private Evento buscarEvento(String eventoId) {
+        try {
+            return eventoId == null ? null : eventoRepository.findById(Long.parseLong(eventoId.trim())).orElse(null);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
+    // Banner del evento guardado en la base de datos
+    @GetMapping("/eventos/{id}/imagen")
+    public ResponseEntity<byte[]> imagenEvento(@PathVariable Long id) {
+        Evento evento = eventoRepository.findById(id).orElse(null);
+        if (evento == null || evento.getImagenEvento() == null || evento.getImagenEvento().length == 0) {
+            return ResponseEntity.notFound().build();
+        }
+        return respuestaImagen(evento.getImagenEvento());
+    }
+
+    // Croquis del recinto subido por el organizador (opcional)
+    @GetMapping("/eventos/{id}/croquis")
+    public ResponseEntity<byte[]> croquisEvento(@PathVariable Long id) {
+        Evento evento = eventoRepository.findById(id).orElse(null);
+        if (evento == null || evento.getCroquis() == null || evento.getCroquis().length == 0) {
+            return ResponseEntity.notFound().build();
+        }
+        return respuestaImagen(evento.getCroquis());
+    }
+
+    // Detecta el formato por los primeros bytes del archivo
+    private static ResponseEntity<byte[]> respuestaImagen(byte[] imagen) {
+        MediaType tipo = MediaType.IMAGE_JPEG;
+        if (imagen.length > 3 && (imagen[0] & 0xFF) == 0x89 && imagen[1] == 'P') tipo = MediaType.IMAGE_PNG;
+        else if (imagen.length > 3 && imagen[0] == 'G' && imagen[1] == 'I') tipo = MediaType.IMAGE_GIF;
+        else if (imagen.length > 11 && imagen[0] == 'R' && imagen[8] == 'W') tipo = MediaType.parseMediaType("image/webp");
+        return ResponseEntity.ok().contentType(tipo).body(imagen);
+    }
+
     @GetMapping("/venta-boletos")
-    public String ventaBoletos(@RequestParam(name = "id", required = false, defaultValue = "1") String eventoId,
+    public String ventaBoletos(@RequestParam(name = "id", required = false) String eventoId,
+                               @RequestParam(name = "zona", required = false) String zona,
+                               @RequestParam(name = "asientos", required = false) String asientos,
                                Model model) {
 
-        List<Evento> eventos = obtenerListaEventos();
-
-        // Buscamos el evento seleccionado por su ID
-        Evento eventoSeleccionado = eventos.stream()
-                .filter(e -> String.valueOf(e.getId()).equals(eventoId))
-                .findFirst()
-                .orElse(eventos.get(0));
+        // Buscamos el evento seleccionado por su ID en la base de datos
+        Evento eventoSeleccionado = buscarEvento(eventoId);
+        if (eventoSeleccionado == null) {
+            return "redirect:/eventos";
+        }
 
         model.addAttribute("evento", eventoSeleccionado);
-        model.addAttribute("mensaje", "¡Selecciona tus asientos y confirma tu compra!");
+        // Zonas del mapa (o tipos de boleto) con precio, disponibilidad y asientos ocupados reales
+        model.addAttribute("opciones", compraService.opcionesDeVenta(eventoSeleccionado));
+        model.addAttribute("usaMapa", compraService.usaMapa(eventoSeleccionado));
+        model.addAttribute("maximoPorCompra", CompraService.MAXIMO_POR_COMPRA);
+        // Permite recargar o compartir la URL con la zona y los asientos ya elegidos
+        model.addAttribute("zonaInicial", zona != null ? zona.trim().toUpperCase(Locale.ROOT) : "");
+        model.addAttribute("asientosIniciales", asientos != null ? asientos.trim() : "");
 
         return "ventaBoletos";
     }
 
-    private List<Evento> obtenerListaEventos() {
-        List<Evento> lista = new ArrayList<>();
-
-        // NOTA: Catálogo público de demostración, todavía no migrado a EventoRepository.
-        // Los eventos reales creados por organizadores desde /organizador/evento/nuevo
-        // sí se guardan en la base de datos (ver OrganizadorController/OrganizadorService).
-
-        // Evento 1
-        List<Boleto> boletos1 = List.of(
-                Boleto.builder().id(1L).tipoNombre("General").precio(150.0).estado(BoletoEstadoENUM.DISPONIBLE).cantidad(400).cantidadVendida(120).build(),
-                Boleto.builder().id(2L).tipoNombre("VIP").precio(300.0).estado(BoletoEstadoENUM.DISPONIBLE).cantidad(100).cantidadVendida(30).build()
-        );
-        lista.add(Evento.builder().id(1L).nombre("Noche Indie: Neon Waves Fest")
-                .descripcion("La cumbre del synthwave y dream-pop latinoamericano con 6 bandas en vivo.")
-                .categoria("Indie").fechaHoraEvento(LocalDateTime.now().plusDays(5))
-                .lugar("Desierto Bar").capacidad(500)
-                .estadoEvento(EstadoEventoENUM.ACTIVO).boletos(boletos1).build());
-
-        // Evento 2
-        List<Boleto> boletos2 = List.of(
-                Boleto.builder().id(3L).tipoNombre("General").precio(300.0).estado(BoletoEstadoENUM.DISPONIBLE).cantidad(250).cantidadVendida(80).build(),
-                Boleto.builder().id(4L).tipoNombre("VIP").precio(600.0).estado(BoletoEstadoENUM.DISPONIBLE).cantidad(50).cantidadVendida(10).build()
-        );
-        lista.add(Evento.builder().id(2L).nombre("Techno Underground: Dark Beats")
-                .descripcion("Una noche inmersiva con DJs internacionales y un sistema de audio envolvente de 360°.")
-                .categoria("Electrónica").fechaHoraEvento(LocalDateTime.now().plusDays(12))
-                .lugar("Arena Metropolitana").capacidad(300)
-                .estadoEvento(EstadoEventoENUM.ACTIVO).boletos(boletos2).build());
-
-        // Evento 3
-        List<Boleto> boletos3 = List.of(
-                Boleto.builder().id(5L).tipoNombre("General").precio(220.0).estado(BoletoEstadoENUM.AGOTADO).cantidad(150).cantidadVendida(150).build(),
-                Boleto.builder().id(6L).tipoNombre("VIP").precio(450.0).estado(BoletoEstadoENUM.AGOTADO).cantidad(50).cantidadVendida(50).build()
-        );
-        lista.add(Evento.builder().id(3L).nombre("Noche Acústica & Jazz Latino")
-                .descripcion("Un recorrido íntimo por los clásicos del bolero y jazz moderno al aire libre.")
-                .categoria("Rock").fechaHoraEvento(LocalDateTime.now().plusDays(25))
-                .lugar("Teatro de la Ciudad").capacidad(200)
-                .estadoEvento(EstadoEventoENUM.AGOTADO).boletos(boletos3).build());
-
-        // Evento 4
-        List<Boleto> boletos4 = List.of(
-                Boleto.builder().id(7L).tipoNombre("General").precio(100.0).estado(BoletoEstadoENUM.DISPONIBLE).cantidad(1000).cantidadVendida(300).build()
-        );
-        lista.add(Evento.builder().id(4L).nombre("Torneo de Fútbol Local")
-                .descripcion("Gran final del torneo municipal de verano.")
-                .categoria("Urbano").fechaHoraEvento(LocalDateTime.now().plusDays(30))
-                .lugar("Estadio Municipal").capacidad(1000)
-                .estadoEvento(EstadoEventoENUM.ACTIVO).boletos(boletos4).build());
-
-        return lista;
-    }
-
     // Paso 1: Recibir selección de mapa de asientos -> Ir al Formulario de Pago
+    // Solo llega QUÉ se quiere comprar; el precio y el total los calcula CompraService.
     @PostMapping("/form-compra")
     public String procesarSeleccionAsientos(
-            @RequestParam("eventoId") String eventoId,
-            @RequestParam("seccion") String seccion,
-            @RequestParam("fila") String fila,
-            @RequestParam("asientos") String asientos,
-            @RequestParam("cantidad") Integer cantidad,
-            @RequestParam("precioBase") Double precioBase,
-            @RequestParam("totalFinal") Double totalFinal,
+            @RequestParam("eventoId") Long eventoId,
+            @RequestParam(value = "tipoId", required = false) Long tipoId,
+            @RequestParam(value = "asientos", required = false) String asientos,
+            @RequestParam(value = "cantidad", required = false) Integer cantidad,
             Model model,
-            HttpSession session) {
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
 
-        Evento evento = obtenerListaEventos().stream()
-                .filter(e -> String.valueOf(e.getId()).equals(eventoId))
-                .findFirst()
-                .orElse(null);
+        if (tipoId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Selecciona una zona o tipo de boleto.");
+            return "redirect:/venta-boletos?id=" + eventoId;
+        }
 
-        // Guardar la selección en la sesión HTTP
+        ResumenCompraDTO resumen;
+        try {
+            resumen = compraService.cotizar(eventoId, tipoId, asientos, cantidad);
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/venta-boletos?id=" + eventoId;
+        }
+
+        // Guardar la selección en la sesión HTTP (solo ids y asientos, no entidades)
         session.setAttribute("eventoId", eventoId);
-        session.setAttribute("seccion", seccion);
-        session.setAttribute("fila", fila);
-        session.setAttribute("asientos", asientos);
-        session.setAttribute("cantidad", cantidad);
-        session.setAttribute("precioBase", precioBase);
-        session.setAttribute("totalFinal", totalFinal);
+        session.setAttribute("tipoId", tipoId);
+        session.setAttribute("asientos", String.join(",", resumen.getAsientos()));
+        session.setAttribute("cantidad", resumen.getCantidad());
 
-        model.addAttribute("evento", evento);
-        model.addAttribute("seccion", seccion);
-        model.addAttribute("fila", fila);
-        model.addAttribute("asientos", asientos);
-        model.addAttribute("cantidad", cantidad);
-        model.addAttribute("precioBase", precioBase);
-        model.addAttribute("totalFinal", totalFinal);
-
+        model.addAttribute("resumen", resumen);
+        model.addAttribute("evento", resumen.getEvento());
         return "formCompraBoletos";
     }
 
-    // Paso 2: Recibir los datos de la tarjeta y cliente -> Ir a Confirmación
+    // Paso 2: Recibir los datos del cliente -> registrar la compra en la base de datos
     @PostMapping("/procesar-pago")
     public String procesarPago(
             @RequestParam("fullName") String fullName,
@@ -222,50 +261,60 @@ public class EventoController {
             @RequestParam(value = "secondLastName", required = false) String secondLastName,
             @RequestParam("phone") String phone,
             @RequestParam("email") String email,
-            @RequestParam(value = "eventoId", required = false) String eventoIdParam,
             @RequestParam(value = "paymentMethod", defaultValue = "Tarjeta de Crédito / Débito") String paymentMethod,
-            Model model,
-            HttpSession session) {
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
 
-        // Recuperar información del boleto desde la sesión
-        String eventoId = eventoIdParam != null ? eventoIdParam : (String) session.getAttribute("eventoId");
-        String seccion = (String) session.getAttribute("seccion");
-        String fila = (String) session.getAttribute("fila");
+        // Recuperar la selección guardada en el paso anterior
+        Long eventoId = (Long) session.getAttribute("eventoId");
+        Long tipoId = (Long) session.getAttribute("tipoId");
         String asientos = (String) session.getAttribute("asientos");
         Integer cantidad = (Integer) session.getAttribute("cantidad");
-        Double totalFinal = (Double) session.getAttribute("totalFinal");
 
-        Evento evento = obtenerListaEventos().stream()
-                .filter(e -> String.valueOf(e.getId()).equals(eventoId != null ? eventoId : "1"))
-                .findFirst()
-                .orElse(obtenerListaEventos().get(0));
+        if (eventoId == null || tipoId == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Tu selección expiró, elige tus boletos de nuevo.");
+            return "redirect:/eventos";
+        }
 
-        String nombreCompleto = fullName + " " + firstLastName +
-                (secondLastName != null && !secondLastName.isBlank() ? " " + secondLastName : "");
+        String nombreCompleto = fullName.trim() + " " + firstLastName.trim() +
+                (secondLastName != null && !secondLastName.isBlank() ? " " + secondLastName.trim() : "");
 
-        Random random = new Random();
-        String codigoPedido = "#KT-2026-" + (10000 + random.nextInt(90000));
-        String codigoAcceso = "KT-VIP-" + (1000 + random.nextInt(9000)) + "-Q4";
+        Compra compra;
+        try {
+            compra = compraService.registrarCompra(eventoId, tipoId, asientos, cantidad,
+                    nombreCompleto, email, phone, paymentMethod);
+        } catch (IllegalStateException e) {
+            // Por ejemplo: alguien más compró el asiento mientras se llenaba el formulario
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/venta-boletos?id=" + eventoId;
+        }
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy • HH:mm 'hrs'", Locale.forLanguageTag("es-ES"));
-        String fechaHoraRegistro = LocalDateTime.now().format(formatter);
+        // La selección ya se usó; se recuerdan las compras de esta sesión para poder ver su confirmación
+        session.removeAttribute("tipoId");
+        session.removeAttribute("asientos");
+        session.removeAttribute("cantidad");
+        @SuppressWarnings("unchecked")
+        Set<Long> compras = (Set<Long>) session.getAttribute("comprasRealizadas");
+        if (compras == null) {
+            compras = new HashSet<>();
+        }
+        compras.add(compra.getId());
+        session.setAttribute("comprasRealizadas", compras);
 
-        // Atributos para la vista confirmacion-pago.html
-        model.addAttribute("evento", evento);
-        model.addAttribute("titularNombre", nombreCompleto);
-        model.addAttribute("titularEmail", email);
-        model.addAttribute("titularTelefono", phone);
-        model.addAttribute("codigoPedido", codigoPedido);
-        model.addAttribute("codigoAcceso", codigoAcceso);
-        model.addAttribute("fechaCompra", fechaHoraRegistro);
-        model.addAttribute("metodoPago", paymentMethod);
+        // Redirección para que recargar la página no repita el cobro
+        return "redirect:/confirmacion-compra?id=" + compra.getId();
+    }
 
-        model.addAttribute("seccion", seccion != null ? seccion : "Sección A • VIP Platino");
-        model.addAttribute("fila", fila != null ? fila : "B");
-        model.addAttribute("asientos", asientos != null ? asientos : "07 y 08");
-        model.addAttribute("cantidadBoletos", cantidad != null ? cantidad : 2);
-        model.addAttribute("totalPagado", totalFinal != null ? totalFinal : 3767.68);
-
+    // Paso 3: Confirmación con los datos guardados de la compra
+    @GetMapping("/confirmacion-compra")
+    public String confirmacionCompra(@RequestParam("id") Long compraId, Model model, HttpSession session) {
+        @SuppressWarnings("unchecked")
+        Set<Long> compras = (Set<Long>) session.getAttribute("comprasRealizadas");
+        // Solo quien hizo la compra (en esta sesión) puede ver sus datos
+        if (compras == null || !compras.contains(compraId)) {
+            return "redirect:/eventos";
+        }
+        model.addAllAttributes(compraService.datosConfirmacion(compraId));
         return "confirmacionPago";
     }
 
