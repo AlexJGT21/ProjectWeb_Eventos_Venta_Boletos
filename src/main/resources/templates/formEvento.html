@@ -881,12 +881,19 @@
 
             if (numerado) {
                 tipos.forEach(t => {
-                    [['tipoId', t.id], ['tipoNombre', t.nombre], ['tipoPrecio', t.precio],
-                     ['tipoAforo', t.aforo], ['tipoDescripcion', t.descripcion]].forEach(([nombre, valor]) => {
+                    const campos = [
+                        { nombre: 'tipoId', valor: t.id },
+                        { nombre: 'tipoNombre', valor: t.nombre },
+                        { nombre: 'tipoPrecio', valor: t.precio },
+                        { nombre: 'tipoAforo', valor: t.aforo },
+                        { nombre: 'tipoDescripcion', valor: t.descripcion }
+                    ];
+
+                    campos.forEach(campoDatos => {
                         const campo = document.createElement('input');
                         campo.type = 'hidden';
-                        campo.name = nombre;
-                        campo.value = valor;
+                        campo.name = campoDatos.nombre;
+                        campo.value = campoDatos.valor;
                         contenedor.appendChild(campo);
                     });
                 });

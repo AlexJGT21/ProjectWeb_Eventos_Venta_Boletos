@@ -76,6 +76,10 @@ public class Evento {
     @JoinColumn(name = "organizador_id", nullable = false)
     private Organizador organizador;
 
+    //@ManyToOne
+    //@JoinColumn(name = "recinto_id", nullable = false)
+    //private Recinto recinto;
+
     // Tipos de boleto configurados por el organizador (sin los boletos ya vendidos)
     public List<Boleto> getTiposBoleto() {
         if (boletos == null) return List.of();

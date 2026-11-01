@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Boletos | Billetera Digital - Konticket</title>
+
+    <!-- Hojas de estilo oficiales -->
+    <link rel="stylesheet" th:href="@{/css/header.css}" href="../css/header.css">
+    <link rel="stylesheet" th:href="@{/css/events-grid.css}" href="../css/events-grid.css">
+    <link rel="stylesheet" th:href="@{/css/mis-boletos.css}" href="../css/mis-boletos.css">
+</head>
+<body>
+
+<input type="checkbox" id="profile-menu-toggle" class="menu-toggle-checkbox">
+
+<header th:replace="~{fragmentos/header :: main-header}"></header>
+
+<label for="profile-menu-toggle" class="sidebar-overlay"></label>
+<aside th:replace="~{fragmentos/header :: perfil-sidebar}"></aside>
+
+<main class="wallet-container">
+
+    <header class="wallet-header">
+            <span class="wallet-badge-active">
+                <span class="status-dot"></span> BILLETERA DIGITAL ACTIVA
+            </span>
+        <h1 class="wallet-title">Mis Boletos</h1>
+        <p class="wallet-subtitle">Gestiona tus accesos verificados, transfiere boletos o prepara tu check-in sin filas.</p>
+    </header>
+
+    <input type="radio" id="tab-proximos" name="modalidad_view" class="tab-radio-toggle" checked>
+    <input type="radio" id="tab-pasados" name="modalidad_view" class="tab-radio-toggle">
+
+    <nav class="wallet-tabs-bar">
+        <div class="wallet-tabs-list">
+            <label for="tab-proximos" class="tab-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                Próximos Eventos
+                <span class="badge-count">2</span>
+            </label>
+
+            <label for="tab-pasados" class="tab-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                Historial Pasado
+                <span class="badge-count">4</span>
+            </label>
+        </div>
+
+        <div class="wallet-meta-tags">
+            <span class="tag-pill">TUS RESERVAS DISPONIBLES</span>
+            <span class="tag-pill">Música / Festivales</span>
+            <small>Actualizado hace un momento</small>
+        </div>
+    </nav>
+
+    <div class="fragments-wrapper">
+
+        <!-- FRAGMENTO 1: PRÓXIMOS EVENTOS -->
+        <section th:replace="~{fragmentos/proximos-boletos :: proximos-boletos}"></section>
+
+        <!-- FRAGMENTO 2: HISTORIAL PASADO -->
+        <section th:replace="~{fragmentos/historial-boletos :: historial-boletos}"></section>
+
+    </div>
+
+    <section class="curaduria-section">
+        <div class="curaduria-header">
+            <div>
+                <span class="update-badge">CURADURÍA PERSONALIZADA</span>
+                <h2 class="section-title">Toquines recomendados para ti este fin de semana</h2>
+            </div>
+            <a th:href="@{/eventos}" class="link-cartelera">
+                Ver cartelera completa en Obregón
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+        </div>
+
+        <div class="events-grid">
+
+            <article class="event-card-item">
+                <div class="card-thumb">
+                    <img th:src="@{/img/default-event.jpg}" src="../img/default-event.jpg" alt="Evento Recomendado">
+                    <span class="badge-status badge-pink">Pocos Boletos</span>
+                    <span class="badge-date">Viernes 27 Mayo · 21:00 hrs</span>
+                </div>
+                <div class="card-details">
+                    <div class="card-category-row">
+                        <span class="card-category">Indie Rock / Post-Punk</span>
+                    </div>
+                    <h3 class="card-event-title">Noche de Ecos & Reverberación</h3>
+                    <p class="card-venue">Desert Bar</p>
+                    <div class="card-footer-action">
+                        <div class="price-box">
+                            <div class="price-tag">$220 <small>MXN</small></div>
+                        </div>
+                        <a href="#" class="btn-action btn-dark">Conseguir Acceso</a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="event-card-item">
+                <div class="card-thumb">
+                    <img th:src="@{/img/default-event.jpg}" src="../img/default-event.jpg" alt="Evento Recomendado">
+                    <span class="badge-status badge-navy">Fase 2</span>
+                    <span class="badge-date">Sábado 28 Mayo · 23:30 hrs</span>
+                </div>
+                <div class="card-details">
+                    <div class="card-category-row">
+                        <span class="card-category">Electrónica / Synth</span>
+                    </div>
+                    <h3 class="card-event-title">Frecuencias Nocturnas Boiler Room</h3>
+                    <p class="card-venue">Laguna del Náinari</p>
+                    <div class="card-footer-action">
+                        <div class="price-box">
+                            <div class="price-tag">$380 <small>MXN</small></div>
+                        </div>
+                        <a href="#" class="btn-action btn-dark">Conseguir Acceso</a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="event-card-item">
+                <div class="card-thumb">
+                    <img th:src="@{/img/default-event.jpg}" src="../img/default-event.jpg" alt="Evento Recomendado">
+                    <span class="badge-status badge-green">Preventa</span>
+                    <span class="badge-date">Domingo 29 Mayo · 18:00 hrs</span>
+                </div>
+                <div class="card-details">
+                    <div class="card-category-row">
+                        <span class="card-category">Garage / Riot Rock</span>
+                    </div>
+                    <h3 class="card-event-title">Distorsión Club Acústico & Furia</h3>
+                    <p class="card-venue">Teatro del ITSON</p>
+                    <div class="card-footer-action">
+                        <div class="price-box">
+                            <div class="price-tag">$190 <small>MXN</small></div>
+                        </div>
+                        <a href="#" class="btn-action btn-dark">Conseguir Acceso</a>
+                    </div>
+                </div>
+            </article>
+
+        </div>
+    </section>
+
+</main>
+
+</body>
+</html>

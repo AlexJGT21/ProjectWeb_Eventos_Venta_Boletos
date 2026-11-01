@@ -27,12 +27,16 @@ public class Recinto {
     @Column(name = "direccion", nullable = false, length = 30)
     private String direccion;
 
-    @Column(name = "croquis", nullable = false)
-    private String croquis;
+    @Lob
+    @Column(name = "croquis", nullable = false, columnDefinition = "LONGBLOB")
+    private byte[] croquis;
 
     //LADO INVERSO
     @OneToMany(mappedBy = "recinto", cascade = CascadeType.ALL)
     private List<Zona> zonas;
+
+    //@OneToMany(mappedBy = "recinto",  cascade = CascadeType.ALL)
+    //private List<Evento> eventos;
 
     @Override
     public String toString() {
