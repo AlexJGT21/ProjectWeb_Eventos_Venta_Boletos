@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -12,40 +13,39 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // REQUISITO: Las contraseñas deben almacenarse cifradas con BCrypt, nunca en texto plano
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // REQUISITO: Configuración mediante SecurityFilterChain
-    // El inicio de sesión se valida contra la tabla organizadores (ver OrganizadorDetailsService)
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                // Desactivar CSRF: Requerimiento fundamental en APIs REST que consumen JSON y JWT
+                .csrf(csrf -> csrf.disable())
+
+                // Política de sesiones sin estado (Stateless)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // Desactivar mecanismos de login por formulario HTML o login básico HTTP
+                .formLogin(form -> form.disable())
+                .httpBasic(basic -> basic.disable())
+
+                // Reglas de autorización para la API REST
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/organizador/**").hasRole("ORGANIZADOR") // Panel y eventos: solo organizadores
-                        .requestMatchers("/admin/**").authenticated() // Protegiendo /admin/** para que requiera sesión
-                        .anyRequest().permitAll() // Permite las rutas públicas (catálogo, venta, login, registro)
-                )
-                .formLogin(form -> form
-                        .loginPage("/user-login") // Vista de login (login-user.html)
-                        .loginProcessingUrl("/login") // La ruta a la que el formulario hace POST
-                        .usernameParameter("email") // Nombres de los campos del formulario
-                        .passwordParameter("password")
-                        .defaultSuccessUrl("/organizador/panel") // Si venía de una página protegida, regresa a ella
-                        .failureUrl("/user-login?error")
-                        .permitAll()
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/index") // Redirección al catálogo tras salir
-                        .invalidateHttpSession(true) // Cierre de sesión con invalidación de la sesión HTTP
-                        .permitAll()
+                        // Endpoints públicos del catálogo, cotizaciones y compras
+                        .requestMatchers("/api/v1/eventos/**").permitAll()
+                        .requestMatchers("/api/v1/compras/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+
+                        // Endpoints protegidos por roles o autenticación JWT
+                        .requestMatchers("/api/v1/organizador/**").hasRole("ORGANIZADOR")
+                        .requestMatchers("/api/v1/admin/**").authenticated()
+
+                        // Cualquier otra ruta requerirá autenticación
+                        .anyRequest().authenticated()
                 );
 
-        // NOTA: CSRF está habilitado por defecto en Spring Security en todas sus configuraciones base.
-        // Al no agregar `.csrf(csrf -> csrf.disable())`, se cumple el requisito automáticamente.
         return http.build();
     }
 }
