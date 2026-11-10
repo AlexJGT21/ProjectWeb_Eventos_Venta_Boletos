@@ -1,0 +1,176 @@
+{
+  "info": {
+    "_postman_id": "471ade1c-665c-4cd0-8647-2f46d732c4b7",
+    "name": "Konticket",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "59413362",
+    "_collection_link": "https://go.postman.co/collection/59413362-471ade1c-665c-4cd0-8647-2f46d732c4b7?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Catalogo de eventos",
+      "item": [
+        {
+          "name": "Listar todos los eventos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/eventos",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "eventos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener detalle por Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/eventos/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "eventos",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Venta de Boletos",
+      "item": [
+        {
+          "name": "Consultar opciones de venta",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Cotizar Compra",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/compras/cotizar?eventoId=1&tipoId=1&asientos=A1, A2&cantidad=2",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "compras",
+                "cotizar"
+              ],
+              "query": [
+                {
+                  "key": "eventoId",
+                  "value": "1"
+                },
+                {
+                  "key": "tipoId",
+                  "value": "1"
+                },
+                {
+                  "key": "asientos",
+                  "value": "A1, A2"
+                },
+                {
+                  "key": "cantidad",
+                  "value": "2"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Procesar Compra y pago",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"eventoId\": 1,\r\n  \"tipoId\": 1,\r\n  \"asientos\": \"A1,A2\",\r\n  \"cantidad\": 2,\r\n  \"fullName\": \"Carlos\",\r\n  \"firstLastName\": \"Mendoza\",\r\n  \"secondLastName\": \"López\",\r\n  \"phone\": \"5512345678\",\r\n  \"email\": \"carlos.mendoza@email.com\",\r\n  \"paymentMethod\": \"Tarjeta de Crédito / Débito\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/v1/compras",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "compras"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Confirmación compra",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/v1/compras/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "v1",
+                "compras",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Pruebas de error",
+      "item": []
+    }
+  ]
+}

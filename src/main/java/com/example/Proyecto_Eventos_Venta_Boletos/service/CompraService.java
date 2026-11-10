@@ -33,10 +33,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- * Venta de boletos: arma las opciones de compra de un evento (zonas del mapa o tipos de boleto),
- * cotiza en el servidor y registra la compra guardando un Boleto por cada asiento/entrada vendida.
- */
+
 @Service
 public class CompraService {
 
@@ -65,11 +62,10 @@ public class CompraService {
 
     // ---------------------------------------------------------------- Opciones de venta
 
-    /** El evento usa el mapa si es de "Mapa Numerado" y al menos un tipo de boleto coincide con una zona. */
     public boolean usaMapa(Evento evento) {
         return "NUMERADO".equals(evento.getModalidadAsientos())
                 && evento.getTiposBoleto().stream()
-                        .anyMatch(t -> MapaRecinto.porNombreDeBoleto(t.getTipoNombre()).isPresent());
+                .anyMatch(t -> MapaRecinto.porNombreDeBoleto(t.getTipoNombre()).isPresent());
     }
 
     @Transactional(readOnly = true)
@@ -111,7 +107,6 @@ public class CompraService {
                         .build());
             }
         } else {
-            // Entrada general: cada tipo de boleto es una opción, sin asientos
             for (Boleto tipo : evento.getTiposBoleto()) {
                 String nombre = tipo.getTipoNombre() != null ? tipo.getTipoNombre() : "General";
                 opciones.add(ZonaVentaDTO.builder()
@@ -211,8 +206,10 @@ public class CompraService {
         BigDecimal iva = subtotal.add(cargo).multiply(TASA_IVA).setScale(2, RoundingMode.HALF_UP);
 
         return ResumenCompraDTO.builder()
-                .evento(evento)
-                .tipo(tipo)
+                .eventoId(evento.getId())
+                .eventoNombre(evento.getNombre())
+                .tipoBoletoId(tipo.getId())
+                .tipoBoletoNombre(tipo.getTipoNombre())
                 .zonaCodigo(zona.map(MapaRecinto.Zona::codigo).orElse(null))
                 .zonaNombre(zona.map(MapaRecinto.Zona::nombre).orElse(tipo.getTipoNombre()))
                 .asientos(asientosFinales)
@@ -225,7 +222,6 @@ public class CompraService {
                 .build();
     }
 
-    /** "d8, E8,e8" -> [D8, E8] ordenados por fila y número, sin repetidos. */
     private static List<String> separarAsientos(String texto) {
         if (texto == null || texto.isBlank()) return List.of();
         return java.util.Arrays.stream(texto.split(","))
@@ -332,7 +328,6 @@ public class CompraService {
 
     // ---------------------------------------------------------------- Confirmación
 
-    /** Datos que necesita confirmacionPago.html, tomados de la compra guardada. */
     @Transactional(readOnly = true)
     public Map<String, Object> datosConfirmacion(Long compraId) {
         Compra compra = compraRepository.findById(compraId)
@@ -346,7 +341,10 @@ public class CompraService {
                 .map(MapaRecinto.Zona::nombre).orElse(primero.getTipoNombre());
 
         Map<String, Object> datos = new LinkedHashMap<>();
-        datos.put("evento", evento);
+        datos.put("eventoId", evento != null ? evento.getId() : null);
+        datos.put("eventoNombre", evento != null ? evento.getNombre() : null);
+        datos.put("eventoLugar", evento != null ? evento.getLugar() : null);
+        datos.put("eventoFecha", evento != null ? evento.getFechaCompleta() : null);
         datos.put("titularNombre", compra.getAsistente().getNombre());
         datos.put("titularEmail", compra.getAsistente().getCorreo());
         datos.put("titularTelefono", compra.getAsistente().getTelefono());
