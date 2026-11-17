@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konticket - Panel de Administración</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/panelOrganizador.css}" href="/css/panelOrganizador.css">
+    <link rel="stylesheet" th:href="@{/css/menu-lateral.css}" href="/css/menu-lateral.css">
+</head>
+<body>
+
+    <!-- Checkbox oculto que controla el menú lateral del fragmento -->
+    <input type="checkbox" id="profile-menu-toggle" class="menu-toggle-checkbox">
+
+    <!-- Overlay oscuro para cerrar el menú al hacer clic fuera -->
+    <label for="profile-menu-toggle" class="sidebar-overlay"></label>
+
+    <main class="main-content">
+        <header th:replace="~{fragmentos/header :: main-header}"></header>
+
+        <div class="dashboard-container">
+
+            <div class="dashboard-header-row">
+                <div class="title-block">
+                    <span class="text-pink text-xs fw-bold">● ADMINISTRACIÓN DE LA PLATAFORMA</span>
+                    <h1 th:text="${titulo}">Panel de Control Administrativo</h1>
+                    <p class="text-light-gray text-sm">Resumen global de organizadores, eventos y ventas de Konticket.</p>
+                </div>
+            </div>
+
+            <!-- Métricas globales -->
+            <div class="metrics-grid">
+                <div class="card metric-card">
+                    <div class="metric-head">
+                        <span class="metric-title">ORGANIZADORES</span>
+                        <i class="fas fa-users text-purple"></i>
+                    </div>
+                    <h2 class="metric-value" th:text="${#numbers.formatInteger(totalOrganizadores, 0, 'COMMA')}">0</h2>
+                    <p class="metric-trend text-light-gray mt-2">Cuentas registradas en la plataforma</p>
+                </div>
+
+                <div class="card metric-card">
+                    <div class="metric-head">
+                        <span class="metric-title">EVENTOS</span>
+                        <i class="fas fa-calendar-alt text-pink"></i>
+                    </div>
+                    <h2 class="metric-value" th:text="${#numbers.formatInteger(totalEventos, 0, 'COMMA')}">0</h2>
+                    <p class="metric-trend text-light-gray mt-2"><strong class="text-pink" th:text="${eventosCancelados}">0</strong> cancelados</p>
+                </div>
+
+                <div class="card metric-card">
+                    <div class="metric-head">
+                        <span class="metric-title">BOLETOS VENDIDOS</span>
+                        <i class="fas fa-ticket-alt text-purple"></i>
+                    </div>
+                    <h2 class="metric-value" th:text="${#numbers.formatInteger(boletosVendidos, 0, 'COMMA')}">0</h2>
+                    <p class="metric-trend text-light-gray mt-2"><strong class="text-pink" th:text="${totalCompras}">0</strong> compras registradas</p>
+                </div>
+
+                <div class="card metric-card">
+                    <div class="metric-head">
+                        <span class="metric-title">INGRESOS TOTALES</span>
+                        <i class="fas fa-money-bill-wave text-pink"></i>
+                    </div>
+                    <h2 class="metric-value">
+                        <span th:text="${'$' + #numbers.formatDecimal(ingresosTotales, 0, 'COMMA', 0, 'POINT')}">$0</span>
+                        <small>MXN</small>
+                    </h2>
+                    <p class="metric-trend text-light-gray mt-2">Incluye cargos por servicio e IVA</p>
+                </div>
+            </div>
+
+            <!-- Accesos rápidos -->
+            <div class="acciones-rapidas">
+                <a th:href="@{/admin/organizadores}" class="card accion-rapida">
+                    <i class="fas fa-user-plus"></i>
+                    <div><strong>Gestionar organizadores</strong><span>Registrar nuevas cuentas o dar de baja las que no tienen eventos.</span></div>
+                </a>
+                <a th:href="@{/admin/eventos}" class="card accion-rapida">
+                    <i class="fas fa-ban"></i>
+                    <div><strong>Control de eventos</strong><span>Revisar todos los eventos y cancelar los que incumplan las políticas.</span></div>
+                </a>
+            </div>
+
+            <!-- Próximos eventos de cualquier organizador -->
+            <div class="card">
+                <div class="inventory-header">
+                    <div>
+                        <span class="text-pink text-xs fw-bold">PRÓXIMAS FECHAS</span>
+                        <h3>Próximos eventos en la plataforma</h3>
+                    </div>
+                    <a th:href="@{/admin/eventos}" class="link-editar-evento">Ver todos los eventos ›</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="inventory-table">
+                        <thead>
+                            <tr>
+                                <th>EVENTO</th>
+                                <th>ORGANIZADOR</th>
+                                <th>FECHA</th>
+                                <th>VENDIDOS / AFORO</th>
+                                <th>ESTADO</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="e : ${proximosEventos}">
+                                <td>
+                                    <div class="ticket-name-cell">
+                                        <i class="fas fa-music text-pink"></i>
+                                        <div>
+                                            <strong th:text="${e.nombre}">Evento</strong>
+                                            <span class="text-xs text-light-gray" th:text="${e.lugar}">Lugar</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td th:text="${e.organizador != null ? e.organizador.nombre : '—'}">Organizador</td>
+                                <td th:text="${e.fechaCorta} + ' • ' + ${e.hora} + ' hrs'">Fecha</td>
+                                <td>
+                                    <strong th:text="${#numbers.formatInteger(e.boletosVendidos, 0, 'COMMA')}">0</strong>
+                                    <span class="text-light-gray" th:text="'/ ' + ${#numbers.formatInteger(e.aforoTipos, 0, 'COMMA')}">/ 0</span>
+                                </td>
+                                <td>
+                                    <span class="pill"
+                                          th:classappend="${e.cancelado} ? 'pill-cancelado' : (${e.disponible} ? 'pill-disponible' : 'pill-agotado')"
+                                          th:text="'● ' + (${e.cancelado} ? 'CANCELADO' : (${e.disponible} ? 'A LA VENTA' : 'SIN BOLETOS'))">ESTADO</span>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(proximosEventos)}">
+                                <td colspan="5" class="text-sm text-light-gray" style="text-align: center; padding: 20px;">
+                                    No hay eventos próximos registrados.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Menú lateral compartido (fragmentos/header.html) -->
+    <aside th:replace="~{fragmentos/header :: perfil-sidebar}"></aside>
+
+</body>
+</html>

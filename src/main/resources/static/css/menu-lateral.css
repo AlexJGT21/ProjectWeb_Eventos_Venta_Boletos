@@ -1,0 +1,200 @@
+/*
+ * Menú lateral del fragmento (fragmentos/header.html :: perfil-sidebar) para las pantallas
+ * que no cargan header.css (panel del organizador y formulario de eventos).
+ * Mismos estilos que header.css para que el menú se vea igual en todo el sitio.
+ */
+
+.menu-toggle-checkbox {
+    display: none;
+}
+
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 998;
+    cursor: pointer;
+}
+
+.perfil-sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 320px;
+    max-width: 100%;
+    height: 100vh;
+    background-color: #FFFFFF;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.08);
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 999;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.menu-toggle-checkbox:checked ~ .sidebar-overlay {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.menu-toggle-checkbox:checked ~ .perfil-sidebar {
+    transform: translateX(0);
+}
+
+/* Tarjeta de usuario con sesión */
+.user-card {
+    display: flex;
+    align-items: center;
+    background-color: #F3F3F8;
+    padding: 10px 14px;
+    border-radius: 16px;
+    gap: 12px;
+}
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    background-color: #000000;
+    color: #FFFFFF;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.info-usuario {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.nombre-usuario {
+    font-size: 14px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1.2;
+}
+
+.rol-usuario {
+    font-size: 11px;
+    color: #6B7280;
+    font-weight: 500;
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Navegación */
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    border-radius: 12px;
+    gap: 12px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sidebar-item:hover {
+    background-color: #F9FAFB;
+}
+
+.sidebar-item.active {
+    background-color: #0A1547;
+    color: #FFFFFF;
+}
+
+.sidebar-item.active svg {
+    stroke: #FFFFFF;
+}
+
+/* Tarjeta de invitado / iniciar sesión */
+.auth-guest-card {
+    background: linear-gradient(145deg, #0A1547 0%, #162467 100%);
+    border-radius: 16px;
+    padding: 20px 16px;
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 20px rgba(10, 21, 71, 0.15);
+}
+
+.guest-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.guest-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    flex-shrink: 0;
+}
+
+.info-invitado {
+    display: flex;
+    flex-direction: column;
+}
+
+.titulo-invitado {
+    font-size: 15px;
+    font-weight: 700;
+    color: #FFFFFF;
+}
+
+.subtitulo-invitado {
+    font-size: 11px;
+    color: #94A3B8;
+}
+
+.btn-sidebar-login {
+    background-color: #E6005C;
+    color: #FFFFFF;
+    text-decoration: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(230, 0, 92, 0.3);
+}
+
+.btn-sidebar-login:hover {
+    background-color: #C5004E;
+    transform: translateY(-1px);
+}

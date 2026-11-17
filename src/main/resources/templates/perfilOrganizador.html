@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konticket - Mi Perfil</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/panelOrganizador.css}" href="/css/panelOrganizador.css">
+    <link rel="stylesheet" th:href="@{/css/menu-lateral.css}" href="/css/menu-lateral.css">
+</head>
+<body>
+
+    <!-- Checkbox oculto que controla el menú lateral del fragmento -->
+    <input type="checkbox" id="profile-menu-toggle" class="menu-toggle-checkbox">
+
+    <!-- Overlay oscuro para cerrar el menú al hacer clic fuera -->
+    <label for="profile-menu-toggle" class="sidebar-overlay"></label>
+
+    <main class="main-content">
+        <header th:replace="~{fragmentos/header :: main-header}"></header>
+
+        <div class="dashboard-container">
+
+            <div class="dashboard-header-row">
+                <div class="title-block">
+                    <span class="text-pink text-xs fw-bold">● CUENTA DE ORGANIZADOR</span>
+                    <h1>Mi Perfil</h1>
+                    <p class="text-light-gray text-sm">Actualiza tus datos de contacto y tu contraseña de acceso.</p>
+                </div>
+            </div>
+
+            <div class="aviso-panel" th:if="${param.exito != null}"><i class="fas fa-check-circle"></i> Tus datos se guardaron correctamente.</div>
+            <div class="aviso-panel aviso-error" th:if="${errorMessage}"><i class="fas fa-exclamation-circle"></i> <span th:text="${errorMessage}">Error</span></div>
+
+            <div class="admin-grid">
+
+                <!-- Resumen de la cuenta -->
+                <div class="card">
+                    <h3><i class="fas fa-id-badge text-pink"></i> Resumen de la cuenta</h3>
+                    <ul class="perfil-resumen">
+                        <li><span>Nombre</span><strong th:text="${organizador.nombre}">Organizador</strong></li>
+                        <li><span>Correo de acceso</span><strong th:text="${organizador.correo}">correo@konticket.mx</strong></li>
+                        <li><span>Eventos registrados</span><strong th:text="${totalEventos}">0</strong></li>
+                    </ul>
+                    <a th:href="@{/organizador/panel}" class="link-editar-evento" style="display: inline-block; margin-top: 15px;"><i class="fas fa-chart-pie"></i> Ir a mi panel</a>
+                </div>
+
+                <!-- Formulario de edición -->
+                <div class="card">
+                    <h3><i class="fas fa-user-edit text-pink"></i> Datos del perfil</h3>
+                    <form th:action="@{/organizador/perfil/actualizar}" method="post">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label for="nombre">Nombre o razón social *</label>
+                                <input type="text" id="nombre" name="nombre" th:value="${organizador.nombre}" required minlength="3" maxlength="50">
+                            </div>
+                            <div class="form-group">
+                                <label for="telefono">Teléfono *</label>
+                                <input type="tel" id="telefono" name="telefono" th:value="${organizador.telefono}" required maxlength="20">
+                            </div>
+                            <div class="form-group">
+                                <label for="correo">Correo electrónico</label>
+                                <!-- Sin "name": el correo es el usuario de inicio de sesión y no se cambia desde aquí -->
+                                <input type="email" id="correo" th:value="${organizador.correo}" readonly>
+                                <small>Es tu usuario para iniciar sesión; no se puede modificar.</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="fechaNacimiento">Fecha de nacimiento</label>
+                                <input type="date" id="fechaNacimiento" name="fechaNacimiento" th:value="${organizador.fechaNacimiento}">
+                            </div>
+                        </div>
+
+                        <h3 class="mt-3"><i class="fas fa-lock text-pink"></i> Cambiar contraseña</h3>
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label for="contrasenia">Nueva contraseña</label>
+                                <input type="password" id="contrasenia" name="contrasenia" minlength="8" maxlength="64" autocomplete="new-password">
+                                <small>Déjala vacía si no quieres cambiarla. Mínimo 8 caracteres.</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmarContrasenia">Confirmar nueva contraseña</label>
+                                <input type="password" id="confirmarContrasenia" name="confirmarContrasenia" minlength="8" maxlength="64" autocomplete="new-password">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit mt-2">GUARDAR CAMBIOS</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Menú lateral compartido (fragmentos/header.html) -->
+    <aside th:replace="~{fragmentos/header :: perfil-sidebar}"></aside>
+
+</body>
+</html>

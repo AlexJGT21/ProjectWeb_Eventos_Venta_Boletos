@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konticket - Panel Organizador & Estadísticas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/panelOrganizador.css}" href="/css/panelOrganizador.css">
+    <link rel="stylesheet" th:href="@{/css/menu-lateral.css}" href="/css/menu-lateral.css">
+</head>
+<body>
+
+    <!-- Checkbox oculto que controla el menú lateral del fragmento -->
+    <input type="checkbox" id="profile-menu-toggle" class="menu-toggle-checkbox">
+
+    <!-- Overlay oscuro para cerrar el menú al hacer clic fuera -->
+    <label for="profile-menu-toggle" class="sidebar-overlay"></label>
+
+    <main class="main-content">
+        <header th:replace="~{fragmentos/header :: main-header}"></header>
+
+        <div class="dashboard-container">
+            
+            <!-- Cabecera Dinámica -->
+            <div class="dashboard-header-row">
+                <div class="title-block">
+                    <span class="text-pink text-xs fw-bold">● CENTRO DE CONTROL OPERATIVO</span>
+                    <h1 th:text="'Panel de Gestión • ' + (${organizador != null} ? ${organizador.nombre} : '')">Panel de Gestión</h1>
+                    <p class="text-light-gray text-sm">Supervisión financiera en tiempo real, inventario de aforo y logística de taquilla.</p>
+                </div>
+                <!-- Al cambiar cualquier filtro se recarga el panel con los datos de ese evento / periodo -->
+                <form class="filters-block" method="get" th:action="@{/organizador/panel}">
+                    <div class="form-group-inline">
+                        <label for="filtroEvento">Evento Activo</label>
+                        <select id="filtroEvento" name="eventoId" onchange="this.form.submit()">
+                            <option value="" th:text="${#lists.isEmpty(eventos)} ? 'Sin eventos registrados' : 'Todos mis eventos'">Todos mis eventos</option>
+                            <option th:each="ev : ${eventos}" th:value="${ev.id}" th:text="${ev.nombre}"
+                                    th:selected="${eventoSeleccionadoId != null and eventoSeleccionadoId == ev.id}">Nombre Evento</option>
+                        </select>
+                        <!-- Edición del evento seleccionado -->
+                        <a class="link-editar-evento" th:if="${eventoSeleccionadoId != null}"
+                           th:href="@{/organizador/evento/{id}/editar(id=${eventoSeleccionadoId})}"><i class="fas fa-pen"></i> Editar este evento</a>
+                    </div>
+                    <div class="form-group-inline">
+                        <label for="filtroDias">Periodo</label>
+                        <select id="filtroDias" name="dias" onchange="this.form.submit()">
+                            <option value="7" th:selected="${diasSeleccionados == 7}">Últimos 7 días</option>
+                            <option value="30" th:selected="${diasSeleccionados == 30}">Últimos 30 días</option>
+                            <option value="90" th:selected="${diasSeleccionados == 90}">Últimos 90 días</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+
+            <div class="aviso-panel" th:if="${param.eventoActualizado != null}"><i class="fas fa-check-circle"></i> Los cambios del evento se guardaron.</div>
+            <div class="aviso-panel" th:if="${param.eventoCreado != null}"><i class="fas fa-check-circle"></i> Evento creado y publicado.</div>
+
+            <div class="staff-banner">
+                <div class="banner-info">
+                    <div class="icon-box"><i class="fas fa-qrcode"></i></div>
+                    <div>
+                        <h3 style="margin-bottom: 5px;">Puertas y Accesos de Staff
+                            <span class="badge-soft" th:text="${diasProximoEvento == null} ? 'Sin eventos próximos' : (${diasProximoEvento == 0} ? 'Evento hoy' : ('Próximo evento en ' + ${diasProximoEvento} + ' días'))">Próximo evento</span>
+                        </h3>
+                        <p class="text-sm" style="opacity: 0.8;">Descarga el reporte de ventas e inventario del evento seleccionado.</p>
+                    </div>
+                </div>
+                <div class="banner-actions">
+                    <button type="button" class="btn-pink-light" disabled title="Próximamente" style="opacity: 0.6; cursor: not-allowed;"><i class="fas fa-expand"></i> ESCÁNER QR (PRÓXIMAMENTE)</button>
+                    <a class="btn-purple-dark" style="text-decoration: none;"
+                       th:href="${eventoSeleccionadoId != null} ? @{/organizador/reporte.csv(eventoId=${eventoSeleccionadoId})} : @{/organizador/reporte.csv}"><i class="fas fa-download"></i> DESCARGAR REPORTE CSV</a>
+                </div>
+            </div>
+
+            <!-- Grid de Métricas Dinámicas -->
+            <div class="metrics-grid">
+                <div class="card metric-card">
+                    <div class="metric-head">
+                        <span class="metric-title">INGRESOS TOTALES</span>
+                        <i class="fas fa-money-bill-wave text-pink"></i>
+                    </div>
+                    <!-- Formato decimal para monedas -->
+                    <h2 class="metric-value">
+                        <span th:text="${'$' + #numbers.formatDecimal(ingresosTotales, 0, 'COMMA', 0, 'POINT')}">$0</span>
+                        <small>MXN</small>
+                    </h2>
+                    <p class="metric-trend text-light-gray"><strong class="text-pink" th:text="${curva.totalPeriodo}">0</strong> boletos vendidos en los últimos <span th:text="${diasSeleccionados}">30</span> días</p>
+                </div>
+                
+                <div class="card metric-card">
+                    <div class="metric-head">
+                        <span class="metric-title">BOLETOS VENDIDOS</span>
+                        <i class="fas fa-ticket-alt text-purple"></i>
+                    </div>
+                    <h2 class="metric-value">
+                        <span th:text="${#numbers.formatInteger(boletosVendidos, 0, 'COMMA')}">0</span> 
+                        <span class="text-light-gray" th:text="'/ ' + ${#numbers.formatInteger(capacidadTotal, 0, 'COMMA')}">/ 0</span>
+                    </h2>
+                    <div class="progress-bar-container mt-2">
+                        <!-- Ancho dinámico según porcentaje -->
+                        <div class="progress-fill bg-pink" th:style="'width: ' + ${porcentajeOcupacion} + '%;'"></div>
+                    </div>
+                    <div class="metric-foot mt-2">
+                        <span class="text-pink fw-bold text-xs" th:text="${#numbers.formatDecimal(porcentajeOcupacion, 1, 1)} + '% capacidad ocupada'">0% capacidad ocupada</span>
+                        <span class="text-light-gray text-xs" th:text="${#numbers.formatInteger(boletosRestantes, 0, 'COMMA')} + ' restantes'">0 restantes</span>
+                    </div>
+                </div>
+                
+                <div class="card metric-card">
+                    <div class="metric-head">
+                        <span class="metric-title">ASISTENCIA - CHECK-IN</span>
+                        <i class="fas fa-user-check text-gray"></i>
+                    </div>
+                    <h2 class="metric-value">0% <span class="text-light-gray text-sm" th:text="'(0 / ' + ${#numbers.formatInteger(boletosVendidos, 0, 'COMMA')} + ')'">(0 / 0)</span></h2>
+                    <p class="metric-trend text-light-gray mt-3"><span class="pulse-dot-yellow"></span>
+                        <span th:text="${diasProximoEvento == null} ? 'Sin eventos próximos' : (${diasProximoEvento == 0} ? 'Apertura de puertas hoy' : ('Apertura de puertas en ' + ${diasProximoEvento} + ' días'))">Apertura de puertas</span>
+                    </p>
+                </div>
+                
+                <div class="card metric-card">
+                    <div class="metric-head">
+                        <span class="metric-title">TICKET PROMEDIO</span>
+                        <i class="fas fa-chart-line text-pink"></i>
+                    </div>
+                    <h2 class="metric-value">
+                        <span th:text="${'$' + #numbers.formatDecimal(ticketPromedio, 0, 'COMMA', 0, 'POINT')}">$0</span>
+                        <small>MXN</small>
+                    </h2>
+                    <p class="metric-trend text-light-gray mt-2" th:if="${tipoTop != null}"><strong class="text-pink" th:text="${tipoTop.tipoBoleto}">Tipo</strong> es el que más ingresos genera</p>
+                    <p class="metric-trend text-light-gray mt-2" th:if="${tipoTop == null}">Aún no hay ventas registradas</p>
+                </div>
+            </div>
+
+            <!-- Grid de Gráficas (calculadas con datos reales) -->
+            <div class="charts-grid">
+                <div class="card chart-card">
+                    <div class="chart-header">
+                        <div>
+                            <span class="text-pink text-xs fw-bold" th:text="'ÚLTIMOS ' + ${curva.dias} + ' DÍAS • MÁXIMO ' + ${curva.maximoDiario} + ' BOLETOS EN UN DÍA'">CURVA DE CONVERSIÓN</span>
+                            <h3>Ritmo de Venta de Boletos por Día</h3>
+                        </div>
+                    </div>
+                    <div class="line-chart-wrapper">
+                        <svg viewBox="0 0 800 250" preserveAspectRatio="none" class="svg-line-chart">
+                            <defs><linearGradient id="grad-pink" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e91e63" stop-opacity="0.3"/><stop offset="100%" stop-color="#e91e63" stop-opacity="0"/></linearGradient></defs>
+                            <path th:attr="d=${curva.trazoArea}" d="M0,230 L800,230 L800,250 L0,250 Z" fill="url(#grad-pink)" />
+                            <path th:attr="d=${curva.trazoLinea}" d="M0,230 L800,230" fill="none" stroke="#e91e63" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="text-xs text-light-gray mt-1" style="display: flex; justify-content: space-between;">
+                        <span th:each="etiqueta : ${curva.etiquetas}" th:text="${etiqueta}">fecha</span>
+                    </div>
+                    <p th:if="${curva.totalPeriodo == 0}" class="text-sm text-light-gray mt-2" style="text-align: center;">
+                        Aún no hay ventas registradas en este periodo.
+                    </p>
+                </div>
+
+                <div class="card chart-card">
+                    <span class="text-pink text-xs fw-bold">AFORO</span>
+                    <h3>Ocupación del Recinto</h3>
+                    <div class="donut-chart-container">
+                        <div class="donut-chart"
+                             th:style="'background: conic-gradient(var(--primary-color) 0% ' + ${porcentajeOcupacion} + '%, #ececf3 ' + ${porcentajeOcupacion} + '% 100%);'">
+                            <div class="donut-inner">
+                                <span class="text-xs fw-bold text-light-gray">VENDIDO</span>
+                                <h2 style="margin: 0;" th:text="${#numbers.formatDecimal(porcentajeOcupacion, 1, 1)} + '%'">0%</h2>
+                                <span class="text-xs fw-bold text-pink" th:text="${#numbers.formatInteger(boletosRestantes, 0, 'COMMA')} + ' libres'">0 libres</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de Inventario Dinámica iterando el modelo DTO -->
+            <div class="inventory-section mt-4">
+                <div class="card">
+                    <div class="inventory-header">
+                        <div>
+                            <span class="text-pink text-xs fw-bold">CONFIGURACIÓN DE INVENTARIO</span>
+                            <h3>Gestión de Boletos por Tipo y Aforo</h3>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="inventory-table">
+                            <thead>
+                                <tr>
+                                    <th>TIPO DE BOLETO</th>
+                                    <th>PRECIO UNITARIO</th>
+                                    <th>VENDIDOS / CAPACIDAD</th>
+                                    <th>CAPACIDAD VISUAL</th>
+                                    <th>INGRESO GENERADO</th>
+                                    <th>ESTADO</th>
+                                    <th>ACCIONES</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Bucle Thymeleaf para generar las filas de la tabla dinámicamente -->
+                                <tr th:each="boleto : ${inventario}">
+                                    <td>
+                                        <div class="ticket-name-cell">
+                                            <i th:class="${boleto.iconoCss}"></i>
+                                            <div>
+                                                <strong th:text="${boleto.tipoBoleto}">Nombre Boleto</strong>
+                                                <span th:text="${boleto.descripcion}">Descripción</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong th:text="${'$' + #numbers.formatDecimal(boleto.precio, 0, 'COMMA', 0, 'POINT')}">$0</strong><br>
+                                        <span class="text-xs text-light-gray">MXN</span>
+                                    </td>
+                                    <td>
+                                        <strong th:text="${#numbers.formatInteger(boleto.vendidos, 0, 'COMMA')}">0</strong> 
+                                        <span class="text-light-gray" th:text="'/ ' + ${#numbers.formatInteger(boleto.capacidad, 0, 'COMMA')}">/ 0</span>
+                                    </td>
+                                    <td>
+                                        <div class="progress-bar-container">
+                                            <div th:class="'progress-fill ' + (${boleto.porcentaje >= 100} ? 'bg-gray' : 'bg-pink')" 
+                                                 th:style="'width: ' + ${boleto.porcentaje} + '%;'"></div>
+                                        </div>
+                                        <div class="text-right text-xs mt-1" 
+                                             th:classappend="${boleto.porcentaje >= 100} ? 'text-light-gray' : 'text-pink fw-bold'"
+                                             th:text="${#numbers.formatDecimal(boleto.porcentaje, 0, 0)} + '%'">0%</div>
+                                    </td>
+                                    <td>
+                                        <strong th:text="${'$' + #numbers.formatDecimal(boleto.ingresoGenerado, 0, 'COMMA', 0, 'POINT')}">$0</strong><br>
+                                        <span class="text-xs text-light-gray">MXN</span>
+                                    </td>
+                                    <td>
+                                        <span class="pill" 
+                                              th:classappend="${boleto.estado == 'AGOTADO'} ? 'pill-agotado' : (${boleto.estado == 'POCOS BOLETOS'} ? 'pill-pocos' : 'pill-disponible')"
+                                              th:text="'● ' + ${boleto.estado}">ESTADO</span>
+                                    </td>
+                                    <td class="table-actions">
+                                        <!-- Editar abre el formulario del evento directo en el paso de boletos -->
+                                        <a th:href="@{/organizador/evento/{id}/editar(id=${boleto.eventoId}, paso=3)}" title="Editar boletos del evento"><i class="fas fa-pen"></i></a>
+                                        <a th:href="@{/organizador/reporte.csv(eventoId=${boleto.eventoId})}" title="Descargar reporte de este evento"><i class="fas fa-download"></i></a>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(inventario)}">
+                                    <td colspan="7" class="text-sm text-light-gray" style="text-align: center; padding: 20px;">
+                                        Este evento todavía no tiene tipos de boleto registrados.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Menú Lateral Dinámico inyectando entidad Organizador -->
+    <!-- Menú lateral compartido (fragmentos/header.html) -->
+    <aside th:replace="~{fragmentos/header :: perfil-sidebar}"></aside>
+
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konticket - Control de Eventos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/panelOrganizador.css}" href="/css/panelOrganizador.css">
+    <link rel="stylesheet" th:href="@{/css/menu-lateral.css}" href="/css/menu-lateral.css">
+</head>
+<body>
+
+    <!-- Checkbox oculto que controla el menú lateral del fragmento -->
+    <input type="checkbox" id="profile-menu-toggle" class="menu-toggle-checkbox">
+
+    <!-- Overlay oscuro para cerrar el menú al hacer clic fuera -->
+    <label for="profile-menu-toggle" class="sidebar-overlay"></label>
+
+    <main class="main-content">
+        <header th:replace="~{fragmentos/header :: main-header}"></header>
+
+        <div class="dashboard-container">
+
+            <div class="dashboard-header-row">
+                <div class="title-block">
+                    <span class="text-pink text-xs fw-bold">● ADMINISTRACIÓN</span>
+                    <h1>Control de Eventos</h1>
+                    <p class="text-light-gray text-sm">Todos los eventos de la plataforma. Un evento cancelado deja de mostrarse en el catálogo y ya no vende boletos.</p>
+                </div>
+                <a th:href="@{/admin/dashboard}" class="link-editar-evento"><i class="fas fa-arrow-left"></i> Volver al panel</a>
+            </div>
+
+            <div class="aviso-panel" th:if="${param.cancelado != null}"><i class="fas fa-check-circle"></i> El evento se canceló y ya no aparece en el catálogo.</div>
+            <div class="aviso-panel" th:if="${param.reactivado != null}"><i class="fas fa-check-circle"></i> El evento se reactivó.</div>
+            <div class="aviso-panel aviso-error" th:if="${errorMessage}"><i class="fas fa-exclamation-circle"></i> <span th:text="${errorMessage}">Error</span></div>
+
+            <div class="card">
+                <div class="inventory-header">
+                    <div>
+                        <span class="text-pink text-xs fw-bold" th:text="${#lists.size(eventos)} + ' EVENTOS'">0 EVENTOS</span>
+                        <h3>Eventos registrados</h3>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="inventory-table">
+                        <thead>
+                            <tr>
+                                <th>EVENTO</th>
+                                <th>ORGANIZADOR</th>
+                                <th>FECHA</th>
+                                <th>VENDIDOS / AFORO</th>
+                                <th>ESTADO</th>
+                                <th>ACCIONES</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="e : ${eventos}" th:with="cancelado=${e.cancelado}, pasado=${e.finalizado}">
+                                <td>
+                                    <div class="ticket-name-cell">
+                                        <i class="fas fa-music text-pink"></i>
+                                        <div>
+                                            <strong th:text="${e.nombre}">Evento</strong>
+                                            <span class="text-xs text-light-gray" th:text="${e.categoria} + ' • ' + ${e.lugar}">Categoría • Lugar</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td th:text="${e.organizador != null ? e.organizador.nombre : '—'}">Organizador</td>
+                                <td th:text="${e.fechaCorta} + ' • ' + ${e.hora} + ' hrs'">Fecha</td>
+                                <td>
+                                    <strong th:text="${#numbers.formatInteger(e.boletosVendidos, 0, 'COMMA')}">0</strong>
+                                    <span class="text-light-gray" th:text="'/ ' + ${#numbers.formatInteger(e.aforoTipos, 0, 'COMMA')}">/ 0</span>
+                                </td>
+                                <td>
+                                    <span class="pill"
+                                          th:classappend="${cancelado} ? 'pill-cancelado' : (${pasado} ? 'pill-agotado' : (${e.disponible} ? 'pill-disponible' : 'pill-pocos'))"
+                                          th:text="'● ' + (${cancelado} ? 'CANCELADO' : (${pasado} ? 'FINALIZADO' : (${e.disponible} ? 'A LA VENTA' : 'SIN BOLETOS')))">ESTADO</span>
+                                </td>
+                                <td class="table-actions">
+                                    <a th:unless="${cancelado}" th:href="@{/venta-boletos(id=${e.id})}" target="_blank" title="Ver página de venta"><i class="fas fa-eye"></i></a>
+
+                                    <form th:unless="${cancelado or pasado}" class="form-inline" th:action="@{/admin/eventos/cancelar}" method="post"
+                                          th:data-nombre="${e.nombre}"
+                                          onsubmit="return confirm('¿Cancelar el evento «' + this.dataset.nombre + '»? Dejará de venderse.');">
+                                        <input type="hidden" name="id" th:value="${e.id}">
+                                        <button type="submit" class="btn-tabla btn-tabla-peligro"><i class="fas fa-ban"></i> Cancelar</button>
+                                    </form>
+
+                                    <form th:if="${cancelado}" class="form-inline" th:action="@{/admin/eventos/reactivar}" method="post">
+                                        <input type="hidden" name="id" th:value="${e.id}">
+                                        <button type="submit" class="btn-tabla"><i class="fas fa-undo"></i> Reactivar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(eventos)}">
+                                <td colspan="6" class="text-sm text-light-gray" style="text-align: center; padding: 20px;">
+                                    Todavía no hay eventos registrados.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Menú lateral compartido (fragmentos/header.html) -->
+    <aside th:replace="~{fragmentos/header :: perfil-sidebar}"></aside>
+
+</body>
+</html>

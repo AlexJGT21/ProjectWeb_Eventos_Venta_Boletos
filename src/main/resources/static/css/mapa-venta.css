@@ -1,0 +1,166 @@
+/* Mapa interactivo del recinto y selección de asientos (ventaBoletos.html) */
+
+.mapa-recinto-wrapper {
+    position: relative;
+    background-color: #F3F3F8;
+    border: 2px solid #0A1547;
+    border-radius: 16px;
+    padding: 12px;
+    margin-bottom: 16px;
+}
+
+.mapa-recinto {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.mapa-recinto text {
+    pointer-events: none;
+    font-family: var(--font-body, sans-serif);
+    font-weight: 800;
+    user-select: none;
+}
+
+.zona-mapa {
+    cursor: pointer;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.zona-mapa:hover {
+    filter: brightness(1.08);
+}
+
+/* Zonas que no se venden en este evento */
+.zona-mapa.no-disponible {
+    opacity: 0.25;
+    cursor: not-allowed;
+}
+
+/* Cuando hay una zona elegida, el resto se atenúa */
+.zona-mapa.atenuada {
+    opacity: 0.35;
+}
+
+.zona-mapa.seleccionada rect,
+.zona-mapa.seleccionada path {
+    stroke: #0A1547;
+    stroke-width: 3;
+}
+
+.tooltip-zona {
+    position: absolute;
+    pointer-events: none;
+    background-color: #0A1547;
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 9px;
+    border-radius: 6px;
+    white-space: nowrap;
+    transform: translate(-50%, -130%);
+    display: none;
+    z-index: 5;
+}
+
+.filter-btn.no-disponible {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.zona-placeholder {
+    text-align: center;
+    font-size: 12px;
+    color: var(--color-text-muted, #8E8E93);
+    padding: 24px 0;
+}
+
+.aviso-venta {
+    background: rgba(230, 0, 92, 0.08);
+    color: #E6005C;
+    border: 1px solid rgba(230, 0, 92, 0.3);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    margin-bottom: 14px;
+}
+
+.seat.occupied {
+    cursor: not-allowed;
+}
+
+.seat.occupied:hover {
+    transform: none;
+}
+
+.mini-card.zona-opcion {
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.mini-card.zona-opcion.no-disponible {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.mini-card .color-zona {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+
+.tag-outline.quitar-asiento {
+    cursor: pointer;
+}
+
+.btn-primary-checkout:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.qty-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Las columnas del grid no deben ensancharse por el mapa o las pastillas */
+.sales-content-grid > .left-column,
+.sales-content-grid > .right-column {
+    min-width: 0;
+}
+
+.filter-pills {
+    flex-wrap: wrap;
+    overflow-x: visible;
+}
+
+/* Aviso breve al intentar pasar del máximo de asientos */
+.legend-hint.aviso-limite {
+    color: #E6005C;
+    font-weight: 700;
+}
+
+/* Croquis subido por el organizador (eventos de entrada general) */
+.croquis-evento {
+    margin: 0 0 16px;
+    background-color: #F3F3F8;
+    border-radius: 16px;
+    padding: 12px;
+    text-align: center;
+}
+
+.croquis-evento img {
+    max-width: 100%;
+    max-height: 420px;
+    border-radius: 10px;
+    object-fit: contain;
+}
+
+.croquis-evento figcaption {
+    font-size: 11px;
+    color: var(--color-text-muted, #8E8E93);
+    margin-top: 6px;
+}

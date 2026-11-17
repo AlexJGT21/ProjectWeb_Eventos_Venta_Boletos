@@ -1,0 +1,784 @@
+/* FUENTE DISPLAY (MuseoModerno) */
+@font-face {
+    font-family: 'MuseoModerno';
+    src: url('../fonts/MuseoModerno-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'MuseoModerno';
+    src: url('../fonts/MuseoModerno-Italic-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+/* FUENTE HEADLINE (Myriad Pro Bold) */
+@font-face {
+    font-family: 'Myriad Pro Bold';
+    src: url('../fonts/MYRIADPRO-BOLD.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* FUENTE CUERPO DE TEXTO (Montserrat) */
+@font-face {
+    font-family: 'Montserrat';
+    src: url('../fonts/Montserrat-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url('../fonts/Montserrat-Italic-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+:root {
+    --color-primary: #0A1547;
+    --color-accent: #E6005C;
+    --color-secondary-pink: #FFC0FE;
+    --color-white: #FFFFFF;
+    --color-dark: #000000;
+    --color-bg-light: #F3F3F8;
+    --color-bg-hover: #F9FAFB;
+    --color-text-main: #1A1A1A;
+    --color-text-dark: #111827;
+    --color-text-muted: #8E8E93;
+    --color-text-subtle: #6B7280;
+
+    /* --- Tipografías Oficiales --- */
+    --font-display: 'MuseoModerno', sans-serif;
+    --font-heading: 'Myriad Pro Bold', sans-serif;
+    --font-body: 'Montserrat', sans-serif;
+}
+
+
+/* Contenedor principal de la Billetera */
+.wallet-container {
+    max-width: 1240px;
+    margin: 30px auto 60px auto;
+    padding: 0 20px;
+    font-family: var(--font-body), serif;
+}
+
+/* Encabezado Superior */
+.wallet-header {
+    margin-bottom: 28px;
+}
+
+.wallet-badge-active {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #EEF2FF;
+    color: #4F46E5;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 6px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    font-family: var(--font-heading), serif;
+}
+
+.wallet-badge-active .status-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #10B981;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #10B981;
+}
+
+.wallet-title {
+    font-family: var(--font-display), serif;
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--color-primary);
+    margin: 0 0 6px 0;
+}
+
+.wallet-subtitle {
+    font-size: 14px;
+    color: var(--color-text-subtle);
+    margin: 0;
+}
+
+.tab-radio-toggle {
+    display: none;
+}
+
+.wallet-tabs-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid #E2E8F0;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.wallet-tabs-list {
+    display: flex;
+    gap: 12px;
+}
+
+.tab-btn {
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-text-subtle);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+    font-family: var(--font-heading), serif;
+}
+
+.tab-btn:hover {
+    color: var(--color-primary);
+}
+
+.tab-btn .badge-count {
+    background: #E2E8F0;
+    color: #334155;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+#tab-proximos:checked ~ .wallet-tabs-bar label[for="tab-proximos"],
+#tab-pasados:checked ~ .wallet-tabs-bar label[for="tab-pasados"] {
+    color: var(--color-accent);
+    border-bottom-color: var(--color-accent);
+}
+
+#tab-proximos:checked ~ .wallet-tabs-bar label[for="tab-proximos"] .badge-count,
+#tab-pasados:checked ~ .wallet-tabs-bar label[for="tab-pasados"] .badge-count {
+    background: var(--color-accent);
+    color: var(--color-white);
+}
+
+.tab-content-fragment {
+    display: none;
+}
+
+#tab-proximos:checked ~ .fragments-wrapper #fragment-proximos,
+#tab-pasados:checked ~ .fragments-wrapper #fragment-pasados {
+    display: block;
+}
+
+.wallet-meta-tags {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--color-text-subtle);
+}
+
+.tag-pill {
+    background: #F1F5F9;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.billetera-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    gap: 28px;
+    align-items: start;
+}
+
+.tickets-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.ticket-item-card {
+    background: var(--color-white);
+    border: 1px solid #E2E8F0;
+    border-radius: 18px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.ticket-item-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.ticket-item-card.active {
+    border: 2px solid var(--color-primary);
+    background: #FAFCFF;
+}
+
+.ticket-item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.badges-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.badge-status-pill {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 12px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    font-family: var(--font-heading), serif;
+}
+
+.badge-active-green { background: #D1FAE5; color: #065F46; }
+.badge-navy { background: var(--color-primary); color: var(--color-white); }
+.badge-gray { background: #E2E8F0; color: #475569; }
+.badge-pink { background: var(--color-accent); color: var(--color-white); }
+.badge-outline { border: 1px solid #CBD5E1; color: #64748B; background: transparent; }
+
+.ticket-item-title {
+    font-family: var(--font-display), serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--color-text-dark);
+    margin: 4px 0 2px 0;
+    line-height: 1.25;
+}
+
+.ticket-item-datetime {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--color-accent);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 4px 0;
+}
+
+.ticket-item-venue {
+    font-size: 12px;
+    color: var(--color-text-subtle);
+    margin: 0;
+}
+
+.ticket-item-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px dashed #E2E8F0;
+}
+
+.ticket-order-ref {
+    font-size: 11px;
+    color: var(--color-text-muted);
+    font-weight: 600;
+}
+
+.ticket-item-price {
+    font-family: var(--font-heading), serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--color-text-dark);
+}
+
+.btn-select-ticket {
+    background: var(--color-bg-light);
+    color: var(--color-text-dark);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.2s ease;
+    font-family: var(--font-heading), serif;
+}
+
+.btn-select-ticket:hover { background: #E2E8F0; }
+
+.transfer-notice-card {
+    background: linear-gradient(135deg, #0A1547 0%, #162467 100%);
+    border-radius: 16px;
+    padding: 18px 20px;
+    color: var(--color-white);
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    box-shadow: 0 8px 20px rgba(10, 21, 71, 0.12);
+}
+
+.transfer-icon {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.transfer-content h4 {
+    font-family: var(--font-heading), serif;
+    font-size: 14px;
+    margin: 0 0 4px 0;
+}
+
+.transfer-content p {
+    font-size: 12px;
+    color: #94A3B8;
+    line-height: 1.4;
+    margin: 0 0 8px 0;
+}
+
+.transfer-tag {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--color-secondary-pink);
+    letter-spacing: 0.5px;
+    font-family: var(--font-heading), serif;
+}
+
+.digital-pass-card {
+    background: var(--color-white);
+    border: 1px solid #E2E8F0;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 16px 36px rgba(10, 21, 71, 0.1);
+    position: sticky;
+    top: 20px;
+}
+
+.pass-header {
+    background: linear-gradient(145deg, #0A1547 0%, #050B26 100%);
+    color: var(--color-white);
+    padding: 24px;
+}
+
+.pass-category-tag {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--color-accent);
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    display: block;
+    font-family: var(--font-heading), serif;
+}
+
+.pass-event-title {
+    font-family: var(--font-display), serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--color-white);
+    margin: 0 0 6px 0;
+    line-height: 1.15;
+}
+
+.pass-artist-info {
+    font-size: 11px;
+    color: #94A3B8;
+    margin-bottom: 18px;
+    line-height: 1.4;
+}
+
+.pass-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.pass-meta-item small {
+    display: block;
+    font-size: 9px;
+    color: #94A3B8;
+    font-weight: 800;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+    font-family: var(--font-heading), serif;
+}
+
+.pass-meta-item strong {
+    font-size: 12px;
+    color: var(--color-white);
+    font-weight: 800;
+}
+
+.ticket-stub-divider {
+    position: relative;
+    height: 20px;
+    background: var(--color-white);
+    display: flex;
+    align-items: center;
+}
+
+.ticket-stub-divider::before,
+.ticket-stub-divider::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: var(--color-bg-light);
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: inset 0 0 0 1px #CBD5E1;
+    z-index: 2;
+}
+
+.ticket-stub-divider::before { left: -10px; }
+.ticket-stub-divider::after { right: -10px; }
+
+.ticket-stub-line {
+    width: 100%;
+    margin: 0 20px;
+    border-top: 2px dashed #CBD5E1;
+}
+
+.pass-body {
+    padding: 16px 24px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.pass-status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 16px;
+    gap: 6px;
+}
+
+.badge-pill-soft {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 12px;
+    background: #EEF2FF;
+    color: #4F46E5;
+    font-family: var(--font-heading), serif;
+}
+
+.badge-pill-navy {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 12px;
+    background: var(--color-primary);
+    color: var(--color-white);
+    font-family: var(--font-heading), serif;
+}
+
+.status-badge-live {
+    background: #FEE2E2;
+    color: var(--color-accent);
+    font-size: 10px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-heading), serif;
+}
+
+.status-badge-live .pulse-dot {
+    width: 6px;
+    height: 6px;
+    background-color: var(--color-accent);
+    border-radius: 50%;
+    animation: pulse-ring 1.5s infinite;
+}
+
+@keyframes pulse-ring {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(230, 0, 92, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(230, 0, 92, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(230, 0, 92, 0); }
+}
+
+.qr-container {
+    background: #FAFAFC;
+    border: 1px dashed #CBD5E1;
+    padding: 16px;
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 16px;
+}
+
+.qr-code-title {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--color-text-subtle);
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    font-family: var(--font-heading), serif;
+}
+
+.qr-box {
+    width: 180px;
+    height: 180px;
+    background: #FFFFFF;
+    padding: 10px;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.qr-code-text {
+    font-family: monospace;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: var(--color-primary);
+    margin-bottom: 6px;
+}
+
+.qr-sync-row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    font-size: 10px;
+    color: #64748B;
+    font-weight: 700;
+    padding: 0 4px;
+}
+
+.pass-access-details {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    background: var(--color-bg-light);
+    padding: 12px;
+    border-radius: 14px;
+    margin-bottom: 16px;
+    text-align: left;
+    box-sizing: border-box;
+}
+
+.access-detail-box small {
+    display: block;
+    font-size: 9px;
+    color: var(--color-text-muted);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-family: var(--font-heading), serif;
+}
+
+.access-detail-box strong {
+    display: block;
+    font-size: 12px;
+    color: var(--color-text-dark);
+    font-weight: 800;
+}
+
+.access-detail-box span {
+    display: block;
+    font-size: 10px;
+    color: var(--color-text-subtle);
+}
+
+.pass-actions-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 14px;
+}
+
+.btn-wallet {
+    flex: 1;
+    background: #000000;
+    color: #FFFFFF;
+    border: none;
+    padding: 12px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-family: var(--font-heading), serif;
+}
+
+.btn-download-pdf {
+    flex: 1;
+    background: #EEF2FF;
+    color: #4F46E5;
+    border: none;
+    padding: 12px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-family: var(--font-heading), serif;
+}
+
+.pass-security-disclaimer {
+    font-size: 10px;
+    color: #94A3B8;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.history-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.history-card-item {
+    background: var(--color-white);
+    border: 1px solid #E2E8F0;
+    border-radius: 18px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    opacity: 0.9;
+    transition: all 0.2s ease;
+}
+
+.history-card-item:hover {
+    opacity: 1;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+}
+
+.history-card-header {
+    background: #F8FAFC;
+    padding: 14px 16px;
+    border-bottom: 1px solid #E2E8F0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.history-card-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.history-event-title {
+    font-family: var(--font-heading), serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--color-text-dark);
+    margin: 0;
+}
+
+.history-card-footer {
+    padding: 12px 16px;
+    background: #FAFCFF;
+    border-top: 1px solid #F1F5F9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.curaduria-section {
+    margin-top: 60px;
+    padding-top: 40px;
+    border-top: 1px solid #E2E8F0;
+}
+
+.curaduria-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 24px;
+}
+
+.update-badge {
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--color-accent);
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    display: block;
+    font-family: var(--font-heading), serif;
+}
+
+.section-title {
+    font-family: var(--font-heading), serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--color-primary);
+    margin: 0;
+}
+
+.link-cartelera {
+    color: var(--color-accent);
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-heading), serif;
+}
+
+.link-cartelera:hover { text-decoration: underline; }
+
+/* RESPONSIVO */
+@media (max-width: 1024px) {
+    .billetera-grid { grid-template-columns: 1fr; }
+    .digital-pass-card { position: static; }
+    .history-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+    .history-grid { grid-template-columns: 1fr; }
+    .pass-access-details { grid-template-columns: 1fr; }
+}

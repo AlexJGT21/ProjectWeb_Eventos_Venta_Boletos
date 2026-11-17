@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konticket - Organizadores</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/panelOrganizador.css}" href="/css/panelOrganizador.css">
+    <link rel="stylesheet" th:href="@{/css/menu-lateral.css}" href="/css/menu-lateral.css">
+</head>
+<body>
+
+    <!-- Checkbox oculto que controla el menú lateral del fragmento -->
+    <input type="checkbox" id="profile-menu-toggle" class="menu-toggle-checkbox">
+
+    <!-- Overlay oscuro para cerrar el menú al hacer clic fuera -->
+    <label for="profile-menu-toggle" class="sidebar-overlay"></label>
+
+    <main class="main-content">
+        <header th:replace="~{fragmentos/header :: main-header}"></header>
+
+        <div class="dashboard-container">
+
+            <div class="dashboard-header-row">
+                <div class="title-block">
+                    <span class="text-pink text-xs fw-bold">● ADMINISTRACIÓN</span>
+                    <h1>Organizadores</h1>
+                    <p class="text-light-gray text-sm">Alta de nuevas cuentas de organizador y control de las existentes.</p>
+                </div>
+                <a th:href="@{/admin/dashboard}" class="link-editar-evento"><i class="fas fa-arrow-left"></i> Volver al panel</a>
+            </div>
+
+            <div class="aviso-panel" th:if="${param.exito != null}"><i class="fas fa-check-circle"></i> Organizador registrado. Ya puede iniciar sesión con su correo y contraseña.</div>
+            <div class="aviso-panel" th:if="${param.eliminado != null}"><i class="fas fa-check-circle"></i> Organizador eliminado.</div>
+            <div class="aviso-panel aviso-error" th:if="${errorMessage}"><i class="fas fa-exclamation-circle"></i> <span th:text="${errorMessage}">Error</span></div>
+
+            <div class="admin-grid">
+
+                <!-- Formulario de registro -->
+                <div class="card">
+                    <h3><i class="fas fa-user-plus text-pink"></i> Registrar organizador</h3>
+                    <form th:action="@{/admin/organizadores/registrar}" th:object="${nuevoOrganizador}" method="post">
+                        <div class="form-group">
+                            <label for="nombre">Nombre o razón social *</label>
+                            <input type="text" id="nombre" th:field="*{nombre}" required minlength="3" maxlength="50" placeholder="Ej. Sonora Live Producciones">
+                        </div>
+                        <div class="form-group">
+                            <label for="telefono">Teléfono *</label>
+                            <input type="tel" id="telefono" th:field="*{telefono}" required maxlength="20" placeholder="Ej. 6441234567">
+                        </div>
+                        <div class="form-group">
+                            <label for="correo">Correo electrónico *</label>
+                            <input type="email" id="correo" th:field="*{correo}" required maxlength="100" placeholder="contacto@ejemplo.com">
+                            <small>Será su usuario para iniciar sesión.</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="contrasenia">Contraseña inicial *</label>
+                            <input type="password" id="contrasenia" name="contrasenia" required minlength="8" maxlength="64" autocomplete="new-password">
+                            <small>Mínimo 8 caracteres. Se guarda cifrada; el organizador puede cambiarla desde su perfil.</small>
+                        </div>
+                        <button type="submit" class="btn-submit mt-2">REGISTRAR ORGANIZADOR</button>
+                    </form>
+                </div>
+
+                <!-- Lista de organizadores -->
+                <div class="card">
+                    <div class="inventory-header">
+                        <div>
+                            <span class="text-pink text-xs fw-bold" th:text="${#lists.size(organizadores)} + ' REGISTRADOS'">0 REGISTRADOS</span>
+                            <h3>Cuentas de organizador</h3>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="inventory-table" style="min-width: 600px;">
+                            <thead>
+                                <tr>
+                                    <th>ORGANIZADOR</th>
+                                    <th>TELÉFONO</th>
+                                    <th>EVENTOS</th>
+                                    <th>ACCIONES</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="o : ${organizadores}">
+                                    <td>
+                                        <div class="ticket-name-cell">
+                                            <i class="fas fa-user-tie text-purple"></i>
+                                            <div>
+                                                <strong th:text="${o.nombre}">Nombre</strong>
+                                                <span class="text-xs text-light-gray" th:text="${o.correo}">correo</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td th:text="${o.telefono}">Teléfono</td>
+                                    <td th:with="numEventos=${o.eventos != null ? #lists.size(o.eventos) : 0}">
+                                        <strong th:text="${numEventos}">0</strong>
+                                    </td>
+                                    <td>
+                                        <!-- Solo se puede eliminar si no tiene eventos (el servicio también lo valida) -->
+                                        <form th:if="${o.eventos == null or #lists.isEmpty(o.eventos)}" class="form-inline"
+                                              th:action="@{/admin/organizadores/eliminar}" method="post"
+                                              th:data-nombre="${o.nombre}"
+                                              onsubmit="return confirm('¿Eliminar la cuenta de ' + this.dataset.nombre + '?');">
+                                            <input type="hidden" name="id" th:value="${o.id}">
+                                            <button type="submit" class="btn-tabla btn-tabla-peligro"><i class="fas fa-trash"></i> Eliminar</button>
+                                        </form>
+                                        <span th:unless="${o.eventos == null or #lists.isEmpty(o.eventos)}" class="text-xs text-light-gray"
+                                              title="Tiene eventos registrados">Con eventos</span>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(organizadores)}">
+                                    <td colspan="4" class="text-sm text-light-gray" style="text-align: center; padding: 20px;">
+                                        Todavía no hay organizadores registrados.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Menú lateral compartido (fragmentos/header.html) -->
+    <aside th:replace="~{fragmentos/header :: perfil-sidebar}"></aside>
+
+</body>
+</html>

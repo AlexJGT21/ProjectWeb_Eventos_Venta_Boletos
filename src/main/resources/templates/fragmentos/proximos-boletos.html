@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<section id="fragment-proximos" class="tab-content-fragment" th:fragment="proximos-boletos">
+    <div class="billetera-grid">
+
+        <div class="tickets-list">
+
+            <!-- Boleto 1 (Seleccionado / Activo) -->
+            <article class="ticket-item-card active">
+                <div class="ticket-item-top">
+                    <div class="badges-row">
+                        <span class="badge-status-pill badge-pink">PASE DIGITAL ACTIVO 1 de 1</span>
+                        <span class="badge-status-pill badge-active-green">Válido</span>
+                    </div>
+                    <span class="badge-status-pill badge-navy">EN 3 DÍAS</span>
+                </div>
+
+                <div class="ticket-item-body">
+                    <h2 class="ticket-item-title">Midnight Echoes Tour</h2>
+                    <p class="ticket-item-datetime">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        Sábado 28 Mayo 2025, 20:00 hrs
+                    </p>
+                    <p class="ticket-item-venue">Desert Bar, Av. Rodolfo Félix, Cd. Obregón</p>
+                </div>
+
+                <div class="ticket-item-footer">
+                    <span class="ticket-order-ref">Compra #KT-98234-CDMX</span>
+                    <div class="ticket-item-price">$750 <small>MXN</small></div>
+                </div>
+            </article>
+
+            <!-- Boleto 2 (Segundo Evento) -->
+            <article class="ticket-item-card">
+                <div class="ticket-item-top">
+                    <div class="badges-row">
+                        <span class="badge-status-pill badge-gray">2X GENERAL</span>
+                        <span class="badge-status-pill badge-outline">FASE 1</span>
+                    </div>
+                    <span class="badge-status-pill badge-active-green">Confirmado</span>
+                </div>
+
+                <div class="ticket-item-body">
+                    <h2 class="ticket-item-title">Festival Distorsión 2025</h2>
+                    <p class="ticket-item-datetime">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        Sábado 14 Junio 2025, 14:00 hrs
+                    </p>
+                    <p class="ticket-item-venue">Plaza Álvaro Obregón, Centro, Cd. Obregón</p>
+                </div>
+
+                <div class="ticket-item-footer">
+                    <span class="ticket-order-ref">Compra #KT-99104-CDMX</span>
+                    <button class="btn-select-ticket">
+                        Seleccionar
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+            </article>
+
+            <!-- Tarjeta de Transferencia y Seguridad -->
+            <div class="transfer-notice-card">
+                <div class="transfer-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 1l4 4-4 4"></path><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><path d="M7 23l-4-4 4-4"></path><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+                </div>
+                <div class="transfer-content">
+                    <h4>Reasignación de Titular</h4>
+                    <p>Puedes transferir la titularidad de cualquiera de tus boletos vía correo electrónico hasta 4 horas antes de la apertura de puertas.</p>
+                    <span class="transfer-tag">VALIDACIÓN CRIPTOGRÁFICA KONTICKET SECUREPASS™</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="digital-pass-card">
+            <div class="pass-header">
+                <span class="pass-category-tag">Concierto Exclusivo Gira Latinoamérica</span>
+                <h3 class="pass-event-title">Midnight Echoes Tour</h3>
+                <p class="pass-artist-info">Banda Invitada: Las Sombras · Visuales Inmersivos por Estudio 04</p>
+
+                <div class="pass-meta-grid">
+                    <div class="pass-meta-item">
+                        <small>Fecha</small>
+                        <strong>28 MAY 2025</strong>
+                    </div>
+                    <div class="pass-meta-item">
+                        <small>Hora Acceso</small>
+                        <strong>20:00 HRS</strong>
+                    </div>
+                    <div class="pass-meta-item">
+                        <small>Venue</small>
+                        <strong>Desert Bar</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ticket-stub-divider">
+                <div class="ticket-stub-line"></div>
+            </div>
+
+            <div class="pass-body">
+                <div class="pass-status-row">
+                    <span class="badge-pill-soft">Acceso Encriptado</span>
+                    <span class="badge-pill-navy">VIP FAST PASS</span>
+                    <span class="status-badge-live">
+                            <span class="pulse-dot"></span> LIVE
+                        </span>
+                </div>
+
+                <div class="qr-container">
+                    <span class="qr-code-title">Código de Acceso</span>
+
+                    <div class="qr-box">
+                        <svg viewBox="0 0 100 100" style="width: 100%; height: 100%;">
+                            <path d="M0 0h30v30H0zM10 10h10v10H10zM70 0h30v30H70zM80 10h10v10H80zM0 70h30v30H0zM10 80h10v10H10z" fill="#0A1547"/>
+                            <path d="M40 10h10v10H40zM50 20h10v10H50zM30 40h10v10H30zM50 40h20v10H50zM80 40h10v10H80zM10 50h10v10H10zM40 60h10v10H40zM60 60h30v10H60zM30 80h10v20H30zM50 80h20v10H50zM80 80h20v20H80z" fill="#0A1547"/>
+                        </svg>
+                    </div>
+
+                    <span class="qr-code-text">KT-VIP-7789-04</span>
+
+                    <div class="qr-sync-row">
+                        <span>Token rotativo activo</span>
+                        <span>SYNC: 23:15:53</span>
+                    </div>
+                </div>
+
+                <div class="pass-access-details">
+                    <div class="access-detail-box">
+                        <small>Acceso</small>
+                        <strong>Puerta B</strong>
+                        <span>Fast Pass lane</span>
+                    </div>
+                    <div class="access-detail-box">
+                        <small>Zona / Lugar</small>
+                        <strong>General A</strong>
+                        <span>Frente a Escenario</span>
+                    </div>
+                    <div class="access-detail-box">
+                        <small>Titular</small>
+                        <strong>Emily L.</strong>
+                        <span>ID Verificada</span>
+                    </div>
+                </div>
+
+                <div class="pass-actions-row">
+                    <button class="btn-wallet">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 7h-1V6a3 3 0 0 0-3-3H5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-8a3 3 0 0 0-3-3zm-14-2h10a1 1 0 0 1 1 1v1H5a1 1 0 0 1 0-2zm15 11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9h15a1 1 0 0 1 1 1v6z"/></svg>
+                        Añadir a Apple / Google Wallet
+                    </button>
+                    <button class="btn-download-pdf">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                        Descargar PDF
+                    </button>
+                </div>
+
+                <p class="pass-security-disclaimer">
+                    Presenta este código QR directo desde tu celular con brillo al máximo al ingresar al torniquete. No se admiten capturas de pantalla fijas.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+</body>
+</html>
